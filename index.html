@@ -244,7 +244,7 @@
         <button onclick="hostFinishGameNow()" id="btn-mp-finish" class="hidden w-full py-2 mb-3 bg-red-50 text-red-500 font-bold rounded-xl border-2 border-red-200 hover:bg-red-100 transition-colors text-sm">
             🏁 Oyunu Bitir
         </button>
-        <button onclick="guestLeaveGame()" id="btn-mp-leave" class="hidden w-full py-2 mb-3 bg-gray-100 text-gray-500 font-bold rounded-xl border-2 border-gray-200 hover:bg-gray-200 transition-colors text-sm">
+        <button onclick="guestLeaveGame()" id="btn-mp-leave" class="hidden fixed bottom-4 right-4 z-40 px-4 py-2 bg-white/90 backdrop-blur-sm text-gray-400 font-semibold text-xs rounded-full shadow-md border border-gray-200 hover:bg-gray-100 hover:text-gray-600 transition-colors">
             🚪 Oyundan Ayrıl
         </button>
 
@@ -291,6 +291,12 @@
     </div>
 
     <!-- TUR SONU MODALI -->
+    <!-- MULTIPLAYER: TUR BAŞI GERİ SAYIM -->
+    <div id="mp-countdown-overlay" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex flex-col items-center justify-center z-50">
+        <p class="text-white text-xl font-bold mb-2">Hazır ol!</p>
+        <span id="mp-countdown-number" class="text-white text-9xl font-black">5</span>
+    </div>
+
     <div id="round-over-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
         <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center border-4 border-summer-sun">
             <div class="text-5xl mb-2">⏱️</div>
@@ -443,16 +449,37 @@
         let timerInterval = null;
         let mpTimerInterval = null; // multiplayer round süresi için (solo timerInterval'dan bağımsız)
 
-        // --- BASİT YEDEK SÖZLÜK ---
+        // --- BASİT YEDEK SÖZLÜK (büyük liste yüklenemezse veya yüklenene kadar ek güvence) ---
         const dictionary = new Set(["YAZ", "SU", "KUM", "GÜNEŞ", "DENİZ", "PLAJ", "TATİL", "SICAK", "ADA", "KAMP"]);
+
+        // --- TÜRKÇE KELİME DOĞRULAMA (statik liste) ---
+        // null = henüz yüklenmedi (bu sırada kontrol atlanır, oyun kilitlenmez)
+        let turkishWordSet = null;
+
+        async function loadTurkishDictionary() {
+            try {
+                const res = await fetch('https://raw.githubusercontent.com/CanNuhlar/Turkce-Kelime-Listesi/master/turkce_kelime_listesi.txt');
+                const text = await res.text();
+                const set = new Set();
+                text.split('\n').forEach(line => {
+                    const w = line.trim();
+                    if (!w) return;
+                    if (/[\s/'’\-0-9]/.test(w)) return; // çok kelimeli öbekler / tire / kesme / rakam içerenleri atla
+                    if (w.length < 3) return; // oyun zaten 3 harften kısa kelime kabul etmiyor
+                    set.add(w.toLocaleUpperCase('tr-TR'));
+                });
+                turkishWordSet = set;
+                console.log('Türkçe sözlük yüklendi:', set.size, 'kelime');
+            } catch (err) {
+                console.error('Sözlük yüklenemedi, kelime kontrolü devre dışı kalacak:', err);
+            }
+        }
+        loadTurkishDictionary();
 
         // --- KURALLAR PANELİ (daktilo efekti) ---
         const RULES_LINES = [
             'Her tur 2 Sesli, 5 Sessiz ve 1 Joker harf düşer. Sessiz harfler asla tekrar etmez.',
-            'Yeni tur, bir önceki turdan en az 5 harf farklı olur.',
-            'Süre, harfler dizildikten sonra başlar.',
-            'Harfleri kullanarak en uzun kelimeleri yaz. Harf başına 1 Puan!',
-            'Seçtiğin tur sayısı kadar oynanır (ya da Sonsuz modda istediğin an bitirebilirsin).'
+            'Harfleri kullanarak en uzun kelimeleri yaz. Harf başına 1 Puan!'
         ];
         let rulesPanelOpen = false;
         let rulesAnimationStarted = false;
@@ -508,6 +535,7 @@
             document.getElementById('mp-name-screen').classList.add('hidden');
             document.getElementById('mp-waiting-screen').classList.add('hidden');
             document.getElementById('round-over-modal').classList.add('hidden');
+            document.getElementById('mp-countdown-overlay').classList.add('hidden');
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('game-over-screen').classList.add('hidden');
             document.getElementById('btn-solo-finish').classList.add('hidden');
@@ -875,10 +903,13 @@
                 return;
             }
 
-            // Gerçek oyunda API veya büyük bir array kontrolü yapılır. 
-            // Burada fallback olarak her kelimeyi kabul ediyoruz (Serbest Onay Modu).
-            // Normalde: if(!dictionary.has(wordStr)) ...
-            
+            // Sözlük yüklendiyse gerçek kontrol yap; yüklenmediyse (henüz/başarısız) oyunu kilitlemeden geç
+            if (turkishWordSet && !turkishWordSet.has(wordStr) && !dictionary.has(wordStr)) {
+                showToast("Bu bir kelime değil!");
+                sounds.playError();
+                return;
+            }
+
             const points = game.activeWord.length;
             game.score += points;
             game.foundWords.push(wordStr);
@@ -1288,7 +1319,8 @@
             game.mp.previousLetters = null; // Yeni oyun, önceki tur kısıtı geçerli değil
             const letters = generateRoundLetterSet(game.mp.previousLetters);
             game.mp.previousLetters = letters.filter(t => !t.isJoker).map(t => t.letter);
-            const roundEndsAt = Date.now() + (game.mp.selectedDurationMinutes * 60000);
+            const countdownEndsAt = Date.now() + 5000; // 5sn geri sayım
+            const roundEndsAt = countdownEndsAt + (game.mp.selectedDurationMinutes * 60000);
 
             await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`), {
                 status: 'playing',
@@ -1296,6 +1328,7 @@
                 roundDurationMinutes: game.mp.selectedDurationMinutes,
                 currentRound: 1,
                 letters: letters,
+                countdownEndsAt: countdownEndsAt,
                 roundEndsAt: roundEndsAt
             });
             await window.fb.update(window.fb.ref(window.fb.db, `lobbies-index/${game.mp.gameId}`), {
@@ -1323,7 +1356,7 @@
             game.roundLetters = data.letters.map(t => ({ ...t, isUsed: false }));
             game.activeWord = [];
             game.foundWords = [];
-            game.isPlaying = true;
+            game.isPlaying = false; // Geri sayım bitene kadar oynanamaz
 
             document.getElementById('found-words-list').innerHTML = '';
             document.getElementById('word-count').textContent = '0';
@@ -1331,7 +1364,35 @@
             updateActiveWordDisplay();
             renderLettersRack(false); // Multiplayer'da 8sn'lik dağıtım animasyonu atlanıyor, hız için
 
-            startMultiplayerTimer(data.roundEndsAt);
+            runMultiplayerCountdown(data.countdownEndsAt, () => {
+                game.isPlaying = true;
+                startMultiplayerTimer(data.roundEndsAt);
+            });
+        }
+
+        // Round başlarken 5'ten geri sayım gösterir (countdownEndsAt yoksa veya geçmişse direkt devam eder)
+        function runMultiplayerCountdown(countdownEndsAt, onComplete) {
+            if (!countdownEndsAt || countdownEndsAt - Date.now() <= 0) {
+                onComplete();
+                return;
+            }
+
+            const overlay = document.getElementById('mp-countdown-overlay');
+            const numberEl = document.getElementById('mp-countdown-number');
+            numberEl.textContent = '5';
+            overlay.classList.remove('hidden');
+
+            const interval = setInterval(() => {
+                const remaining = Math.ceil((countdownEndsAt - Date.now()) / 1000);
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    overlay.classList.add('hidden');
+                    onComplete();
+                } else {
+                    numberEl.textContent = remaining;
+                    sounds.playClick();
+                }
+            }, 1000);
         }
 
         function startMultiplayerTimer(roundEndsAt) {
@@ -1409,12 +1470,14 @@
 
             const letters = generateRoundLetterSet(game.mp.previousLetters);
             game.mp.previousLetters = letters.filter(t => !t.isJoker).map(t => t.letter);
-            const roundEndsAt = Date.now() + (durationMinutes * 60000);
+            const countdownEndsAt = Date.now() + 5000; // 5sn geri sayım
+            const roundEndsAt = countdownEndsAt + (durationMinutes * 60000);
 
             await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`), {
                 status: 'playing',
                 currentRound: game.mp.lastSyncedRound + 1,
                 letters: letters,
+                countdownEndsAt: countdownEndsAt,
                 roundEndsAt: roundEndsAt
             });
         }
