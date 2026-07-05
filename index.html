@@ -220,6 +220,11 @@
             <!-- Harfler buraya JS ile çizilecek -->
         </div>
 
+        <!-- Sonsuz modda host için (varsayılan gizli) -->
+        <button onclick="hostFinishGameNow()" id="btn-mp-finish" class="hidden w-full py-2 mb-3 bg-red-50 text-red-500 font-bold rounded-xl border-2 border-red-200 hover:bg-red-100 transition-colors text-sm">
+            🏁 Oyunu Bitir
+        </button>
+
         <!-- Kontrol Butonları -->
         <div class="flex gap-4 mb-6">
             <button onclick="shuffleLettersAndPlay()" id="btn-shuffle" class="flex-1 py-3 bg-white text-summer-sea font-bold rounded-xl shadow border-2 border-blue-200 hover:bg-blue-50 transition-colors flex items-center justify-center gap-2">
@@ -264,9 +269,20 @@
             <h3 class="text-3xl font-extrabold text-summer-sea mb-1"><span id="round-over-title">Tur Bitti!</span></h3>
             <p class="text-gray-500 mb-4">Toplam Skorun</p>
             <p id="round-over-score" class="text-5xl font-black text-summer-coral mb-6">0</p>
+
+            <!-- Multiplayer'da doldurulur, solo'da boş kalır -->
+            <div id="round-over-leaderboard" class="flex flex-col gap-1 mb-6 text-left"></div>
+
+            <!-- Solo VE multiplayer host için -->
             <button onclick="goToNextRound()" id="btn-next-round" class="w-full py-4 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-xl rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
                 Sonraki Tur ➜
             </button>
+            <!-- Sadece multiplayer + sonsuz modda host'a ek buton -->
+            <button onclick="hostFinishGameNow()" id="btn-round-over-finish" class="hidden w-full mt-2 py-2 bg-red-50 text-red-500 font-bold rounded-xl border-2 border-red-200 hover:bg-red-100 transition-colors text-sm">
+                🏁 Oyunu Burada Bitir
+            </button>
+            <!-- Sadece multiplayer misafirine -->
+            <p id="round-over-guest-text" class="hidden text-gray-500 animate-pulse">Host'un kararını bekliyorsun...</p>
         </div>
     </div>
 
@@ -389,10 +405,12 @@
                 pendingJoinGameId: null,  // katılınacak oyunun id'si (guest akışında)
                 selectedRoundCount: null, // host'un seçtiği round sayısı (henüz DB'ye yazılmadan)
                 lobbyListActive: false,   // aktif oyunlar listesi dinleniyor mu
-                waitingActive: false      // bekleme odası dinleniyor mu
+                waitingActive: false,     // bekleme odası dinleniyor mu
+                lastSyncedRound: null     // en son senkronlanan round no (gereksiz re-render'ı önler)
             }
         };
         let timerInterval = null;
+        let mpTimerInterval = null; // multiplayer round süresi için (solo timerInterval'dan bağımsız)
 
         // --- BASİT YEDEK SÖZLÜK ---
         const dictionary = new Set(["YAZ", "SU", "KUM", "GÜNEŞ", "DENİZ", "PLAJ", "TATİL", "SICAK", "ADA", "KAMP"]);
@@ -406,10 +424,17 @@
             document.getElementById('mp-lobby-screen').classList.add('hidden');
             document.getElementById('mp-name-screen').classList.add('hidden');
             document.getElementById('mp-waiting-screen').classList.add('hidden');
+            document.getElementById('round-over-modal').classList.add('hidden');
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('game-over-screen').classList.add('hidden');
             clearInterval(timerInterval);
+            clearInterval(mpTimerInterval);
             detachMpListeners();
+            // Multiplayer state'ini temizle (oyun bitip menüye dönüldüğünde eski lobiye yazmayı önler)
+            game.mp.gameId = null;
+            game.mp.isHost = false;
+            game.mp.selectedRoundCount = null;
+            game.mp.lastSyncedRound = null;
         }
 
         function showNameScreen() {
@@ -749,7 +774,15 @@
             
             addWordToList(wordStr, points);
             updateUI();
-            
+
+            // Multiplayer'da: sadece kendi skor düğümüne yaz, başkasına dokunma
+            if (game.mp.gameId) {
+                window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}/scores/${game.playerName}`), {
+                    total: game.score,
+                    foundWords: game.foundWords
+                }).catch(err => console.error('Skor yazılamadı:', err));
+            }
+
             // Sadece kelimeyi temizle, kullanılan harfleri GERİ VER (Çünkü aynı harflerle başka kelime yazılacak)
             game.activeWord.forEach(item => {
                 const originalTile = game.roundLetters.find(t => t.id === item.originId);
@@ -1006,8 +1039,11 @@
             });
 
             game.playerName = name;
+            game.score = 0;
+            game.foundWords = [];
             game.mp.gameId = gameId;
             game.mp.isHost = true;
+            game.mp.lastSyncedRound = null;
 
             document.getElementById('mp-name-screen').classList.add('hidden');
             subscribeToWaitingRoom(gameId);
@@ -1030,8 +1066,11 @@
             await window.fb.update(window.fb.ref(window.fb.db, `lobbies-index/${gameId}`), { playerCount: newCount });
 
             game.playerName = finalName;
+            game.score = 0;
+            game.foundWords = [];
             game.mp.gameId = gameId;
             game.mp.isHost = false;
+            game.mp.lastSyncedRound = null;
 
             document.getElementById('mp-name-screen').classList.add('hidden');
             subscribeToWaitingRoom(gameId);
@@ -1051,13 +1090,26 @@
                     leaveMultiplayerLobby();
                     return;
                 }
-                renderWaitingRoom(data);
-
-                if (data.status === 'playing') {
-                    // D2'de gerçek oyun ekranına geçiş burada yapılacak.
-                    showToast('Oyun başladı! (Oyun mekaniği bir sonraki aşamada eklenecek)', 'success');
-                }
+                handleLobbyUpdate(data);
             });
+        }
+
+        // Lobiden gelen HER güncellemede çağrılır (status'a göre doğru ekranı yönetir)
+        function handleLobbyUpdate(data) {
+            if (data.status === 'waiting') {
+                document.getElementById('mp-waiting-screen').classList.remove('hidden');
+                document.getElementById('game-screen').classList.add('hidden');
+                renderWaitingRoom(data);
+            } else if (data.status === 'playing') {
+                document.getElementById('mp-waiting-screen').classList.add('hidden');
+                document.getElementById('round-over-modal').classList.add('hidden');
+                enterOrSyncMultiplayerRound(data);
+            } else if (data.status === 'roundover') {
+                showMultiplayerRoundOverModal(data);
+            } else if (data.status === 'finished') {
+                clearInterval(mpTimerInterval);
+                showMultiplayerGameOver(data);
+            }
         }
 
         function renderWaitingRoom(data) {
@@ -1088,24 +1140,198 @@
             startBtn.classList.add('bg-gradient-to-r', 'from-summer-sun', 'to-summer-coral', 'hover:shadow-xl');
         }
 
+        // Host için: 2 sesli + 5 sessiz + 1 joker üretir, game state'ine dokunmadan sadece veri döner
+        // (DB'ye yazılıp round-trip ile TÜM client'lara aynı harfler böyle ulaşır)
+        function hostGenerateLetterSet() {
+            const letters = [];
+            for (let i = 0; i < 2; i++) {
+                letters.push({ id: `v_${i}`, letter: VOWELS[Math.floor(Math.random() * VOWELS.length)], isJoker: false });
+            }
+            for (let i = 0; i < 5; i++) {
+                letters.push({ id: `c_${i}`, letter: CONSONANTS[Math.floor(Math.random() * CONSONANTS.length)], isJoker: false });
+            }
+            letters.push({ id: 'joker_1', letter: '★', isJoker: true });
+            letters.sort(() => Math.random() - 0.5);
+            return letters;
+        }
+
         async function startMultiplayerGame() {
             if (!game.mp.selectedRoundCount || !game.mp.gameId) return;
 
+            const letters = hostGenerateLetterSet();
+            const roundEndsAt = Date.now() + 180000; // 3 dakika
+
             await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`), {
                 status: 'playing',
-                roundCount: game.mp.selectedRoundCount
+                roundCount: game.mp.selectedRoundCount,
+                currentRound: 1,
+                letters: letters,
+                roundEndsAt: roundEndsAt
             });
             await window.fb.update(window.fb.ref(window.fb.db, `lobbies-index/${game.mp.gameId}`), {
                 status: 'playing'
             });
         }
 
+        // Yeni round'a girildiğinde (veya ilk kez) ekranı ve state'i senkronlar.
+        // Aynı round için tekrar tekrar tetiklenen (skor güncellemesi gibi) çağrılarda hiçbir şey yapmaz.
+        function enterOrSyncMultiplayerRound(data) {
+            document.getElementById('game-screen').classList.remove('hidden');
+
+            const finishBtn = document.getElementById('btn-mp-finish');
+            finishBtn.classList.toggle('hidden', !(game.mp.isHost && data.roundCount === 'Sonsuz'));
+
+            if (game.mp.lastSyncedRound === data.currentRound) {
+                return; // Bu round zaten senkronlandı, sadece skor güncellemesi tetiklemiş olabilir
+            }
+            game.mp.lastSyncedRound = data.currentRound;
+
+            game.currentRound = data.currentRound;
+            game.maxRounds = (data.roundCount === 'Sonsuz') ? Infinity : data.roundCount;
+            game.roundLetters = data.letters.map(t => ({ ...t, isUsed: false }));
+            game.activeWord = [];
+            game.foundWords = [];
+            game.isPlaying = true;
+
+            document.getElementById('found-words-list').innerHTML = '';
+            document.getElementById('word-count').textContent = '0';
+            updateUI();
+            updateActiveWordDisplay();
+            renderLettersRack(false); // Multiplayer'da 8sn'lik dağıtım animasyonu atlanıyor, hız için
+
+            startMultiplayerTimer(data.roundEndsAt);
+        }
+
+        function startMultiplayerTimer(roundEndsAt) {
+            clearInterval(mpTimerInterval);
+            const timeDisplay = document.getElementById('time-left');
+
+            function tick() {
+                const remaining = Math.max(0, Math.round((roundEndsAt - Date.now()) / 1000));
+                const m = Math.floor(remaining / 60);
+                const s = remaining % 60;
+                timeDisplay.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+                timeDisplay.classList.toggle('text-red-500', remaining <= 10);
+
+                if (remaining <= 0) {
+                    clearInterval(mpTimerInterval);
+                    game.isPlaying = false;
+                    // Round'u sonlandırma yazma işlemini SADECE host yapar (çakışmayı önlemek için)
+                    if (game.mp.isHost) hostEndRound();
+                }
+            }
+            tick();
+            mpTimerInterval = setInterval(tick, 1000);
+        }
+
+        async function hostEndRound() {
+            const snapshot = await window.fb.get(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`));
+            const data = snapshot.val();
+            if (!data) return;
+
+            const isLastRound = (data.roundCount !== 'Sonsuz') && (data.currentRound >= data.roundCount);
+
+            if (isLastRound) {
+                await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`), { status: 'finished' });
+                await window.fb.update(window.fb.ref(window.fb.db, `lobbies-index/${game.mp.gameId}`), { status: 'finished' });
+            } else {
+                await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`), { status: 'roundover' });
+            }
+        }
+
+        function showMultiplayerRoundOverModal(data) {
+            document.getElementById('round-over-title').textContent = `${data.currentRound}. Tur Bitti!`;
+            document.getElementById('round-over-score').textContent = game.score;
+
+            const ranked = Object.entries(data.scores || {})
+                .map(([name, s]) => ({ name, total: s.total || 0 }))
+                .sort((a, b) => b.total - a.total);
+
+            document.getElementById('round-over-leaderboard').innerHTML = ranked.map((p, i) => `
+                <div class="flex justify-between px-3 py-1.5 rounded-lg text-sm ${p.name === game.playerName ? 'bg-summer-sun text-white font-bold' : 'bg-blue-50 text-gray-700'}">
+                    <span>${i + 1}. ${p.name}</span><span>${p.total}</span>
+                </div>
+            `).join('');
+
+            const nextBtn = document.getElementById('btn-next-round');
+            const finishBtn = document.getElementById('btn-round-over-finish');
+            const guestText = document.getElementById('round-over-guest-text');
+
+            if (game.mp.isHost) {
+                nextBtn.classList.remove('hidden');
+                nextBtn.onclick = hostStartNextRound;
+                finishBtn.classList.toggle('hidden', data.roundCount !== 'Sonsuz');
+                guestText.classList.add('hidden');
+            } else {
+                nextBtn.classList.add('hidden');
+                finishBtn.classList.add('hidden');
+                guestText.classList.remove('hidden');
+            }
+
+            document.getElementById('round-over-modal').classList.remove('hidden');
+        }
+
+        async function hostStartNextRound() {
+            const letters = hostGenerateLetterSet();
+            const roundEndsAt = Date.now() + 180000;
+
+            await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`), {
+                status: 'playing',
+                currentRound: game.mp.lastSyncedRound + 1,
+                letters: letters,
+                roundEndsAt: roundEndsAt
+            });
+        }
+
+        async function hostFinishGameNow() {
+            await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`), { status: 'finished' });
+            await window.fb.update(window.fb.ref(window.fb.db, `lobbies-index/${game.mp.gameId}`), { status: 'finished' });
+        }
+
+        async function showMultiplayerGameOver(data) {
+            document.getElementById('round-over-modal').classList.add('hidden');
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('game-over-screen').classList.remove('hidden');
+            document.getElementById('final-score').textContent = game.score;
+            sounds.playSuccess();
+
+            const ranked = Object.entries(data.scores || {})
+                .map(([name, s]) => ({ name, total: s.total || 0 }))
+                .sort((a, b) => b.total - a.total);
+
+            document.getElementById('leaderboard-title').textContent = '🏆 Bu Oyunun Sonuçları';
+            document.getElementById('leaderboard-list').innerHTML = ranked.map((p, i) => `
+                <div class="flex justify-between items-center px-3 py-2 rounded-lg ${p.name === game.playerName ? 'bg-summer-sun text-white font-bold' : 'bg-white text-gray-700'}">
+                    <span>${i + 1}. ${p.name}</span><span>${p.total}</span>
+                </div>
+            `).join('');
+
+            // Kalıcı skor tablosuna (Apps Script, 2. sekme) kendi skorunu gönder
+            try {
+                await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        mode: 'multiplayer',
+                        playerName: game.playerName,
+                        score: game.score,
+                        category: categoryLabel(game.maxRounds)
+                    })
+                });
+            } catch (err) {
+                console.error('Multiplayer skor kaydı başarısız:', err);
+            }
+        }
+
         function leaveMultiplayerLobby() {
             detachMpListeners();
+            clearInterval(mpTimerInterval);
             game.mp.gameId = null;
             game.mp.isHost = false;
             game.mp.selectedRoundCount = null;
+            game.mp.lastSyncedRound = null;
             document.getElementById('mp-waiting-screen').classList.add('hidden');
+            document.getElementById('round-over-modal').classList.add('hidden');
+            document.getElementById('btn-mp-finish').classList.add('hidden');
             showWelcomeScreen();
         }
 
