@@ -106,7 +106,7 @@
 
     <!-- KARŞILAMA EKRANI -->
     <div id="welcome-screen" class="max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
-        <div class="text-6xl mb-4">🏝️🚩🔍</div>
+        <div class="text-6xl mb-4">🏝️</div>
         <h1 class="text-4xl font-extrabold text-summer-sea mb-6 tracking-tight">Kelime Avı</h1>
         
         <button onclick="showNameScreen()" class="w-full py-4 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-2xl rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">
@@ -180,14 +180,11 @@
         <h2 class="text-3xl font-extrabold text-summer-sea mb-2">Kaç Tur Oynayalım?</h2>
         <p class="text-gray-500 mb-4">Tur sayısı ve süresini seç</p>
 
-        <div class="grid grid-cols-2 gap-2 mb-2">
+        <div class="grid grid-cols-2 gap-2 mb-4">
             <button onclick="selectSoloRoundCount(3)" data-solo-round="3" class="solo-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">3</button>
             <button onclick="selectSoloRoundCount(5)" data-solo-round="5" class="solo-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">5</button>
             <button onclick="selectSoloRoundCount(7)" data-solo-round="7" class="solo-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">7</button>
             <button onclick="selectSoloRoundCount(10)" data-solo-round="10" class="solo-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">10</button>
-        </div>
-        <div class="grid grid-cols-2 gap-2 mb-4">
-            <button onclick="selectSoloRoundCount(Infinity)" data-solo-round="Infinity" class="solo-round-btn col-span-2 py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">Sınırsız ∞</button>
         </div>
 
         <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Tur Süresi (dk)</p>
@@ -241,14 +238,10 @@
         <!-- Sadece host görür -->
         <div id="mp-host-controls" class="hidden">
             <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Kaç Tur?</p>
-            <div class="grid grid-cols-2 gap-2 mb-2">
+            <div class="grid grid-cols-3 gap-2 mb-4">
                 <button onclick="selectMpRoundCount(3)" data-round="3" class="mp-round-btn py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200">3</button>
                 <button onclick="selectMpRoundCount(5)" data-round="5" class="mp-round-btn py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200">5</button>
                 <button onclick="selectMpRoundCount(7)" data-round="7" class="mp-round-btn py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200">7</button>
-                <button onclick="selectMpRoundCount(10)" data-round="10" class="mp-round-btn py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200">10</button>
-            </div>
-            <div class="grid grid-cols-2 gap-2 mb-4">
-                <button onclick="selectMpRoundCount('Sonsuz')" data-round="Sonsuz" class="mp-round-btn col-span-2 py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200">Sınırsız ∞</button>
             </div>
             <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Tur Süresi (dk)</p>
             <div class="grid grid-cols-3 gap-2 mb-4">
@@ -372,6 +365,9 @@
             <p class="text-gray-500 mb-4">Toplam Skorun</p>
             <p id="round-over-score" class="text-5xl font-black text-summer-coral mb-6">0</p>
 
+            <!-- En uzun kelime bonusu (multiplayer'da, varsa doldurulur) -->
+            <div id="round-over-bonus-banner" class="hidden bg-amber-50 border-2 border-amber-300 text-amber-700 text-sm font-bold rounded-xl p-3 mb-4"></div>
+
             <!-- Multiplayer'da doldurulur, solo'da boş kalır -->
             <div id="round-over-leaderboard" class="flex flex-col gap-1 mb-6 text-left"></div>
 
@@ -404,6 +400,9 @@
             <p class="text-sm font-bold text-orange-400 uppercase tracking-widest mb-1">Toplam Skor</p>
             <p id="final-score" class="text-6xl font-black text-summer-coral">0</p>
         </div>
+
+        <!-- En uzun kelime bonusu (multiplayer'da, varsa doldurulur) -->
+        <div id="game-over-bonus-banner" class="hidden bg-amber-50 border-2 border-amber-300 text-amber-700 text-sm font-bold rounded-xl p-3 mb-4"></div>
 
         <div class="bg-blue-50 rounded-2xl p-4 mb-6 text-left">
             <p class="text-sm font-bold text-summer-sea uppercase tracking-widest mb-2 text-center" id="leaderboard-title">🏆 Skor Tablosu</p>
@@ -520,7 +519,8 @@
                 previousLetters: null, // Bir önceki turun harfleri (host bunu takip eder)
                 lobbyListActive: false,   // aktif oyunlar listesi dinleniyor mu
                 waitingActive: false,     // bekleme odası dinleniyor mu
-                lastSyncedRound: null     // en son senkronlanan round no (gereksiz re-render'ı önler)
+                lastSyncedRound: null,    // en son senkronlanan round no (gereksiz re-render'ı önler)
+                lastBonusAppliedRound: null // en uzun kelime bonusunun uygulandığı round no (tekrar uygulanmasın diye)
             }
         };
         let timerInterval = null;
@@ -737,6 +737,7 @@
             game.mp.selectedRoundCount = null;
             game.mp.selectedDurationMinutes = null;
             game.mp.lastSyncedRound = null;
+            game.mp.lastBonusAppliedRound = null;
         }
 
         function showNameScreen() {
@@ -752,6 +753,7 @@
         }
 
         function showRoundSelectScreen() {
+            document.getElementById('welcome-screen').classList.add('hidden');
             document.getElementById('name-screen').classList.add('hidden');
             document.getElementById('round-select-screen').classList.remove('hidden');
 
@@ -901,6 +903,13 @@
         // Kurallar: 5 sessiz harf ASLA tekrar etmez (iadesiz seçim);
         // previousLetters verilmişse yeni set ile en fazla 2 ortak harf olacak şekilde
         // (yani en az 5 harf farklı) üretilene kadar dener (güvenlik amaçlı 200 deneme sınırı var).
+        // Bir harf dizisini karıştırır ama joker'i (varsa) her zaman en sona sabitler
+        function shuffleKeepingJokerLast(letters) {
+            const joker = letters.find(t => t.isJoker);
+            const rest = letters.filter(t => !t.isJoker).sort(() => Math.random() - 0.5);
+            return joker ? [...rest, joker] : rest;
+        }
+
         function generateRoundLetterSet(previousLetters) {
             let vowels, consonants, combined;
             let attempt = 0;
@@ -916,8 +925,7 @@
                 ...consonants.map((letter, i) => ({ id: `c_${i}`, letter, isJoker: false })),
                 { id: 'joker_1', letter: '★', isJoker: true }
             ];
-            letters.sort(() => Math.random() - 0.5);
-            return letters;
+            return shuffleKeepingJokerLast(letters);
         }
 
         function generateLetters() {
@@ -1026,7 +1034,7 @@
             if(!game.isPlaying) return;
             // Oynanırken karıştırılırsa, 8 saniye beklemeden anında karışsın ama ses çıksın
             sounds.playRoll();
-            game.roundLetters.sort(() => Math.random() - 0.5);
+            game.roundLetters = shuffleKeepingJokerLast(game.roundLetters);
             renderLettersRack(false);
         }
 
@@ -1149,7 +1157,7 @@
                 return;
             }
 
-            const points = game.activeWord.length;
+            const points = game.activeWord.filter(item => !item.isJoker).length;
             game.score += points;
             game.foundWords.push(wordStr);
             
@@ -1182,7 +1190,7 @@
 
         // Kelime onaylandıktan sonra harfleri karıştırır ve üzerlerinden kısa bir ışık efekti geçirir
         function shuffleAndShineLetters() {
-            game.roundLetters.sort(() => Math.random() - 0.5);
+            game.roundLetters = shuffleKeepingJokerLast(game.roundLetters);
             renderLettersRack(false);
             sounds.playRoll();
             document.querySelectorAll('#letters-rack .tile').forEach(tileEl => {
@@ -1407,6 +1415,7 @@
         function openMpNameScreen(role, gameId = null) {
             game.mp.pendingRole = role;
             game.mp.pendingJoinGameId = gameId;
+            document.getElementById('mp-lobby-screen').classList.add('hidden');
 
             // İsim bu oturumda zaten belirlendiyse tekrar sormadan direkt devam et
             // (her lobi kendi çakışma kontrolünü createLobby/joinLobby içinde zaten yapıyor)
@@ -1415,7 +1424,6 @@
                 return;
             }
 
-            document.getElementById('mp-lobby-screen').classList.add('hidden');
             document.getElementById('mp-name-screen').classList.remove('hidden');
             document.getElementById('mp-name-input').value = '';
             setTimeout(() => document.getElementById('mp-name-input').focus(), 100);
@@ -1475,6 +1483,7 @@
             game.mp.gameId = gameId;
             game.mp.isHost = true;
             game.mp.lastSyncedRound = null;
+            game.mp.lastBonusAppliedRound = null;
 
             document.getElementById('mp-name-screen').classList.add('hidden');
             subscribeToWaitingRoom(gameId);
@@ -1502,6 +1511,7 @@
             game.mp.gameId = gameId;
             game.mp.isHost = false;
             game.mp.lastSyncedRound = null;
+            game.mp.lastBonusAppliedRound = null;
 
             document.getElementById('mp-name-screen').classList.add('hidden');
             subscribeToWaitingRoom(gameId);
@@ -1699,18 +1709,83 @@
             mpTimerInterval = setInterval(tick, 1000);
         }
 
+        // Bu turda en uzun kelimeyi kim(ler) yazdı hesaplar.
+        // Berabere durumunda: toplam puanı DÜŞÜK olan(lar) kazanır (rekabeti kızıştırmak için).
+        function computeLongestWordBonus(scoresObj) {
+            let maxLen = 0;
+            let candidates = []; // { name, word, total }
+
+            Object.entries(scoresObj || {}).forEach(([name, s]) => {
+                const words = s.foundWords || [];
+                if (words.length === 0) return;
+
+                let longest = '';
+                words.forEach(w => { if (w.length > longest.length) longest = w; });
+
+                if (longest.length > maxLen) {
+                    maxLen = longest.length;
+                    candidates = [{ name, word: longest, total: s.total || 0 }];
+                } else if (longest.length === maxLen && maxLen > 0) {
+                    candidates.push({ name, word: longest, total: s.total || 0 });
+                }
+            });
+
+            if (maxLen === 0 || candidates.length === 0) return null;
+            if (candidates.length === 1) {
+                return { winners: [{ name: candidates[0].name, word: candidates[0].word }], length: maxLen };
+            }
+
+            // Berabere: en düşük puanlı(lar) kazanır
+            const minTotal = Math.min(...candidates.map(c => c.total));
+            const winners = candidates.filter(c => c.total === minTotal).map(c => ({ name: c.name, word: c.word }));
+            return { winners, length: maxLen };
+        }
+
+        // data.longestWordBonus'u kontrol eder; ben kazanmışsam ve bu round için daha önce
+        // uygulanmadıysa kendi skoruma +5 ekleyip kendi skor düğümüme yazarım (başkasına dokunmam).
+        function processLongestWordBonus(data) {
+            const bonusData = data.longestWordBonus;
+            if (!bonusData || bonusData.round !== data.currentRound) return null;
+
+            const amIWinner = bonusData.winners.some(w => w.name === game.playerName);
+            if (amIWinner && game.mp.lastBonusAppliedRound !== data.currentRound) {
+                game.mp.lastBonusAppliedRound = data.currentRound;
+                game.score += 5;
+                updateUI();
+                window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}/scores/${game.playerName}`), {
+                    total: game.score,
+                    foundWords: game.foundWords
+                }).catch(err => console.error('Bonus puanı yazılamadı:', err));
+            }
+            return bonusData;
+        }
+
+        function renderBonusBanner(bonusData, elementId) {
+            const banner = document.getElementById(elementId);
+            if (!bonusData) {
+                banner.classList.add('hidden');
+                banner.innerHTML = '';
+                return;
+            }
+            const namesText = bonusData.winners.map(w => `${w.name} ("${w.word}")`).join(' ve ');
+            banner.classList.remove('hidden');
+            banner.innerHTML = `🏆 Turun En Uzun Kelimesi: ${namesText} — <strong>+5 puan</strong>`;
+        }
+
         async function hostEndRound() {
             const snapshot = await window.fb.get(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`));
             const data = snapshot.val();
             if (!data) return;
 
             const isLastRound = (data.roundCount !== 'Sonsuz') && (data.currentRound >= data.roundCount);
+            const bonus = computeLongestWordBonus(data.scores);
+            const bonusUpdate = { longestWordBonus: bonus ? { round: data.currentRound, ...bonus } : null };
 
             if (isLastRound) {
-                await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`), { status: 'finished' });
+                await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`), { status: 'finished', ...bonusUpdate });
                 await window.fb.update(window.fb.ref(window.fb.db, `lobbies-index/${game.mp.gameId}`), { status: 'finished' });
             } else {
-                await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`), { status: 'roundover' });
+                await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`), { status: 'roundover', ...bonusUpdate });
             }
         }
 
@@ -1756,6 +1831,9 @@
         function showMultiplayerRoundOverModal(data) {
             document.getElementById('round-over-title').textContent = `${data.currentRound}. Tur Bitti!`;
             document.getElementById('round-over-score').textContent = game.score;
+
+            const bonusData = processLongestWordBonus(data);
+            renderBonusBanner(bonusData, 'round-over-bonus-banner');
 
             const ranked = Object.entries(data.scores || {})
                 .map(([name, s]) => ({ name, total: s.total || 0 }))
@@ -1821,7 +1899,12 @@
         }
 
         async function hostFinishGameNow() {
-            await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`), { status: 'finished' });
+            const snapshot = await window.fb.get(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`));
+            const data = snapshot.val();
+            const bonus = data ? computeLongestWordBonus(data.scores) : null;
+            const bonusUpdate = { longestWordBonus: bonus ? { round: data.currentRound, ...bonus } : null };
+
+            await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`), { status: 'finished', ...bonusUpdate });
             await window.fb.update(window.fb.ref(window.fb.db, `lobbies-index/${game.mp.gameId}`), { status: 'finished' });
         }
 
@@ -1841,8 +1924,11 @@
             document.getElementById('round-over-modal').classList.add('hidden');
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('game-over-screen').classList.remove('hidden');
-            document.getElementById('final-score').textContent = game.score;
             sounds.playSuccess();
+
+            const bonusData = processLongestWordBonus(data); // game.score'u gerekirse burada günceller
+            renderBonusBanner(bonusData, 'game-over-bonus-banner');
+            document.getElementById('final-score').textContent = game.score;
 
             const ranked = Object.entries(data.scores || {})
                 .map(([name, s]) => ({ name, total: s.total || 0 }))
@@ -1898,6 +1984,7 @@
             game.mp.isHost = false;
             game.mp.selectedRoundCount = null;
             game.mp.lastSyncedRound = null;
+            game.mp.lastBonusAppliedRound = null;
             document.getElementById('mp-waiting-screen').classList.add('hidden');
             document.getElementById('round-over-modal').classList.add('hidden');
             document.getElementById('btn-mp-finish').classList.add('hidden');
