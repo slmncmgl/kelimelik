@@ -74,6 +74,17 @@
             max-height: 0;
         }
 
+        /* Kelime onayı sonrası harflerin üzerinden geçen kısa ışık efekti */
+        @keyframes tileShineSweep {
+            0% { background-position: -150% 0; }
+            100% { background-position: 250% 0; }
+        }
+        .tile-shine {
+            background-image: linear-gradient(120deg, transparent 40%, rgba(255,255,255,0.85) 50%, transparent 60%);
+            background-size: 200% 100%;
+            animation: tileShineSweep 0.5s ease-out;
+        }
+
         /* Özel Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
@@ -136,7 +147,8 @@
         </div>
 
         <p class="text-left text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Kategori</p>
-        <div class="grid grid-cols-4 gap-2 mb-4">
+        <div class="grid grid-cols-5 gap-2 mb-4">
+            <button onclick="selectScoreboardCategory(3)" data-sb-cat="3" class="sb-cat-btn py-2 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200 transition-colors">3</button>
             <button onclick="selectScoreboardCategory(5)" data-sb-cat="5" class="sb-cat-btn py-2 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200 transition-colors">5</button>
             <button onclick="selectScoreboardCategory(7)" data-sb-cat="7" class="sb-cat-btn py-2 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200 transition-colors">7</button>
             <button onclick="selectScoreboardCategory(10)" data-sb-cat="10" class="sb-cat-btn py-2 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200 transition-colors">10</button>
@@ -167,13 +179,28 @@
     <!-- ROUND SEÇİM EKRANI -->
     <div id="round-select-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
         <h2 class="text-3xl font-extrabold text-summer-sea mb-2">Kaç Tur Oynayalım?</h2>
-        <p class="text-gray-500 mb-6">Bir seçenek seç ve başlayalım</p>
-        <div class="grid grid-cols-2 gap-4 mb-4">
-            <button onclick="startGame(5)" class="py-6 bg-blue-50 hover:bg-summer-sea hover:text-white text-summer-sea font-black text-3xl rounded-2xl border-2 border-blue-200 transition-all">5</button>
-            <button onclick="startGame(7)" class="py-6 bg-blue-50 hover:bg-summer-sea hover:text-white text-summer-sea font-black text-3xl rounded-2xl border-2 border-blue-200 transition-all">7</button>
-            <button onclick="startGame(10)" class="py-6 bg-blue-50 hover:bg-summer-sea hover:text-white text-summer-sea font-black text-3xl rounded-2xl border-2 border-blue-200 transition-all">10</button>
-            <button onclick="startGame(Infinity)" class="py-6 bg-blue-50 hover:bg-summer-sea hover:text-white text-summer-sea font-black text-3xl rounded-2xl border-2 border-blue-200 transition-all">∞</button>
+        <p class="text-gray-500 mb-4">Tur sayısı ve süresini seç</p>
+
+        <div class="grid grid-cols-4 gap-2 mb-2">
+            <button onclick="selectSoloRoundCount(3)" data-solo-round="3" class="solo-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">3</button>
+            <button onclick="selectSoloRoundCount(5)" data-solo-round="5" class="solo-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">5</button>
+            <button onclick="selectSoloRoundCount(7)" data-solo-round="7" class="solo-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">7</button>
+            <button onclick="selectSoloRoundCount(10)" data-solo-round="10" class="solo-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">10</button>
         </div>
+        <div class="grid grid-cols-4 gap-2 mb-4">
+            <button onclick="selectSoloRoundCount(Infinity)" data-solo-round="Infinity" class="solo-round-btn col-span-2 col-start-2 py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">Sınırsız ∞</button>
+        </div>
+
+        <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Tur Süresi (dk)</p>
+        <div class="grid grid-cols-3 gap-2 mb-6">
+            <button onclick="selectSoloDuration(1)" data-solo-duration="1" class="solo-duration-btn py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200 transition-colors">1</button>
+            <button onclick="selectSoloDuration(2)" data-solo-duration="2" class="solo-duration-btn py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200 transition-colors">2</button>
+            <button onclick="selectSoloDuration(3)" data-solo-duration="3" class="solo-duration-btn py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200 transition-colors">3</button>
+        </div>
+
+        <button onclick="startGame()" id="btn-solo-start" disabled class="w-full py-4 bg-gray-300 text-white font-bold text-xl rounded-2xl shadow-lg transition-all mb-3 cursor-not-allowed">
+            Oyunu Başlat 🚀
+        </button>
         <button onclick="showWelcomeScreen()" class="w-full py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
     </div>
 
@@ -215,11 +242,14 @@
         <!-- Sadece host görür -->
         <div id="mp-host-controls" class="hidden">
             <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Kaç Tur?</p>
-            <div class="grid grid-cols-4 gap-2 mb-4">
+            <div class="grid grid-cols-4 gap-2 mb-2">
+                <button onclick="selectMpRoundCount(3)" data-round="3" class="mp-round-btn py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200">3</button>
                 <button onclick="selectMpRoundCount(5)" data-round="5" class="mp-round-btn py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200">5</button>
                 <button onclick="selectMpRoundCount(7)" data-round="7" class="mp-round-btn py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200">7</button>
                 <button onclick="selectMpRoundCount(10)" data-round="10" class="mp-round-btn py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200">10</button>
-                <button onclick="selectMpRoundCount('Sonsuz')" data-round="Sonsuz" class="mp-round-btn py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200">∞</button>
+            </div>
+            <div class="grid grid-cols-4 gap-2 mb-4">
+                <button onclick="selectMpRoundCount('Sonsuz')" data-round="Sonsuz" class="mp-round-btn col-span-2 col-start-2 py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200">Sınırsız ∞</button>
             </div>
             <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Tur Süresi (dk)</p>
             <div class="grid grid-cols-3 gap-2 mb-4">
@@ -467,6 +497,8 @@
             maxRounds: 10,
             playerName: '',
             previousLetters: null, // Bir önceki turun harfleri (min 5 harf farkı kuralı için)
+            selectedRoundCount: null, // Round-select ekranında seçilen (solo)
+            selectedDurationMinutes: null, // Round-select ekranında seçilen tur süresi (solo)
             roundLetters: [], // Seçilen 7+1 harf. Format: { id: string, letter: string, isJoker: boolean, isUsed: boolean, originalId: string }
             activeWord: [],   // Ekrandaki oluşturulan kelime dizisi
             foundWords: [],   // Bu tur bulunan kelimeler (Puanlamayı engellemek için)
@@ -713,6 +745,50 @@
         function showRoundSelectScreen() {
             document.getElementById('name-screen').classList.add('hidden');
             document.getElementById('round-select-screen').classList.remove('hidden');
+
+            game.selectedRoundCount = null;
+            game.selectedDurationMinutes = null;
+            document.querySelectorAll('.solo-round-btn, .solo-duration-btn').forEach(btn => {
+                btn.classList.remove('bg-summer-sea', 'text-white');
+                btn.classList.add('bg-blue-50', 'text-summer-sea');
+            });
+            updateSoloStartButtonState();
+        }
+
+        function selectSoloRoundCount(count) {
+            game.selectedRoundCount = count;
+            document.querySelectorAll('.solo-round-btn').forEach(btn => {
+                const isSelected = String(btn.dataset.soloRound) === String(count);
+                btn.classList.toggle('bg-summer-sea', isSelected);
+                btn.classList.toggle('text-white', isSelected);
+                btn.classList.toggle('bg-blue-50', !isSelected);
+                btn.classList.toggle('text-summer-sea', !isSelected);
+            });
+            updateSoloStartButtonState();
+        }
+
+        function selectSoloDuration(minutes) {
+            game.selectedDurationMinutes = minutes;
+            document.querySelectorAll('.solo-duration-btn').forEach(btn => {
+                const isSelected = Number(btn.dataset.soloDuration) === Number(minutes);
+                btn.classList.toggle('bg-summer-sea', isSelected);
+                btn.classList.toggle('text-white', isSelected);
+                btn.classList.toggle('bg-blue-50', !isSelected);
+                btn.classList.toggle('text-summer-sea', !isSelected);
+            });
+            updateSoloStartButtonState();
+        }
+
+        function updateSoloStartButtonState() {
+            const startBtn = document.getElementById('btn-solo-start');
+            const ready = (game.selectedRoundCount !== null) && game.selectedDurationMinutes;
+            startBtn.disabled = !ready;
+            startBtn.classList.toggle('bg-gray-300', !ready);
+            startBtn.classList.toggle('cursor-not-allowed', !ready);
+            startBtn.classList.toggle('bg-gradient-to-r', ready);
+            startBtn.classList.toggle('from-summer-sun', ready);
+            startBtn.classList.toggle('to-summer-coral', ready);
+            startBtn.classList.toggle('hover:shadow-xl', ready);
         }
 
         // Girilen ismi, sheet'teki mevcut isimlerle karşılaştırıp çakışırsa
@@ -752,12 +828,13 @@
             showRoundSelectScreen();
         }
 
-        function startGame(roundCount) {
+        function startGame() {
+            if (game.selectedRoundCount === null || !game.selectedDurationMinutes) return;
             if (audioCtx.state === 'suspended') audioCtx.resume();
 
             game.score = 0;
             game.currentRound = 1;
-            game.maxRounds = roundCount;
+            game.maxRounds = game.selectedRoundCount;
             game.foundWords = [];
             game.previousLetters = null;
 
@@ -778,7 +855,7 @@
         function startRound() {
             game.activeWord = [];
             game.foundWords = [];
-            game.timeRemaining = 180;
+            game.timeRemaining = game.selectedDurationMinutes * 60;
             game.isPlaying = false;
             document.getElementById('found-words-list').innerHTML = '';
             document.getElementById('word-count').textContent = '0';
@@ -1091,7 +1168,18 @@
             });
             game.activeWord = [];
             updateActiveWordDisplay();
+            shuffleAndShineLetters();
+        }
+
+        // Kelime onaylandıktan sonra harfleri karıştırır ve üzerlerinden kısa bir ışık efekti geçirir
+        function shuffleAndShineLetters() {
+            game.roundLetters.sort(() => Math.random() - 0.5);
             renderLettersRack(false);
+            sounds.playRoll();
+            document.querySelectorAll('#letters-rack .tile').forEach(tileEl => {
+                tileEl.classList.add('tile-shine');
+                setTimeout(() => tileEl.classList.remove('tile-shine'), 500);
+            });
         }
 
         function addWordToList(word, points) {
@@ -1745,9 +1833,29 @@
             }
         }
 
-        function leaveMultiplayerLobby() {
+        async function leaveMultiplayerLobby() {
+            const gameId = game.mp.gameId;
+            const isHost = game.mp.isHost;
+            const playerName = game.playerName;
+
             detachMpListeners();
             clearInterval(mpTimerInterval);
+
+            if (gameId) {
+                try {
+                    if (isHost) {
+                        // Host ayrılırsa oyun devam edemez, lobiyi tamamen sil (aktif oyunlar listesinde hayalet kalmasın)
+                        await window.fb.remove(window.fb.ref(window.fb.db, `lobbies/${gameId}`));
+                        await window.fb.remove(window.fb.ref(window.fb.db, `lobbies-index/${gameId}`));
+                    } else {
+                        // Misafir sadece kendi kaydını siler, host ve diğer oyuncular etkilenmez
+                        await window.fb.remove(window.fb.ref(window.fb.db, `lobbies/${gameId}/players/${playerName}`));
+                    }
+                } catch (err) {
+                    console.error('Lobi temizliği başarısız:', err);
+                }
+            }
+
             game.mp.gameId = null;
             game.mp.isHost = false;
             game.mp.selectedRoundCount = null;
