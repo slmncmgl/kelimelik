@@ -106,14 +106,44 @@
             🤝 Arkadaşlarınla Oyna
         </button>
 
-        <button onclick="toggleRulesPanel()" id="btn-rules-toggle" class="w-full mt-4 py-2 text-summer-sea font-bold text-sm hover:underline transition-all">
-            📜 Kurallar
-        </button>
+        <div class="grid grid-cols-2 gap-2 mt-4">
+            <button onclick="toggleRulesPanel()" id="btn-rules-toggle" class="py-2 text-summer-sea font-bold text-sm hover:underline transition-all">
+                📜 Kurallar
+            </button>
+            <button onclick="showScoreboardScreen()" class="py-2 text-summer-sea font-bold text-sm hover:underline transition-all">
+                🏆 Skor Tablosu
+            </button>
+        </div>
         <div id="rules-panel">
             <div class="bg-blue-50 p-4 rounded-xl text-left text-sm mt-3 shadow-inner text-gray-700 min-h-[150px]">
                 <div id="rules-typewriter-content"></div>
             </div>
         </div>
+    </div>
+
+    <!-- SKOR TABLOSU EKRANI -->
+    <div id="scoreboard-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
+        <h2 class="text-3xl font-extrabold text-summer-sea mb-4">🏆 Skor Tablosu</h2>
+
+        <p class="text-left text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Mod</p>
+        <div class="grid grid-cols-2 gap-2 mb-4">
+            <button onclick="selectScoreboardMode('solo')" data-sb-mode="solo" class="sb-mode-btn py-2 bg-blue-50 text-summer-sea font-bold rounded-xl border-2 border-blue-200 transition-colors">Tek Kişilik</button>
+            <button onclick="selectScoreboardMode('multiplayer')" data-sb-mode="multiplayer" class="sb-mode-btn py-2 bg-blue-50 text-summer-sea font-bold rounded-xl border-2 border-blue-200 transition-colors">Arkadaşlarınla</button>
+        </div>
+
+        <p class="text-left text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Kategori</p>
+        <div class="grid grid-cols-4 gap-2 mb-4">
+            <button onclick="selectScoreboardCategory(5)" data-sb-cat="5" class="sb-cat-btn py-2 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200 transition-colors">5</button>
+            <button onclick="selectScoreboardCategory(7)" data-sb-cat="7" class="sb-cat-btn py-2 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200 transition-colors">7</button>
+            <button onclick="selectScoreboardCategory(10)" data-sb-cat="10" class="sb-cat-btn py-2 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200 transition-colors">10</button>
+            <button onclick="selectScoreboardCategory('Sonsuz')" data-sb-cat="Sonsuz" class="sb-cat-btn py-2 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200 transition-colors">∞</button>
+        </div>
+
+        <div id="scoreboard-list" class="flex flex-col gap-1 mb-6 text-left max-h-72 overflow-y-auto">
+            <p class="text-gray-400 text-sm text-center">Mod ve kategori seç</p>
+        </div>
+
+        <button onclick="showWelcomeScreen()" class="w-full py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
     </div>
 
     <!-- İSİM GİRME EKRANI -->
@@ -528,12 +558,87 @@
             }
         }
 
+        // --- SKOR TABLOSU EKRANI ---
+        let sbSelectedMode = null;
+        let sbSelectedCategory = null;
+
+        function showScoreboardScreen() {
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('scoreboard-screen').classList.remove('hidden');
+
+            sbSelectedMode = null;
+            sbSelectedCategory = null;
+            document.querySelectorAll('.sb-mode-btn, .sb-cat-btn').forEach(btn => {
+                btn.classList.remove('bg-summer-sea', 'text-white');
+                btn.classList.add('bg-blue-50', 'text-summer-sea');
+            });
+            document.getElementById('scoreboard-list').innerHTML =
+                '<p class="text-gray-400 text-sm text-center">Mod ve kategori seç</p>';
+        }
+
+        function selectScoreboardMode(mode) {
+            sbSelectedMode = mode;
+            document.querySelectorAll('.sb-mode-btn').forEach(btn => {
+                const isSelected = btn.dataset.sbMode === mode;
+                btn.classList.toggle('bg-summer-sea', isSelected);
+                btn.classList.toggle('text-white', isSelected);
+                btn.classList.toggle('bg-blue-50', !isSelected);
+                btn.classList.toggle('text-summer-sea', !isSelected);
+            });
+            tryLoadScoreboard();
+        }
+
+        function selectScoreboardCategory(category) {
+            sbSelectedCategory = category;
+            document.querySelectorAll('.sb-cat-btn').forEach(btn => {
+                const isSelected = String(btn.dataset.sbCat) === String(category);
+                btn.classList.toggle('bg-summer-sea', isSelected);
+                btn.classList.toggle('text-white', isSelected);
+                btn.classList.toggle('bg-blue-50', !isSelected);
+                btn.classList.toggle('text-summer-sea', !isSelected);
+            });
+            tryLoadScoreboard();
+        }
+
+        async function tryLoadScoreboard() {
+            if (!sbSelectedMode || !sbSelectedCategory) return;
+
+            const listEl = document.getElementById('scoreboard-list');
+            listEl.innerHTML = '<p class="text-gray-400 text-sm text-center">Yükleniyor...</p>';
+
+            try {
+                const res = await fetch(`${WEB_APP_URL}?mode=${sbSelectedMode}`);
+                const players = await res.json();
+
+                const ranked = players
+                    .map(p => ({ name: p.name, score: p.scores[String(sbSelectedCategory)] }))
+                    .filter(p => p.score !== null && p.score !== undefined && p.score !== '')
+                    .sort((a, b) => b.score - a.score)
+                    .slice(0, 20);
+
+                if (ranked.length === 0) {
+                    listEl.innerHTML = '<p class="text-gray-400 text-sm text-center">Bu kategoride henüz skor yok</p>';
+                    return;
+                }
+
+                listEl.innerHTML = ranked.map((p, i) => `
+                    <div class="flex justify-between items-center px-3 py-2 rounded-lg bg-blue-50 text-gray-700">
+                        <span>${i + 1}. ${p.name}</span><span class="font-bold text-summer-sea">${p.score}</span>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error('Skor tablosu yüklenemedi:', err);
+                listEl.innerHTML = '<p class="text-gray-400 text-sm text-center">Skor tablosuna ulaşılamadı</p>';
+            }
+        }
+
         // --- TEMEL OYUN FONKSİYONLARI ---
 
         function showWelcomeScreen() {
             document.getElementById('welcome-screen').classList.remove('hidden');
             document.getElementById('name-screen').classList.add('hidden');
             document.getElementById('round-select-screen').classList.add('hidden');
+            document.getElementById('scoreboard-screen').classList.add('hidden');
             document.getElementById('mp-lobby-screen').classList.add('hidden');
             document.getElementById('mp-name-screen').classList.add('hidden');
             document.getElementById('mp-waiting-screen').classList.add('hidden');
@@ -629,15 +734,25 @@
             game.activeWord = [];
             game.foundWords = [];
             game.timeRemaining = 180;
+            game.isPlaying = false;
             document.getElementById('found-words-list').innerHTML = '';
             document.getElementById('word-count').textContent = '0';
             updateUI();
-            
+
+            const timeDisplay = document.getElementById('time-left');
+            clearInterval(timerInterval);
+            timeDisplay.textContent = 'Dağıtılıyor...';
+            timeDisplay.classList.add('text-sm', 'md:text-lg', 'animate-pulse');
+
             generateLetters();
             sounds.playStart();
-            
-            // Animasyonlu çizimi başlat (8 saniye sürecek)
-            renderLettersRack(true);
+
+            // Animasyonlu çizimi başlat (artık 4 saniye sürüyor, eskiden 8sn'ydi)
+            renderLettersRack(true, () => {
+                game.isPlaying = true;
+                timeDisplay.classList.remove('text-sm', 'md:text-lg', 'animate-pulse');
+                startTimer();
+            });
         }
 
         // İki 7-harflik set arasındaki ortak harf sayısını (multiset olarak) hesaplar
@@ -725,19 +840,15 @@
             }
         }
 
-        function renderLettersRack(animate = false) {
+        function renderLettersRack(animate = false, onAnimationComplete = null) {
             const rackEl = document.getElementById('letters-rack');
             rackEl.innerHTML = '';
 
-            const timeDisplay = document.getElementById('time-left');
             const btnShuffle = document.getElementById('btn-shuffle');
             const btnSubmit = document.getElementById('btn-submit');
+            const SCRAMBLE_STEP_MS = 500; // Eskiden 1000ms'ydi, artık 2 katı hızlı
 
             if (animate) {
-                game.isPlaying = false;
-                clearInterval(timerInterval);
-                timeDisplay.textContent = 'Dağıtılıyor...';
-                timeDisplay.classList.add('text-sm', 'md:text-lg', 'animate-pulse');
                 btnShuffle.disabled = true;
                 btnSubmit.disabled = true;
                 btnShuffle.classList.add('opacity-50', 'cursor-not-allowed');
@@ -754,10 +865,10 @@
                 if (animate) {
                     tileBtn.className = `tile w-12 h-14 md:w-16 md:h-18 rounded-xl shadow-inner flex items-center justify-center font-bold text-xl md:text-2xl select-none bg-gray-300 text-gray-500 cursor-not-allowed`;
                     
-                    // Her harf bir öncekinden 1 saniye sonra karıştırılmaya başlasın
+                    // Her harf bir öncekinden yarım saniye sonra karıştırılmaya başlasın
                     setTimeout(() => {
-                        animateScrambleLetter(tileBtn, tile, 1000); // 1 saniye boyunca karışıp duracak
-                    }, index * 1000);
+                        animateScrambleLetter(tileBtn, tile, SCRAMBLE_STEP_MS);
+                    }, index * SCRAMBLE_STEP_MS);
 
                 } else {
                     setFinalTileAppearance(tileBtn, tile);
@@ -772,17 +883,15 @@
                 rackEl.appendChild(tileBtn);
             });
 
-            // Eğer animasyon varsa, tüm harfler yerleştikten sonra (8. saniye) oyunu başlat
+            // Eğer animasyon varsa, tüm harfler yerleştikten sonra butonları geri aç ve çağırana haber ver
             if (animate) {
                 setTimeout(() => {
-                    game.isPlaying = true;
-                    timeDisplay.classList.remove('text-sm', 'md:text-lg', 'animate-pulse');
                     btnShuffle.disabled = false;
                     btnSubmit.disabled = false;
                     btnShuffle.classList.remove('opacity-50', 'cursor-not-allowed');
                     btnSubmit.classList.remove('opacity-50', 'cursor-not-allowed');
-                    startTimer();
-                }, game.roundLetters.length * 1000); // 8 eleman * 1000ms = 8 saniye
+                    if (onAnimationComplete) onAnimationComplete();
+                }, game.roundLetters.length * SCRAMBLE_STEP_MS);
             }
         }
 
@@ -1365,7 +1474,7 @@
             document.getElementById('word-count').textContent = '0';
             updateUI();
             updateActiveWordDisplay();
-            renderLettersRack(false); // Multiplayer'da 8sn'lik dağıtım animasyonu atlanıyor, hız için
+            renderLettersRack(true); // Artık multiplayer'da da animasyon oynuyor (4sn), 5sn'lik geri sayımla paralel
 
             runMultiplayerCountdown(data.countdownEndsAt, () => {
                 game.isPlaying = true;
