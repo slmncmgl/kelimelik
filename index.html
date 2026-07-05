@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelime Türetmece - Yaz Esintisi</title>
+    <title>Kelime Avı</title>
     
     <!-- Sadece Inter fontunu yüklüyoruz -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -106,12 +106,11 @@
 
     <!-- KARŞILAMA EKRANI -->
     <div id="welcome-screen" class="max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
-        <div class="text-6xl mb-4">🌴☀️🍉</div>
-        <h1 class="text-4xl font-extrabold text-summer-sea mb-2 tracking-tight">Kelime Türetmece</h1>
-        <h2 class="text-xl text-summer-coral font-semibold mb-6">Yaz Esintisi</h2>
+        <div class="text-6xl mb-4">🏝️🚩🔍</div>
+        <h1 class="text-4xl font-extrabold text-summer-sea mb-6 tracking-tight">Kelime Avı</h1>
         
         <button onclick="showNameScreen()" class="w-full py-4 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-2xl rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">
-            🌊 Tek Kişilik Oyun
+            🗺️ Tek Kişilik Oyun
         </button>
         <button onclick="showMpLobbyScreen()" class="w-full py-4 bg-white text-summer-sea font-bold text-xl rounded-2xl shadow border-2 border-blue-200 hover:bg-blue-50 transition-all">
             🤝 Arkadaşlarınla Oyna
@@ -288,13 +287,18 @@
         </div>
 
         <!-- Kelime Giriş ve Gösterim Alanı -->
-        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md p-4 mb-4 flex flex-col items-center justify-center min-h-[100px] border-2 border-white relative">
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md p-4 mb-4 flex flex-col items-center justify-center min-h-[100px] border-2 border-white relative" onclick="focusMobileKeyboard()">
             <div id="active-word-display" class="flex gap-2 min-h-[3rem] items-center justify-center flex-wrap">
                 <!-- Seçilen harfler buraya gelecek -->
                 <p class="text-gray-400 font-medium">Harflere tıklayın veya klavyeyi kullanın...</p>
             </div>
-            
-            <button onclick="clearActiveWord()" class="absolute right-4 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:bg-red-200 hover:text-red-600 transition-colors" title="Kelimeyi Temizle">
+
+            <!-- Mobilde klavye açmak için görünmez input. Görsel olarak hiçbir şey göstermiyor,
+                 sadece dokunulduğunda OS klavyesini tetikliyor. Harf tıklama mekanizmasına dokunmuyor. -->
+            <input id="mobile-keyboard-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
+                class="absolute inset-0 w-full h-full opacity-0 cursor-text" style="font-size:16px;" />
+
+            <button onclick="event.stopPropagation(); clearActiveWord()" class="absolute right-4 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 hover:bg-red-200 hover:text-red-600 transition-colors z-10" title="Kelimeyi Temizle">
                 ✕
             </button>
         </div>
@@ -1594,7 +1598,7 @@
             game.mp.previousLetters = null; // Yeni oyun, önceki tur kısıtı geçerli değil
             const letters = generateRoundLetterSet(game.mp.previousLetters);
             game.mp.previousLetters = letters.filter(t => !t.isJoker).map(t => t.letter);
-            const countdownEndsAt = Date.now() + 5000; // 5sn geri sayım
+            const countdownEndsAt = window.fb.serverNow() + 5000; // 5sn geri sayım (sunucu saatine göre)
             const letterAnimationMs = letters.length * LETTER_SCRAMBLE_STEP_MS; // Geri sayımdan sonra harf sıralanma süresi
             const roundEndsAt = countdownEndsAt + letterAnimationMs + (game.mp.selectedDurationMinutes * 60000);
 
@@ -1650,7 +1654,7 @@
 
         // Round başlarken 5'ten geri sayım gösterir (countdownEndsAt yoksa veya geçmişse direkt devam eder)
         function runMultiplayerCountdown(countdownEndsAt, onComplete) {
-            if (!countdownEndsAt || countdownEndsAt - Date.now() <= 0) {
+            if (!countdownEndsAt || countdownEndsAt - window.fb.serverNow() <= 0) {
                 onComplete();
                 return;
             }
@@ -1661,7 +1665,7 @@
             overlay.classList.remove('hidden');
 
             const interval = setInterval(() => {
-                const remaining = Math.ceil((countdownEndsAt - Date.now()) / 1000);
+                const remaining = Math.ceil((countdownEndsAt - window.fb.serverNow()) / 1000);
                 if (remaining <= 0) {
                     clearInterval(interval);
                     overlay.classList.add('hidden');
@@ -1678,7 +1682,7 @@
             const timeDisplay = document.getElementById('time-left');
 
             function tick() {
-                const remaining = Math.max(0, Math.round((roundEndsAt - Date.now()) / 1000));
+                const remaining = Math.max(0, Math.round((roundEndsAt - window.fb.serverNow()) / 1000));
                 const m = Math.floor(remaining / 60);
                 const s = remaining % 60;
                 timeDisplay.textContent = `${m}:${s.toString().padStart(2, '0')}`;
@@ -1803,7 +1807,7 @@
 
             const letters = generateRoundLetterSet(game.mp.previousLetters);
             game.mp.previousLetters = letters.filter(t => !t.isJoker).map(t => t.letter);
-            const countdownEndsAt = Date.now() + 5000; // 5sn geri sayım
+            const countdownEndsAt = window.fb.serverNow() + 5000; // 5sn geri sayım (sunucu saatine göre)
             const letterAnimationMs = letters.length * LETTER_SCRAMBLE_STEP_MS;
             const roundEndsAt = countdownEndsAt + letterAnimationMs + (durationMinutes * 60000);
 
@@ -1901,28 +1905,28 @@
             showWelcomeScreen();
         }
 
-        // --- KLAVYE DESTEĞİ ---
-        window.addEventListener('keydown', (e) => {
+        // --- OYUN İÇİ TUŞ/KARAKTER İŞLEME (masaüstü klavye VE mobil input ortak kullanır) ---
+        function processGameplayKeyInput(rawKey) {
             if (!game.isPlaying) return;
-            
+
             // Eğer Joker modalı açıksa, basılan harfi jokere ata
             if (!document.getElementById('joker-modal').classList.contains('hidden')) {
-                const key = e.key.toLocaleUpperCase('tr-TR');
+                const key = rawKey.toLocaleUpperCase('tr-TR');
                 if (ALPHABET.includes(key)) {
                     selectJokerLetter(key);
-                } else if (e.key === 'Escape') {
+                } else if (rawKey === 'Escape') {
                     closeJokerModal();
                 }
                 return;
             }
 
-            const key = e.key.toLocaleUpperCase('tr-TR');
-            
-            if (e.key === 'Enter') {
+            const key = rawKey.toLocaleUpperCase('tr-TR');
+
+            if (rawKey === 'Enter') {
                 submitWord();
                 return;
             }
-            if (e.key === 'Backspace') {
+            if (rawKey === 'Backspace') {
                 if (game.activeWord.length > 0) {
                     removeLetterFromWord(game.activeWord.length - 1);
                 }
@@ -1930,7 +1934,7 @@
             }
 
             // Joker tetikleyici tuşlar (*, ?, .)
-            if (e.key === '*' || e.key === '?' || e.key === '.') {
+            if (rawKey === '*' || rawKey === '?' || rawKey === '.') {
                 const jokerTile = game.roundLetters.find(t => t.isJoker && !t.isUsed);
                 if (jokerTile) {
                     openJokerModal(jokerTile);
@@ -1954,6 +1958,40 @@
                     renderLettersRack(false);
                 }
                 // Joker de yoksa sessizce yoksay
+            }
+        }
+
+        // --- KLAVYE DESTEĞİ (masaüstü fiziksel klavye) ---
+        window.addEventListener('keydown', (e) => {
+            processGameplayKeyInput(e.key);
+        });
+
+        // --- MOBİL KLAVYE DESTEĞİ ---
+        // Kelime alanına dokunulunca bu görünmez input odaklanır, OS klavyesi açılır.
+        // Harflere dokunarak seçme mekanizmasına hiç dokunulmuyor, ikisi paralel çalışır.
+        function focusMobileKeyboard() {
+            if (game.isPlaying) {
+                document.getElementById('mobile-keyboard-input').focus();
+            }
+        }
+
+        const mobileKeyboardInput = document.getElementById('mobile-keyboard-input');
+
+        mobileKeyboardInput.addEventListener('input', (e) => {
+            const val = e.target.value;
+            if (val.length > 0) {
+                const upperVal = val.toLocaleUpperCase('tr-TR');
+                for (const ch of upperVal) {
+                    processGameplayKeyInput(ch);
+                }
+            }
+            e.target.value = ''; // Her zaman boşalt: "sıradaki karakter" yakalayıcısı gibi çalışır
+        });
+
+        mobileKeyboardInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === 'Backspace') {
+                e.preventDefault(); // Mobil klavyenin varsayılan davranışını (form gönderme vs.) engelle
+                processGameplayKeyInput(e.key);
             }
         });
 
@@ -1982,8 +2020,19 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        // Cihaz saatinin Firebase sunucu saatinden farkını takip ediyoruz.
+        // Round bitiş zamanlarını hesaplarken bunu kullanmak, farklı telefonların
+        // saat ayarlarındaki (birkaç saniyelik) sapmaları telafi eder.
+        let serverTimeOffsetMs = 0;
+        onValue(ref(db, '.info/serverTimeOffset'), (snap) => {
+            serverTimeOffsetMs = snap.val() || 0;
+        });
+
         // Klasik <script> içindeki fonksiyonların erişebilmesi için global'e bağlıyoruz
-        window.fb = { db, ref, set, get, update, onValue, off, remove, serverTimestamp };
+        window.fb = {
+            db, ref, set, get, update, onValue, off, remove, serverTimestamp,
+            serverNow: () => Date.now() + serverTimeOffsetMs
+        };
     </script>
 </body>
 </html>
