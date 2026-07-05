@@ -181,14 +181,14 @@
         <h2 class="text-3xl font-extrabold text-summer-sea mb-2">Kaç Tur Oynayalım?</h2>
         <p class="text-gray-500 mb-4">Tur sayısı ve süresini seç</p>
 
-        <div class="grid grid-cols-4 gap-2 mb-2">
+        <div class="grid grid-cols-2 gap-2 mb-2">
             <button onclick="selectSoloRoundCount(3)" data-solo-round="3" class="solo-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">3</button>
             <button onclick="selectSoloRoundCount(5)" data-solo-round="5" class="solo-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">5</button>
             <button onclick="selectSoloRoundCount(7)" data-solo-round="7" class="solo-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">7</button>
             <button onclick="selectSoloRoundCount(10)" data-solo-round="10" class="solo-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">10</button>
         </div>
-        <div class="grid grid-cols-4 gap-2 mb-4">
-            <button onclick="selectSoloRoundCount(Infinity)" data-solo-round="Infinity" class="solo-round-btn col-span-2 col-start-2 py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">Sınırsız ∞</button>
+        <div class="grid grid-cols-2 gap-2 mb-4">
+            <button onclick="selectSoloRoundCount(Infinity)" data-solo-round="Infinity" class="solo-round-btn col-span-2 py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">Sınırsız ∞</button>
         </div>
 
         <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Tur Süresi (dk)</p>
@@ -242,14 +242,14 @@
         <!-- Sadece host görür -->
         <div id="mp-host-controls" class="hidden">
             <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Kaç Tur?</p>
-            <div class="grid grid-cols-4 gap-2 mb-2">
+            <div class="grid grid-cols-2 gap-2 mb-2">
                 <button onclick="selectMpRoundCount(3)" data-round="3" class="mp-round-btn py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200">3</button>
                 <button onclick="selectMpRoundCount(5)" data-round="5" class="mp-round-btn py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200">5</button>
                 <button onclick="selectMpRoundCount(7)" data-round="7" class="mp-round-btn py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200">7</button>
                 <button onclick="selectMpRoundCount(10)" data-round="10" class="mp-round-btn py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200">10</button>
             </div>
-            <div class="grid grid-cols-4 gap-2 mb-4">
-                <button onclick="selectMpRoundCount('Sonsuz')" data-round="Sonsuz" class="mp-round-btn col-span-2 col-start-2 py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200">Sınırsız ∞</button>
+            <div class="grid grid-cols-2 gap-2 mb-4">
+                <button onclick="selectMpRoundCount('Sonsuz')" data-round="Sonsuz" class="mp-round-btn col-span-2 py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200">Sınırsız ∞</button>
             </div>
             <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Tur Süresi (dk)</p>
             <div class="grid grid-cols-3 gap-2 mb-4">
@@ -736,6 +736,11 @@
         }
 
         function showNameScreen() {
+            // İsim bu oturumda zaten belirlendiyse tekrar sormaya gerek yok
+            if (game.playerName) {
+                showRoundSelectScreen();
+                return;
+            }
             document.getElementById('welcome-screen').classList.add('hidden');
             document.getElementById('name-screen').classList.remove('hidden');
             document.getElementById('name-input').value = '';
@@ -1346,6 +1351,8 @@
             return id;
         }
 
+        const STALE_LOBBY_MS = 45 * 60 * 1000; // 45 dakikadan eski 'waiting' lobiler hayalet sayılır
+
         function showMpLobbyScreen() {
             document.getElementById('welcome-screen').classList.add('hidden');
             document.getElementById('mp-lobby-screen').classList.remove('hidden');
@@ -1356,7 +1363,20 @@
             mpActiveListenerPath = 'lobbies-index';
             window.fb.onValue(window.fb.ref(window.fb.db, 'lobbies-index'), (snapshot) => {
                 const data = snapshot.val() || {};
-                const waiting = Object.entries(data).filter(([id, l]) => l.status === 'waiting');
+                const now = Date.now();
+                const waiting = [];
+
+                Object.entries(data).forEach(([id, l]) => {
+                    if (l.status !== 'waiting') return;
+                    const isStale = !l.createdAt || (now - l.createdAt) > STALE_LOBBY_MS;
+                    if (isStale) {
+                        // Hayalet lobi: listeye koyma ve fırsatçı olarak veritabanından da temizle
+                        window.fb.remove(window.fb.ref(window.fb.db, `lobbies-index/${id}`)).catch(() => {});
+                        window.fb.remove(window.fb.ref(window.fb.db, `lobbies/${id}`)).catch(() => {});
+                        return;
+                    }
+                    waiting.push([id, l]);
+                });
 
                 if (waiting.length === 0) {
                     listEl.innerHTML = '<p class="text-gray-400 text-sm">Şu an aktif oyun yok. İlk oyunu sen kur!</p>';
@@ -1384,6 +1404,13 @@
             game.mp.pendingRole = role;
             game.mp.pendingJoinGameId = gameId;
 
+            // İsim bu oturumda zaten belirlendiyse tekrar sormadan direkt devam et
+            // (her lobi kendi çakışma kontrolünü createLobby/joinLobby içinde zaten yapıyor)
+            if (game.playerName) {
+                proceedWithMpName(game.playerName, false);
+                return;
+            }
+
             document.getElementById('mp-lobby-screen').classList.add('hidden');
             document.getElementById('mp-name-screen').classList.remove('hidden');
             document.getElementById('mp-name-input').value = '';
@@ -1396,10 +1423,15 @@
                 showToast('Lütfen bir isim gir!');
                 return;
             }
+            await proceedWithMpName(rawName, true);
+        }
 
+        async function proceedWithMpName(rawName, fromButton) {
             const btn = document.getElementById('btn-mp-name-continue');
-            btn.disabled = true;
-            btn.textContent = 'Bağlanılıyor...';
+            if (fromButton) {
+                btn.disabled = true;
+                btn.textContent = 'Bağlanılıyor...';
+            }
 
             try {
                 if (game.mp.pendingRole === 'host') {
@@ -1412,8 +1444,10 @@
                 showToast('Bağlantı hatası, tekrar dene!');
             }
 
-            btn.disabled = false;
-            btn.textContent = 'Devam Et →';
+            if (fromButton) {
+                btn.disabled = false;
+                btn.textContent = 'Devam Et →';
+            }
         }
 
         async function createLobby(name) {
