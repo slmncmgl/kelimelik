@@ -173,6 +173,12 @@
                 <button onclick="selectMpRoundCount(10)" data-round="10" class="mp-round-btn py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200">10</button>
                 <button onclick="selectMpRoundCount('Sonsuz')" data-round="Sonsuz" class="mp-round-btn py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200">∞</button>
             </div>
+            <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Tur Süresi (dk)</p>
+            <div class="grid grid-cols-3 gap-2 mb-4">
+                <button onclick="selectMpDuration(1)" data-duration="1" class="mp-duration-btn py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200">1</button>
+                <button onclick="selectMpDuration(2)" data-duration="2" class="mp-duration-btn py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200">2</button>
+                <button onclick="selectMpDuration(3)" data-duration="3" class="mp-duration-btn py-3 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200">3</button>
+            </div>
             <button onclick="startMultiplayerGame()" id="btn-mp-start" disabled class="w-full py-4 bg-gray-300 text-white font-bold text-xl rounded-2xl shadow-lg transition-all mb-3 cursor-not-allowed">
                 Oyunu Başlat 🚀
             </button>
@@ -220,9 +226,12 @@
             <!-- Harfler buraya JS ile çizilecek -->
         </div>
 
-        <!-- Sonsuz modda host için (varsayılan gizli) -->
+        <!-- Multiplayer: host için 'Oyunu Bitir', misafir için 'Oyundan Ayrıl' (ikisi de varsayılan gizli) -->
         <button onclick="hostFinishGameNow()" id="btn-mp-finish" class="hidden w-full py-2 mb-3 bg-red-50 text-red-500 font-bold rounded-xl border-2 border-red-200 hover:bg-red-100 transition-colors text-sm">
             🏁 Oyunu Bitir
+        </button>
+        <button onclick="guestLeaveGame()" id="btn-mp-leave" class="hidden w-full py-2 mb-3 bg-gray-100 text-gray-500 font-bold rounded-xl border-2 border-gray-200 hover:bg-gray-200 transition-colors text-sm">
+            🚪 Oyundan Ayrıl
         </button>
 
         <!-- Kontrol Butonları -->
@@ -404,6 +413,7 @@
                 pendingRole: null,        // 'host' | 'guest' — isim ekranına hangi amaçla girildiği
                 pendingJoinGameId: null,  // katılınacak oyunun id'si (guest akışında)
                 selectedRoundCount: null, // host'un seçtiği round sayısı (henüz DB'ye yazılmadan)
+                selectedDurationMinutes: null, // host'un seçtiği tur süresi (dakika)
                 lobbyListActive: false,   // aktif oyunlar listesi dinleniyor mu
                 waitingActive: false,     // bekleme odası dinleniyor mu
                 lastSyncedRound: null     // en son senkronlanan round no (gereksiz re-render'ı önler)
@@ -434,6 +444,7 @@
             game.mp.gameId = null;
             game.mp.isHost = false;
             game.mp.selectedRoundCount = null;
+            game.mp.selectedDurationMinutes = null;
             game.mp.lastSyncedRound = null;
         }
 
@@ -1133,11 +1144,32 @@
                 btn.classList.toggle('bg-blue-50', !isSelected);
                 btn.classList.toggle('text-summer-sea', !isSelected);
             });
+            updateMpStartButtonState();
+        }
 
+        function selectMpDuration(minutes) {
+            game.mp.selectedDurationMinutes = minutes;
+            document.querySelectorAll('.mp-duration-btn').forEach(btn => {
+                const isSelected = Number(btn.dataset.duration) === Number(minutes);
+                btn.classList.toggle('bg-summer-sea', isSelected);
+                btn.classList.toggle('text-white', isSelected);
+                btn.classList.toggle('bg-blue-50', !isSelected);
+                btn.classList.toggle('text-summer-sea', !isSelected);
+            });
+            updateMpStartButtonState();
+        }
+
+        // "Oyunu Başlat" butonu, HEM round sayısı HEM süre seçilmeden aktif olmasın
+        function updateMpStartButtonState() {
             const startBtn = document.getElementById('btn-mp-start');
-            startBtn.disabled = false;
-            startBtn.classList.remove('bg-gray-300', 'cursor-not-allowed');
-            startBtn.classList.add('bg-gradient-to-r', 'from-summer-sun', 'to-summer-coral', 'hover:shadow-xl');
+            const ready = game.mp.selectedRoundCount && game.mp.selectedDurationMinutes;
+            startBtn.disabled = !ready;
+            startBtn.classList.toggle('bg-gray-300', !ready);
+            startBtn.classList.toggle('cursor-not-allowed', !ready);
+            startBtn.classList.toggle('bg-gradient-to-r', ready);
+            startBtn.classList.toggle('from-summer-sun', ready);
+            startBtn.classList.toggle('to-summer-coral', ready);
+            startBtn.classList.toggle('hover:shadow-xl', ready);
         }
 
         // Host için: 2 sesli + 5 sessiz + 1 joker üretir, game state'ine dokunmadan sadece veri döner
@@ -1156,14 +1188,15 @@
         }
 
         async function startMultiplayerGame() {
-            if (!game.mp.selectedRoundCount || !game.mp.gameId) return;
+            if (!game.mp.selectedRoundCount || !game.mp.selectedDurationMinutes || !game.mp.gameId) return;
 
             const letters = hostGenerateLetterSet();
-            const roundEndsAt = Date.now() + 180000; // 3 dakika
+            const roundEndsAt = Date.now() + (game.mp.selectedDurationMinutes * 60000);
 
             await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`), {
                 status: 'playing',
                 roundCount: game.mp.selectedRoundCount,
+                roundDurationMinutes: game.mp.selectedDurationMinutes,
                 currentRound: 1,
                 letters: letters,
                 roundEndsAt: roundEndsAt
@@ -1178,8 +1211,9 @@
         function enterOrSyncMultiplayerRound(data) {
             document.getElementById('game-screen').classList.remove('hidden');
 
-            const finishBtn = document.getElementById('btn-mp-finish');
-            finishBtn.classList.toggle('hidden', !(game.mp.isHost && data.roundCount === 'Sonsuz'));
+            // Host: her zaman 'Oyunu Bitir' görür. Misafir: her zaman 'Oyundan Ayrıl' görür.
+            document.getElementById('btn-mp-finish').classList.toggle('hidden', !game.mp.isHost);
+            document.getElementById('btn-mp-leave').classList.toggle('hidden', game.mp.isHost);
 
             if (game.mp.lastSyncedRound === data.currentRound) {
                 return; // Bu round zaten senkronlandı, sadece skor güncellemesi tetiklemiş olabilir
@@ -1260,7 +1294,7 @@
             if (game.mp.isHost) {
                 nextBtn.classList.remove('hidden');
                 nextBtn.onclick = hostStartNextRound;
-                finishBtn.classList.toggle('hidden', data.roundCount !== 'Sonsuz');
+                finishBtn.classList.remove('hidden'); // Host için her modda gösterilir
                 guestText.classList.add('hidden');
             } else {
                 nextBtn.classList.add('hidden');
@@ -1272,8 +1306,11 @@
         }
 
         async function hostStartNextRound() {
+            const snapshot = await window.fb.get(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}/roundDurationMinutes`));
+            const durationMinutes = snapshot.val() || 3; // güvenlik amaçlı varsayılan
+
             const letters = hostGenerateLetterSet();
-            const roundEndsAt = Date.now() + 180000;
+            const roundEndsAt = Date.now() + (durationMinutes * 60000);
 
             await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`), {
                 status: 'playing',
@@ -1286,6 +1323,18 @@
         async function hostFinishGameNow() {
             await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`), { status: 'finished' });
             await window.fb.update(window.fb.ref(window.fb.db, `lobbies-index/${game.mp.gameId}`), { status: 'finished' });
+        }
+
+        // Misafir oyundan ayrılır: sadece kendi oyuncu kaydını siler, host/diğer oyuncular etkilenmez
+        async function guestLeaveGame() {
+            if (!game.mp.gameId || game.mp.isHost) return;
+            try {
+                await window.fb.remove(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}/players/${game.playerName}`));
+            } catch (err) {
+                console.error('Ayrılma işlemi başarısız:', err);
+            }
+            showWelcomeScreen();
+            showToast('Oyundan ayrıldın', 'success');
         }
 
         async function showMultiplayerGameOver(data) {
@@ -1332,6 +1381,7 @@
             document.getElementById('mp-waiting-screen').classList.add('hidden');
             document.getElementById('round-over-modal').classList.add('hidden');
             document.getElementById('btn-mp-finish').classList.add('hidden');
+            document.getElementById('btn-mp-leave').classList.add('hidden');
             showWelcomeScreen();
         }
 
