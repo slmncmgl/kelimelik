@@ -58,6 +58,22 @@
             animation: wave 15s ease infinite;
         }
 
+        /* Kurallar paneli - daktilo imleci */
+        @keyframes rulesCursorBlink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        .rules-cursor {
+            animation: rulesCursorBlink 0.6s step-start infinite;
+            font-weight: bold;
+            color: #0288d1;
+        }
+        #rules-panel {
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+            max-height: 0;
+        }
+
         /* Özel Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
@@ -83,23 +99,21 @@
         <h1 class="text-4xl font-extrabold text-summer-sea mb-2 tracking-tight">Kelime Türetmece</h1>
         <h2 class="text-xl text-summer-coral font-semibold mb-6">Yaz Esintisi</h2>
         
-        <div class="bg-blue-50 p-4 rounded-xl text-left text-sm mb-6 shadow-inner text-gray-700">
-            <h3 class="font-bold text-lg mb-2 text-summer-sea">Nasıl Oynanır?</h3>
-            <ul class="list-disc pl-5 space-y-2">
-                <li>Her tur <strong>2 Sesli, 5 Sessiz ve 1 Joker</strong> harf düşer.</li>
-                <li>Harflerin ekrana düşmesi şifre çözücü gibi 8 saniye sürer.</li>
-                <li>Süre (3:00dk) harfler dizildikten sonra başlar!</li>
-                <li>Harfleri kullanarak en uzun kelimeleri yaz. Harf başına 1 Puan!</li>
-                <li>Seçtiğin tur sayısı kadar oynanır. En yüksek puanı hedefle!</li>
-            </ul>
-        </div>
-        
         <button onclick="showNameScreen()" class="w-full py-4 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-2xl rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">
             🌊 Tek Kişilik Oyun
         </button>
         <button onclick="showMpLobbyScreen()" class="w-full py-4 bg-white text-summer-sea font-bold text-xl rounded-2xl shadow border-2 border-blue-200 hover:bg-blue-50 transition-all">
             🤝 Arkadaşlarınla Oyna
         </button>
+
+        <button onclick="toggleRulesPanel()" id="btn-rules-toggle" class="w-full mt-4 py-2 text-summer-sea font-bold text-sm hover:underline transition-all">
+            📜 Kurallar
+        </button>
+        <div id="rules-panel">
+            <div class="bg-blue-50 p-4 rounded-xl text-left text-sm mt-3 shadow-inner text-gray-700 min-h-[150px]">
+                <div id="rules-typewriter-content"></div>
+            </div>
+        </div>
     </div>
 
     <!-- İSİM GİRME EKRANI -->
@@ -232,6 +246,11 @@
         </button>
         <button onclick="guestLeaveGame()" id="btn-mp-leave" class="hidden w-full py-2 mb-3 bg-gray-100 text-gray-500 font-bold rounded-xl border-2 border-gray-200 hover:bg-gray-200 transition-colors text-sm">
             🚪 Oyundan Ayrıl
+        </button>
+
+        <!-- Tek kişilik mod için (varsayılan gizli) -->
+        <button onclick="soloFinishGameNow()" id="btn-solo-finish" class="hidden w-full py-2 mb-3 bg-red-50 text-red-500 font-bold rounded-xl border-2 border-red-200 hover:bg-red-100 transition-colors text-sm">
+            🏁 Oyunu Bitir
         </button>
 
         <!-- Kontrol Butonları -->
@@ -400,6 +419,7 @@
             currentRound: 1,
             maxRounds: 10,
             playerName: '',
+            previousLetters: null, // Bir önceki turun harfleri (min 5 harf farkı kuralı için)
             roundLetters: [], // Seçilen 7+1 harf. Format: { id: string, letter: string, isJoker: boolean, isUsed: boolean, originalId: string }
             activeWord: [],   // Ekrandaki oluşturulan kelime dizisi
             foundWords: [],   // Bu tur bulunan kelimeler (Puanlamayı engellemek için)
@@ -414,6 +434,7 @@
                 pendingJoinGameId: null,  // katılınacak oyunun id'si (guest akışında)
                 selectedRoundCount: null, // host'un seçtiği round sayısı (henüz DB'ye yazılmadan)
                 selectedDurationMinutes: null, // host'un seçtiği tur süresi (dakika)
+                previousLetters: null, // Bir önceki turun harfleri (host bunu takip eder)
                 lobbyListActive: false,   // aktif oyunlar listesi dinleniyor mu
                 waitingActive: false,     // bekleme odası dinleniyor mu
                 lastSyncedRound: null     // en son senkronlanan round no (gereksiz re-render'ı önler)
@@ -424,6 +445,58 @@
 
         // --- BASİT YEDEK SÖZLÜK ---
         const dictionary = new Set(["YAZ", "SU", "KUM", "GÜNEŞ", "DENİZ", "PLAJ", "TATİL", "SICAK", "ADA", "KAMP"]);
+
+        // --- KURALLAR PANELİ (daktilo efekti) ---
+        const RULES_LINES = [
+            'Her tur 2 Sesli, 5 Sessiz ve 1 Joker harf düşer. Sessiz harfler asla tekrar etmez.',
+            'Yeni tur, bir önceki turdan en az 5 harf farklı olur.',
+            'Süre, harfler dizildikten sonra başlar.',
+            'Harfleri kullanarak en uzun kelimeleri yaz. Harf başına 1 Puan!',
+            'Seçtiğin tur sayısı kadar oynanır (ya da Sonsuz modda istediğin an bitirebilirsin).'
+        ];
+        let rulesPanelOpen = false;
+        let rulesAnimationStarted = false;
+
+        function toggleRulesPanel() {
+            const panel = document.getElementById('rules-panel');
+            const toggleBtn = document.getElementById('btn-rules-toggle');
+
+            rulesPanelOpen = !rulesPanelOpen;
+            panel.style.maxHeight = rulesPanelOpen ? '500px' : '0';
+            toggleBtn.textContent = rulesPanelOpen ? '📜 Kuralları Gizle' : '📜 Kurallar';
+
+            if (rulesPanelOpen && !rulesAnimationStarted) {
+                rulesAnimationStarted = true;
+                typeRulesLines();
+            }
+        }
+
+        async function typeRulesLines() {
+            const container = document.getElementById('rules-typewriter-content');
+            container.innerHTML = '';
+
+            for (const line of RULES_LINES) {
+                const lineEl = document.createElement('p');
+                lineEl.className = 'mb-2';
+                const textSpan = document.createElement('span');
+                const cursorSpan = document.createElement('span');
+                cursorSpan.className = 'rules-cursor';
+                cursorSpan.textContent = '|';
+
+                lineEl.appendChild(document.createTextNode('• '));
+                lineEl.appendChild(textSpan);
+                lineEl.appendChild(cursorSpan);
+                container.appendChild(lineEl);
+
+                for (let i = 0; i < line.length; i++) {
+                    textSpan.textContent += line[i];
+                    await new Promise(r => setTimeout(r, 18));
+                }
+
+                await new Promise(r => setTimeout(r, 1000)); // Satır bitince ~1sn imleç yanıp söner
+                cursorSpan.remove();
+            }
+        }
 
         // --- TEMEL OYUN FONKSİYONLARI ---
 
@@ -437,6 +510,7 @@
             document.getElementById('round-over-modal').classList.add('hidden');
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('game-over-screen').classList.add('hidden');
+            document.getElementById('btn-solo-finish').classList.add('hidden');
             clearInterval(timerInterval);
             clearInterval(mpTimerInterval);
             detachMpListeners();
@@ -504,11 +578,17 @@
             game.currentRound = 1;
             game.maxRounds = roundCount;
             game.foundWords = [];
+            game.previousLetters = null;
 
             document.getElementById('round-select-screen').classList.add('hidden');
             document.getElementById('welcome-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
             document.getElementById('game-over-screen').classList.add('hidden');
+
+            // Solo mod buton görünürlüğü: kendi 'Oyunu Bitir' butonu var, multiplayer'ınkiler gizli
+            document.getElementById('btn-solo-finish').classList.remove('hidden');
+            document.getElementById('btn-mp-finish').classList.add('hidden');
+            document.getElementById('btn-mp-leave').classList.add('hidden');
 
             updateUI();
             startRound();
@@ -529,23 +609,46 @@
             renderLettersRack(true);
         }
 
+        // İki 7-harflik set arasındaki ortak harf sayısını (multiset olarak) hesaplar
+        function countCommonLetters(setA, setB) {
+            const bCounts = {};
+            setB.forEach(l => { bCounts[l] = (bCounts[l] || 0) + 1; });
+            let common = 0;
+            setA.forEach(l => {
+                if (bCounts[l] > 0) { common++; bCounts[l]--; }
+            });
+            return common;
+        }
+
+        // Ortak harf üretici — hem solo hem multiplayer kullanır.
+        // Kurallar: 5 sessiz harf ASLA tekrar etmez (iadesiz seçim);
+        // previousLetters verilmişse yeni set ile en fazla 2 ortak harf olacak şekilde
+        // (yani en az 5 harf farklı) üretilene kadar dener (güvenlik amaçlı 200 deneme sınırı var).
+        function generateRoundLetterSet(previousLetters) {
+            let vowels, consonants, combined;
+            let attempt = 0;
+            do {
+                vowels = [];
+                for (let i = 0; i < 2; i++) {
+                    vowels.push(VOWELS[Math.floor(Math.random() * VOWELS.length)]);
+                }
+                consonants = [...CONSONANTS].sort(() => Math.random() - 0.5).slice(0, 5);
+                combined = [...vowels, ...consonants];
+                attempt++;
+            } while (previousLetters && countCommonLetters(combined, previousLetters) > 2 && attempt < 200);
+
+            const letters = [
+                ...vowels.map((letter, i) => ({ id: `v_${i}`, letter, isJoker: false })),
+                ...consonants.map((letter, i) => ({ id: `c_${i}`, letter, isJoker: false })),
+                { id: 'joker_1', letter: '★', isJoker: true }
+            ];
+            letters.sort(() => Math.random() - 0.5);
+            return letters;
+        }
+
         function generateLetters() {
-            game.roundLetters = [];
-            // 2 Sesli
-            for(let i=0; i<2; i++) {
-                const letter = VOWELS[Math.floor(Math.random() * VOWELS.length)];
-                game.roundLetters.push({ id: `v_${i}`, letter: letter, isJoker: false, isUsed: false });
-            }
-            // 5 Sessiz
-            for(let i=0; i<5; i++) {
-                const letter = CONSONANTS[Math.floor(Math.random() * CONSONANTS.length)];
-                game.roundLetters.push({ id: `c_${i}`, letter: letter, isJoker: false, isUsed: false });
-            }
-            // 1 Joker
-            game.roundLetters.push({ id: `joker_1`, letter: '★', isJoker: true, isUsed: false });
-            
-            // Başlangıçta bi kere kendi içlerinde karıştır ki joker hep sonda olmasın
-            game.roundLetters.sort(() => Math.random() - 0.5);
+            game.roundLetters = generateRoundLetterSet(game.previousLetters).map(t => ({ ...t, isUsed: false }));
+            game.previousLetters = game.roundLetters.filter(t => !t.isJoker).map(t => t.letter);
             game.jokerAvailable = true;
         }
 
@@ -834,6 +937,13 @@
             document.getElementById('round-over-modal').classList.add('hidden');
             game.currentRound++;
             startRound();
+        }
+
+        // Solo modda kullanıcı istediği an oyunu bitirebilir — mevcut endGame() zaten
+        // skoru Apps Script'e gönderip leaderboard'u gösteriyor, ek bir şey gerekmiyor.
+        function soloFinishGameNow() {
+            clearInterval(timerInterval);
+            endGame();
         }
 
         function endGame() {
@@ -1172,25 +1282,12 @@
             startBtn.classList.toggle('hover:shadow-xl', ready);
         }
 
-        // Host için: 2 sesli + 5 sessiz + 1 joker üretir, game state'ine dokunmadan sadece veri döner
-        // (DB'ye yazılıp round-trip ile TÜM client'lara aynı harfler böyle ulaşır)
-        function hostGenerateLetterSet() {
-            const letters = [];
-            for (let i = 0; i < 2; i++) {
-                letters.push({ id: `v_${i}`, letter: VOWELS[Math.floor(Math.random() * VOWELS.length)], isJoker: false });
-            }
-            for (let i = 0; i < 5; i++) {
-                letters.push({ id: `c_${i}`, letter: CONSONANTS[Math.floor(Math.random() * CONSONANTS.length)], isJoker: false });
-            }
-            letters.push({ id: 'joker_1', letter: '★', isJoker: true });
-            letters.sort(() => Math.random() - 0.5);
-            return letters;
-        }
-
         async function startMultiplayerGame() {
             if (!game.mp.selectedRoundCount || !game.mp.selectedDurationMinutes || !game.mp.gameId) return;
 
-            const letters = hostGenerateLetterSet();
+            game.mp.previousLetters = null; // Yeni oyun, önceki tur kısıtı geçerli değil
+            const letters = generateRoundLetterSet(game.mp.previousLetters);
+            game.mp.previousLetters = letters.filter(t => !t.isJoker).map(t => t.letter);
             const roundEndsAt = Date.now() + (game.mp.selectedDurationMinutes * 60000);
 
             await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`), {
@@ -1214,6 +1311,7 @@
             // Host: her zaman 'Oyunu Bitir' görür. Misafir: her zaman 'Oyundan Ayrıl' görür.
             document.getElementById('btn-mp-finish').classList.toggle('hidden', !game.mp.isHost);
             document.getElementById('btn-mp-leave').classList.toggle('hidden', game.mp.isHost);
+            document.getElementById('btn-solo-finish').classList.add('hidden');
 
             if (game.mp.lastSyncedRound === data.currentRound) {
                 return; // Bu round zaten senkronlandı, sadece skor güncellemesi tetiklemiş olabilir
@@ -1309,7 +1407,8 @@
             const snapshot = await window.fb.get(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}/roundDurationMinutes`));
             const durationMinutes = snapshot.val() || 3; // güvenlik amaçlı varsayılan
 
-            const letters = hostGenerateLetterSet();
+            const letters = generateRoundLetterSet(game.mp.previousLetters);
+            game.mp.previousLetters = letters.filter(t => !t.isJoker).map(t => t.letter);
             const roundEndsAt = Date.now() + (durationMinutes * 60000);
 
             await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`), {
