@@ -125,6 +125,10 @@
     <div id="scoreboard-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
         <h2 class="text-3xl font-extrabold text-summer-sea mb-4">🏆 Skor Tablosu</h2>
 
+        <div id="scoreboard-top-highlight" class="bg-orange-50 border-2 border-orange-200 rounded-xl p-3 mb-5 text-sm text-gray-700 font-semibold">
+            Yükleniyor...
+        </div>
+
         <p class="text-left text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Mod</p>
         <div class="grid grid-cols-2 gap-2 mb-4">
             <button onclick="selectScoreboardMode('solo')" data-sb-mode="solo" class="sb-mode-btn py-2 bg-blue-50 text-summer-sea font-bold rounded-xl border-2 border-blue-200 transition-colors">Tek Kişilik</button>
@@ -270,16 +274,16 @@
             <!-- Harfler buraya JS ile çizilecek -->
         </div>
 
-        <!-- Multiplayer: host için 'Oyunu Bitir', misafir için 'Oyundan Ayrıl' (ikisi de varsayılan gizli) -->
-        <button onclick="hostFinishGameNow()" id="btn-mp-finish" class="hidden w-full py-2 mb-3 bg-red-50 text-red-500 font-bold rounded-xl border-2 border-red-200 hover:bg-red-100 transition-colors text-sm">
+        <!-- Multiplayer: host için 'Oyunu Bitir', misafir için 'Oyundan Ayrıl' — ikisi de sağ altta, kibar, varsayılan gizli -->
+        <button onclick="hostFinishGameNow()" id="btn-mp-finish" class="hidden fixed bottom-4 right-4 z-40 px-4 py-2 bg-red-50/90 backdrop-blur-sm text-red-400 font-semibold text-xs rounded-full shadow-md border border-red-200 hover:bg-red-100 hover:text-red-600 transition-colors">
             🏁 Oyunu Bitir
         </button>
         <button onclick="guestLeaveGame()" id="btn-mp-leave" class="hidden fixed bottom-4 right-4 z-40 px-4 py-2 bg-white/90 backdrop-blur-sm text-gray-400 font-semibold text-xs rounded-full shadow-md border border-gray-200 hover:bg-gray-100 hover:text-gray-600 transition-colors">
             🚪 Oyundan Ayrıl
         </button>
 
-        <!-- Tek kişilik mod için (varsayılan gizli) -->
-        <button onclick="soloFinishGameNow()" id="btn-solo-finish" class="hidden w-full py-2 mb-3 bg-red-50 text-red-500 font-bold rounded-xl border-2 border-red-200 hover:bg-red-100 transition-colors text-sm">
+        <!-- Tek kişilik mod için — sağ altta, kibar, varsayılan gizli -->
+        <button onclick="soloFinishGameNow()" id="btn-solo-finish" class="hidden fixed bottom-4 right-4 z-40 px-4 py-2 bg-red-50/90 backdrop-blur-sm text-red-400 font-semibold text-xs rounded-full shadow-md border border-red-200 hover:bg-red-100 hover:text-red-600 transition-colors">
             🏁 Oyunu Bitir
         </button>
 
@@ -336,6 +340,12 @@
 
             <!-- Multiplayer'da doldurulur, solo'da boş kalır -->
             <div id="round-over-leaderboard" class="flex flex-col gap-1 mb-6 text-left"></div>
+
+            <!-- Sadece multiplayer'da, başkalarının bulup benim bulamadığım kelimeler -->
+            <div id="round-over-missed-words" class="hidden text-left mb-4">
+                <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Kaçırdığın Kelimeler</p>
+                <div id="round-over-missed-words-list" class="flex flex-wrap gap-2"></div>
+            </div>
 
             <!-- Solo VE multiplayer host için -->
             <button onclick="goToNextRound()" id="btn-next-round" class="w-full py-4 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-xl rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
@@ -448,6 +458,7 @@
         const VOWELS = ['A', 'E', 'I', 'İ', 'O', 'Ö', 'U', 'Ü'];
         const CONSONANTS = ['B', 'C', 'Ç', 'D', 'F', 'G', 'Ğ', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'R', 'S', 'Ş', 'T', 'V', 'Y', 'Z'];
         const ALPHABET = [...VOWELS, ...CONSONANTS].sort((a, b) => a.localeCompare(b, 'tr'));
+        const LETTER_SCRAMBLE_STEP_MS = 500; // Her harfin karışma/sabitlenme adımı (8 harf x 500ms = 4sn toplam)
         
         let game = {
             isPlaying: false,
@@ -574,6 +585,39 @@
             });
             document.getElementById('scoreboard-list').innerHTML =
                 '<p class="text-gray-400 text-sm text-center">Mod ve kategori seç</p>';
+
+            loadOverallMultiplayerHighScore();
+        }
+
+        // Mod/kategori seçiminden bağımsız: Arkadaşlarınla Oyna'daki TÜM kategoriler
+        // arasındaki en yüksek tekil skoru bulur (sabit üst kutuda gösterilir)
+        async function loadOverallMultiplayerHighScore() {
+            const el = document.getElementById('scoreboard-top-highlight');
+            el.textContent = 'Yükleniyor...';
+
+            try {
+                const res = await fetch(`${WEB_APP_URL}?mode=multiplayer`);
+                const players = await res.json();
+
+                let best = null;
+                players.forEach(p => {
+                    Object.entries(p.scores || {}).forEach(([category, score]) => {
+                        if (score === null || score === undefined || score === '') return;
+                        if (!best || score > best.score) {
+                            best = { name: p.name, score, category };
+                        }
+                    });
+                });
+
+                if (!best) {
+                    el.textContent = 'Henüz Arkadaşlarınla Oyna skoru yok';
+                    return;
+                }
+                el.innerHTML = `🔥 En Yüksek: <strong>${best.name}</strong> — ${best.score} puan <span class="text-xs text-gray-500">(${best.category} tur, Arkadaşlarınla Oyna)</span>`;
+            } catch (err) {
+                console.error('Genel en yüksek skor yüklenemedi:', err);
+                el.textContent = 'Yüklenemedi';
+            }
         }
 
         function selectScoreboardMode(mode) {
@@ -649,6 +693,7 @@
             document.getElementById('btn-solo-finish').classList.add('hidden');
             clearInterval(timerInterval);
             clearInterval(mpTimerInterval);
+            clearInterval(roundOverUnlockInterval);
             detachMpListeners();
             // Multiplayer state'ini temizle (oyun bitip menüye dönüldüğünde eski lobiye yazmayı önler)
             game.mp.gameId = null;
@@ -774,10 +819,7 @@
             let vowels, consonants, combined;
             let attempt = 0;
             do {
-                vowels = [];
-                for (let i = 0; i < 2; i++) {
-                    vowels.push(VOWELS[Math.floor(Math.random() * VOWELS.length)]);
-                }
+                vowels = [...VOWELS].sort(() => Math.random() - 0.5).slice(0, 2);
                 consonants = [...CONSONANTS].sort(() => Math.random() - 0.5).slice(0, 5);
                 combined = [...vowels, ...consonants];
                 attempt++;
@@ -846,7 +888,6 @@
 
             const btnShuffle = document.getElementById('btn-shuffle');
             const btnSubmit = document.getElementById('btn-submit');
-            const SCRAMBLE_STEP_MS = 500; // Eskiden 1000ms'ydi, artık 2 katı hızlı
 
             if (animate) {
                 btnShuffle.disabled = true;
@@ -867,8 +908,8 @@
                     
                     // Her harf bir öncekinden yarım saniye sonra karıştırılmaya başlasın
                     setTimeout(() => {
-                        animateScrambleLetter(tileBtn, tile, SCRAMBLE_STEP_MS);
-                    }, index * SCRAMBLE_STEP_MS);
+                        animateScrambleLetter(tileBtn, tile, LETTER_SCRAMBLE_STEP_MS);
+                    }, index * LETTER_SCRAMBLE_STEP_MS);
 
                 } else {
                     setFinalTileAppearance(tileBtn, tile);
@@ -891,7 +932,7 @@
                     btnShuffle.classList.remove('opacity-50', 'cursor-not-allowed');
                     btnSubmit.classList.remove('opacity-50', 'cursor-not-allowed');
                     if (onAnimationComplete) onAnimationComplete();
-                }, game.roundLetters.length * SCRAMBLE_STEP_MS);
+                }, game.roundLetters.length * LETTER_SCRAMBLE_STEP_MS);
             }
         }
 
@@ -1432,7 +1473,8 @@
             const letters = generateRoundLetterSet(game.mp.previousLetters);
             game.mp.previousLetters = letters.filter(t => !t.isJoker).map(t => t.letter);
             const countdownEndsAt = Date.now() + 5000; // 5sn geri sayım
-            const roundEndsAt = countdownEndsAt + (game.mp.selectedDurationMinutes * 60000);
+            const letterAnimationMs = letters.length * LETTER_SCRAMBLE_STEP_MS; // Geri sayımdan sonra harf sıralanma süresi
+            const roundEndsAt = countdownEndsAt + letterAnimationMs + (game.mp.selectedDurationMinutes * 60000);
 
             await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`), {
                 status: 'playing',
@@ -1472,13 +1514,15 @@
 
             document.getElementById('found-words-list').innerHTML = '';
             document.getElementById('word-count').textContent = '0';
+            document.getElementById('letters-rack').innerHTML = ''; // Geri sayım bitene kadar harf gösterilmesin
             updateUI();
             updateActiveWordDisplay();
-            renderLettersRack(true); // Artık multiplayer'da da animasyon oynuyor (4sn), 5sn'lik geri sayımla paralel
 
             runMultiplayerCountdown(data.countdownEndsAt, () => {
-                game.isPlaying = true;
-                startMultiplayerTimer(data.roundEndsAt);
+                renderLettersRack(true, () => {
+                    game.isPlaying = true;
+                    startMultiplayerTimer(data.roundEndsAt);
+                });
             });
         }
 
@@ -1544,6 +1588,45 @@
             }
         }
 
+        let roundOverUnlockInterval = null;
+
+        // Başka oyuncuların bulup BENİM bulamadığım kelimeleri hesaplar (tersi değil)
+        function computeMissedWords(data) {
+            const myWords = new Set(game.foundWords);
+            const missedSet = new Set();
+            Object.entries(data.scores || {}).forEach(([name, s]) => {
+                if (name === game.playerName) return;
+                (s.foundWords || []).forEach(w => {
+                    if (!myWords.has(w)) missedSet.add(w);
+                });
+            });
+            return Array.from(missedSet);
+        }
+
+        // "Sonraki Tur" butonunu N saniye pasif tutar (kaçırılan kelimeler okunsun diye), sonra otomatik aktifleştirir
+        function lockNextRoundButton(btn, seconds) {
+            clearInterval(roundOverUnlockInterval);
+            let remaining = seconds;
+
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            btn.classList.remove('hover:shadow-xl', 'hover:-translate-y-1');
+            btn.textContent = `Kelimeler gösteriliyor... (${remaining})`;
+
+            roundOverUnlockInterval = setInterval(() => {
+                remaining--;
+                if (remaining <= 0) {
+                    clearInterval(roundOverUnlockInterval);
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    btn.classList.add('hover:shadow-xl', 'hover:-translate-y-1');
+                    btn.textContent = 'Sonraki Tur ➜';
+                } else {
+                    btn.textContent = `Kelimeler gösteriliyor... (${remaining})`;
+                }
+            }, 1000);
+        }
+
         function showMultiplayerRoundOverModal(data) {
             document.getElementById('round-over-title').textContent = `${data.currentRound}. Tur Bitti!`;
             document.getElementById('round-over-score').textContent = game.score;
@@ -1558,6 +1641,20 @@
                 </div>
             `).join('');
 
+            // Kaçırdığın kelimeler (sadece herkese gösterilir, hesap kişiye özel)
+            const missed = computeMissedWords(data);
+            const missedSection = document.getElementById('round-over-missed-words');
+            const missedList = document.getElementById('round-over-missed-words-list');
+            if (missed.length > 0) {
+                missedSection.classList.remove('hidden');
+                missedList.innerHTML = missed.map(w =>
+                    `<span class="bg-red-50 text-red-500 border border-red-200 px-2 py-1 rounded-lg text-sm font-bold">${w}</span>`
+                ).join('');
+            } else {
+                missedSection.classList.add('hidden');
+                missedList.innerHTML = '';
+            }
+
             const nextBtn = document.getElementById('btn-next-round');
             const finishBtn = document.getElementById('btn-round-over-finish');
             const guestText = document.getElementById('round-over-guest-text');
@@ -1567,7 +1664,9 @@
                 nextBtn.onclick = hostStartNextRound;
                 finishBtn.classList.remove('hidden'); // Host için her modda gösterilir
                 guestText.classList.add('hidden');
+                lockNextRoundButton(nextBtn, 5); // Kelimeler okunsun diye 5sn pasif
             } else {
+                clearInterval(roundOverUnlockInterval);
                 nextBtn.classList.add('hidden');
                 finishBtn.classList.add('hidden');
                 guestText.classList.remove('hidden');
@@ -1583,7 +1682,8 @@
             const letters = generateRoundLetterSet(game.mp.previousLetters);
             game.mp.previousLetters = letters.filter(t => !t.isJoker).map(t => t.letter);
             const countdownEndsAt = Date.now() + 5000; // 5sn geri sayım
-            const roundEndsAt = countdownEndsAt + (durationMinutes * 60000);
+            const letterAnimationMs = letters.length * LETTER_SCRAMBLE_STEP_MS;
+            const roundEndsAt = countdownEndsAt + letterAnimationMs + (durationMinutes * 60000);
 
             await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`), {
                 status: 'playing',
