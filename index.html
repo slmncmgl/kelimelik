@@ -139,6 +139,11 @@
             Yükleniyor...
         </div>
 
+        <p class="text-left text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">📋 Tüm Oyuncular (A-Z)</p>
+        <div id="all-players-list" class="flex flex-wrap gap-2 mb-5 max-h-32 overflow-y-auto text-left">
+            <p class="text-gray-400 text-sm">Yükleniyor...</p>
+        </div>
+
         <p class="text-left text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Mod</p>
         <div class="grid grid-cols-2 gap-2 mb-4">
             <button onclick="selectScoreboardMode('solo')" data-sb-mode="solo" class="sb-mode-btn py-2 bg-blue-50 text-summer-sea font-bold rounded-xl border-2 border-blue-200 transition-colors">Tek Kişilik</button>
@@ -620,6 +625,40 @@
                 '<p class="text-gray-400 text-sm text-center">Mod ve kategori seç</p>';
 
             loadOverallMultiplayerHighScore();
+            loadAllPlayersList();
+        }
+
+        // Solo + Multiplayer sheet'lerindeki TÜM isimleri birleştirip tekilleştirir,
+        // tur sayısı/süre'den bağımsız, alfabetik (A-Z) tek liste olarak gösterir.
+        async function loadAllPlayersList() {
+            const listEl = document.getElementById('all-players-list');
+            listEl.innerHTML = '<p class="text-gray-400 text-sm">Yükleniyor...</p>';
+
+            try {
+                const [soloRes, mpRes] = await Promise.all([
+                    fetch(`${WEB_APP_URL}?mode=solo`),
+                    fetch(`${WEB_APP_URL}?mode=multiplayer`)
+                ]);
+                const [soloPlayers, mpPlayers] = await Promise.all([soloRes.json(), mpRes.json()]);
+
+                const allNames = new Set([
+                    ...soloPlayers.map(p => p.name),
+                    ...mpPlayers.map(p => p.name)
+                ]);
+
+                if (allNames.size === 0) {
+                    listEl.innerHTML = '<p class="text-gray-400 text-sm">Henüz kimse oynamadı</p>';
+                    return;
+                }
+
+                const sortedNames = Array.from(allNames).sort((a, b) => a.localeCompare(b, 'tr'));
+                listEl.innerHTML = sortedNames.map(name =>
+                    `<span class="bg-blue-50 text-summer-sea px-3 py-1 rounded-full text-sm font-semibold">${name}</span>`
+                ).join('');
+            } catch (err) {
+                console.error('Oyuncu listesi yüklenemedi:', err);
+                listEl.innerHTML = '<p class="text-gray-400 text-sm">Yüklenemedi</p>';
+            }
         }
 
         // Mod/kategori seçiminden bağımsız: Arkadaşlarınla Oyna'daki TÜM kategoriler
@@ -1360,7 +1399,7 @@
             return id;
         }
 
-        const STALE_LOBBY_MS = 45 * 60 * 1000; // 45 dakikadan eski 'waiting' lobiler hayalet sayılır
+        const STALE_LOBBY_MS = 3 * 60 * 1000; // 3 dakikadan eski 'waiting' (başlamamış) lobiler hayalet sayılır
 
         function showMpLobbyScreen() {
             document.getElementById('welcome-screen').classList.add('hidden');
@@ -2056,6 +2095,11 @@
 
         // --- KLAVYE DESTEĞİ (masaüstü fiziksel klavye) ---
         window.addEventListener('keydown', (e) => {
+            // Mobil klavye input'u odaktaysa bu olayı işleme — o input kendi dinleyicisinde
+            // zaten aynı tuşu işliyor. İkisi birden çalışırsa aynı harf çift kez eklenir (bug).
+            if (document.activeElement && document.activeElement.id === 'mobile-keyboard-input') {
+                return;
+            }
             processGameplayKeyInput(e.key);
         });
 
