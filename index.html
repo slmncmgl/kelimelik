@@ -129,7 +129,7 @@
         <button onclick="showWelcomeScreen()" class="w-full py-4 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-xl rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">
             📖 Sadece Kelime
         </button>
-        <button onclick="showToast('Çok yakında! 🔢', 'success')" class="w-full py-4 bg-white text-summer-sea font-bold text-xl rounded-2xl shadow border-2 border-blue-200 hover:bg-blue-50 transition-all mb-3">
+        <button onclick="showSayiEntry()" class="w-full py-4 bg-white text-summer-sea font-bold text-xl rounded-2xl shadow border-2 border-blue-200 hover:bg-blue-50 transition-all mb-3">
             🔢 Sadece İşlem
         </button>
         <button onclick="showToast('Çok yakında! 🎲', 'success')" class="w-full py-4 bg-white text-summer-sea font-bold text-xl rounded-2xl shadow border-2 border-blue-200 hover:bg-blue-50 transition-all">
@@ -139,7 +139,6 @@
 
     <!-- KARŞILAMA EKRANI (Kelime Avı ana menüsü) -->
     <div id="welcome-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
-        <button onclick="showGameModeSelectScreen()" class="mb-2 text-sm text-gray-400 hover:text-summer-sea transition-colors">← Ana Menü</button>
         <div class="text-6xl mb-4">🏝️</div>
         <h1 class="text-4xl font-extrabold text-summer-sea mb-6 tracking-tight">Kelime Avı</h1>
         
@@ -163,6 +162,8 @@
                 <div id="rules-typewriter-content"></div>
             </div>
         </div>
+
+        <button onclick="showGameModeSelectScreen()" class="w-full mt-4 py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
     </div>
 
     <!-- SKOR TABLOSU EKRANI -->
@@ -220,6 +221,98 @@
             Oyunu Başlat 🚀
         </button>
         <button onclick="showWelcomeScreen()" class="w-full py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
+    </div>
+
+    <!-- SAYI AVI: ROUND SEÇİM EKRANI -->
+    <div id="sayi-round-select-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
+        <h2 class="text-3xl font-extrabold text-summer-sea mb-2">🔢 Sayı Avı</h2>
+        <p class="text-gray-500 mb-6">Kaç tur oynayalım? (Her tur 1 dakika)</p>
+
+        <div class="grid grid-cols-3 gap-2 mb-6">
+            <button onclick="selectSayiRoundCount(3)" data-sayi-round="3" class="sayi-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">3</button>
+            <button onclick="selectSayiRoundCount(5)" data-sayi-round="5" class="sayi-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">5</button>
+            <button onclick="selectSayiRoundCount(7)" data-sayi-round="7" class="sayi-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">7</button>
+        </div>
+
+        <button onclick="startSayiGame()" id="btn-sayi-start" disabled class="w-full py-4 bg-gray-300 text-white font-bold text-xl rounded-2xl shadow-lg transition-all mb-3 cursor-not-allowed">
+            Oyunu Başlat 🚀
+        </button>
+        <button onclick="showGameModeSelectScreen()" class="w-full py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
+    </div>
+
+    <!-- SAYI AVI: OYUN EKRANI -->
+    <div id="sayi-game-screen" class="hidden w-full max-w-2xl flex flex-col h-full max-h-[90vh]">
+        <div class="flex justify-between items-center bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-md mb-4 border-2 border-white">
+            <div class="text-center">
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Tur</p>
+                <p class="text-2xl font-black text-summer-sea"><span id="sayi-current-round">1</span>/<span id="sayi-max-round">3</span></p>
+            </div>
+            <div class="text-center bg-blue-100 px-6 py-2 rounded-xl">
+                <p class="text-xs font-bold text-blue-500 uppercase tracking-wider">Süre</p>
+                <p id="sayi-time-left" class="text-3xl font-black text-summer-ocean">1:00</p>
+            </div>
+            <div class="text-center">
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Puan</p>
+                <p id="sayi-score" class="text-3xl font-black text-summer-coral">0</p>
+            </div>
+        </div>
+
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md p-4 mb-4 text-center border-2 border-white">
+            <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Hedef Sayı</p>
+            <p id="sayi-target" class="text-5xl font-black text-summer-sea">000</p>
+            <p class="text-sm text-gray-500 mt-2">En Yakın Sonucun: <span id="sayi-best-result" class="font-bold text-summer-coral">-</span></p>
+        </div>
+
+        <!-- İşlem kurma alanı -->
+        <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md p-4 mb-4 flex flex-col items-center justify-center min-h-[70px] border-2 border-white">
+            <p id="sayi-expression-display" class="text-2xl font-bold text-summer-sea">Bir sayı seç...</p>
+        </div>
+
+        <!-- Sayı karoları -->
+        <div id="sayi-numbers-rack" class="flex flex-wrap justify-center gap-2 md:gap-3 mb-4 min-h-[5rem]"></div>
+
+        <!-- İşlem butonları -->
+        <div class="grid grid-cols-4 gap-2 mb-4">
+            <button onclick="selectSayiOperator('+')" data-sayi-op="+" class="sayi-op-btn py-3 bg-white text-summer-sea font-black text-2xl rounded-xl shadow border-2 border-blue-200 hover:bg-blue-50">+</button>
+            <button onclick="selectSayiOperator('-')" data-sayi-op="-" class="sayi-op-btn py-3 bg-white text-summer-sea font-black text-2xl rounded-xl shadow border-2 border-blue-200 hover:bg-blue-50">−</button>
+            <button onclick="selectSayiOperator('×')" data-sayi-op="×" class="sayi-op-btn py-3 bg-white text-summer-sea font-black text-2xl rounded-xl shadow border-2 border-blue-200 hover:bg-blue-50">×</button>
+            <button onclick="selectSayiOperator('÷')" data-sayi-op="÷" class="sayi-op-btn py-3 bg-white text-summer-sea font-black text-2xl rounded-xl shadow border-2 border-blue-200 hover:bg-blue-50">÷</button>
+        </div>
+
+        <button onclick="resetSayiNumbers()" class="w-full py-2 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors text-sm">
+            🔄 Sayıları Sıfırla (baştan kombinle)
+        </button>
+    </div>
+
+    <!-- SAYI AVI: TUR SONU MODALI -->
+    <div id="sayi-round-over-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center border-4 border-summer-sun">
+            <div class="text-5xl mb-2">🔢</div>
+            <h3 class="text-3xl font-extrabold text-summer-sea mb-1"><span id="sayi-round-over-title">Tur Bitti!</span></h3>
+            <p class="text-gray-500">Hedef: <span id="sayi-round-over-target" class="font-bold">000</span></p>
+            <p class="text-gray-500 mb-2">Senin Sonucun: <span id="sayi-round-over-result" class="font-bold">-</span></p>
+            <p class="text-gray-500 mb-4">Kazandığın Puan: <span id="sayi-round-over-points" class="font-bold text-summer-coral">0</span></p>
+            <p class="text-gray-500 mb-6">Toplam Skorun: <span id="sayi-round-over-total" class="font-black text-2xl text-summer-coral">0</span></p>
+            <button onclick="sayiGoToNextRound()" class="w-full py-4 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-xl rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
+                Sonraki Tur ➜
+            </button>
+        </div>
+    </div>
+
+    <!-- SAYI AVI: OYUN BİTİŞ EKRANI -->
+    <div id="sayi-game-over-screen" class="hidden max-w-md w-full bg-white/95 backdrop-blur-md p-8 rounded-3xl shadow-2xl text-center border-4 border-summer-sun relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-summer-sun to-summer-coral"></div>
+        <h2 class="text-4xl font-extrabold text-gray-800 mb-2 mt-4">Oyun Bitti!</h2>
+        <p class="text-gray-500 mb-6">Sayı Avı'nda harika iş çıkardın.</p>
+
+        <div class="bg-orange-50 rounded-2xl p-6 mb-6">
+            <p class="text-sm font-bold text-orange-400 uppercase tracking-widest mb-1">Toplam Skor</p>
+            <p id="sayi-final-score" class="text-6xl font-black text-summer-coral">0</p>
+        </div>
+
+        <button onclick="showGameModeSelectScreen()" class="w-full py-4 bg-summer-sea text-white font-bold text-xl rounded-2xl shadow-lg hover:bg-blue-700 transition-all">
+            Ana Menüye Dön
+        </button>
     </div>
 
     <!-- MULTIPLAYER: LOBİ LİSTESİ -->
@@ -504,7 +597,7 @@
         }
 
         // --- SCOREBOARD API ---
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzru6X7J2V4gPWfsO9JwMgXs5p1R_ndQuEenDK91Kf7gZDqBJWGyWqse8lROEpMmK5I/exec';
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxQsG8gZHTGN5g6UTgbyPbZFX3wrC4UBaKZN_Ttbq5chU0AaxGu5GieZIPciZi-g6S4/exec';
 
         // --- OYUN DEĞİŞKENLERİ ---
         const VOWELS = ['A', 'E', 'I', 'İ', 'O', 'Ö', 'U', 'Ü'];
@@ -521,6 +614,7 @@
             previousLetters: null, // Bir önceki turun harfleri (min 5 harf farkı kuralı için)
             selectedRoundCount: null, // Round-select ekranında seçilen (solo)
             selectedDurationMinutes: null, // Round-select ekranında seçilen tur süresi (solo)
+            pendingGameType: 'kelime', // İsim ekranından sonra hangi oyuna gidileceği ('kelime' | 'sayi')
             roundLetters: [], // Seçilen 7+1 harf. Format: { id: string, letter: string, isJoker: boolean, isUsed: boolean, originalId: string }
             activeWord: [],   // Ekrandaki oluşturulan kelime dizisi
             foundWords: [],   // Bu tur bulunan kelimeler (Puanlamayı engellemek için)
@@ -732,6 +826,12 @@
 
         function showGameModeSelectScreen() {
             document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('name-screen').classList.add('hidden');
+            document.getElementById('sayi-round-select-screen').classList.add('hidden');
+            document.getElementById('sayi-game-screen').classList.add('hidden');
+            document.getElementById('sayi-game-over-screen').classList.add('hidden');
+            document.getElementById('sayi-round-over-modal').classList.add('hidden');
+            clearInterval(sayiTimerInterval);
             document.getElementById('game-mode-select-screen').classList.remove('hidden');
         }
 
@@ -763,12 +863,26 @@
         }
 
         function showNameScreen() {
+            game.pendingGameType = 'kelime';
             // İsim bu oturumda zaten belirlendiyse tekrar sormaya gerek yok
             if (game.playerName) {
                 showRoundSelectScreen();
                 return;
             }
             document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('name-screen').classList.remove('hidden');
+            document.getElementById('name-input').value = '';
+            setTimeout(() => document.getElementById('name-input').focus(), 100);
+        }
+
+        // Sayı Avı'ya giriş — aynı isim akışını (hatırlama dahil) kullanır, sadece hedef ekran farklı
+        function showSayiEntry() {
+            game.pendingGameType = 'sayi';
+            if (game.playerName) {
+                showSayiRoundSelectScreen();
+                return;
+            }
+            document.getElementById('game-mode-select-screen').classList.add('hidden');
             document.getElementById('name-screen').classList.remove('hidden');
             document.getElementById('name-input').value = '';
             setTimeout(() => document.getElementById('name-input').focus(), 100);
@@ -858,7 +972,11 @@
             game.playerName = finalName;
             btn.disabled = false;
             btn.textContent = 'Devam Et →';
-            showRoundSelectScreen();
+            if (game.pendingGameType === 'sayi') {
+                showSayiRoundSelectScreen();
+            } else {
+                showRoundSelectScreen();
+            }
         }
 
         function startGame() {
@@ -1358,6 +1476,317 @@
                 closeJokerModal();
                 updateActiveWordDisplay();
                 renderLettersRack(false);
+            }
+        }
+
+        // --- SAYI AVI ---
+        const SAYI_SMALL_POOL = [1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10]; // Her küçük sayıdan 2 tane (torba mantığı)
+        const SAYI_LARGE_POOL = [25, 50, 75, 100];
+        let sayiTimerInterval = null;
+
+        function generateSayiRound() {
+            const largeCountOptions = [0, 1, 1, 2, 2]; // 0:%20, 1:%40, 2:%40 ağırlıklı rastgele
+            const largeCount = largeCountOptions[Math.floor(Math.random() * largeCountOptions.length)];
+            const largeNumbers = [...SAYI_LARGE_POOL].sort(() => Math.random() - 0.5).slice(0, largeCount);
+            const smallNumbers = [...SAYI_SMALL_POOL].sort(() => Math.random() - 0.5).slice(0, 6 - largeCount);
+            const numbers = [...largeNumbers, ...smallNumbers].sort(() => Math.random() - 0.5);
+            const target = Math.floor(Math.random() * 900) + 100; // 100-999
+            return { numbers, target };
+        }
+
+        function showSayiRoundSelectScreen() {
+            document.getElementById('name-screen').classList.add('hidden');
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('game-mode-select-screen').classList.add('hidden');
+            document.getElementById('sayi-round-select-screen').classList.remove('hidden');
+
+            game.selectedRoundCount = null;
+            document.querySelectorAll('.sayi-round-btn').forEach(btn => {
+                btn.classList.remove('bg-summer-sea', 'text-white');
+                btn.classList.add('bg-blue-50', 'text-summer-sea');
+            });
+            updateSayiStartButtonState();
+        }
+
+        function selectSayiRoundCount(count) {
+            game.selectedRoundCount = count;
+            document.querySelectorAll('.sayi-round-btn').forEach(btn => {
+                const isSelected = String(btn.dataset.sayiRound) === String(count);
+                btn.classList.toggle('bg-summer-sea', isSelected);
+                btn.classList.toggle('text-white', isSelected);
+                btn.classList.toggle('bg-blue-50', !isSelected);
+                btn.classList.toggle('text-summer-sea', !isSelected);
+            });
+            updateSayiStartButtonState();
+        }
+
+        function updateSayiStartButtonState() {
+            const startBtn = document.getElementById('btn-sayi-start');
+            const ready = game.selectedRoundCount !== null;
+            startBtn.disabled = !ready;
+            startBtn.classList.toggle('bg-gray-300', !ready);
+            startBtn.classList.toggle('cursor-not-allowed', !ready);
+            startBtn.classList.toggle('bg-gradient-to-r', ready);
+            startBtn.classList.toggle('from-summer-sun', ready);
+            startBtn.classList.toggle('to-summer-coral', ready);
+            startBtn.classList.toggle('hover:shadow-xl', ready);
+        }
+
+        function startSayiGame() {
+            if (game.selectedRoundCount === null) return;
+            game.sayi = {
+                numbers: [],
+                target: 0,
+                currentRound: 1,
+                maxRounds: game.selectedRoundCount,
+                score: 0,
+                bestResultThisRound: null,
+                selectedTileId: null,
+                selectedOperator: null,
+                timeRemaining: 60
+            };
+            document.getElementById('sayi-round-select-screen').classList.add('hidden');
+            document.getElementById('sayi-game-screen').classList.remove('hidden');
+            document.getElementById('sayi-game-over-screen').classList.add('hidden');
+            document.getElementById('sayi-max-round').textContent = game.sayi.maxRounds;
+            updateSayiUI();
+            startSayiRound();
+        }
+
+        function startSayiRound() {
+            const { numbers, target } = generateSayiRound();
+            game.sayi.numbers = numbers.map((val, i) => ({ id: `n_${i}`, value: val, used: false }));
+            game.sayi.target = target;
+            game.sayi.bestResultThisRound = null;
+            game.sayi.selectedTileId = null;
+            game.sayi.selectedOperator = null;
+            game.sayi.timeRemaining = 60;
+
+            document.getElementById('sayi-target').textContent = target;
+            document.getElementById('sayi-best-result').textContent = '-';
+            resetSayiOperatorButtonStyles();
+            updateSayiExpressionDisplay();
+            updateSayiUI();
+            renderSayiNumbersRack();
+            considerSayiBestResult(); // Başlangıç 6 sayısı da (0 işlemle) aday olarak değerlendirilir
+            sounds.playStart();
+            startSayiTimer();
+        }
+
+        function startSayiTimer() {
+            clearInterval(sayiTimerInterval);
+            const timeDisplay = document.getElementById('sayi-time-left');
+
+            function tick() {
+                const m = Math.floor(game.sayi.timeRemaining / 60);
+                const s = game.sayi.timeRemaining % 60;
+                timeDisplay.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+                timeDisplay.classList.toggle('text-red-500', game.sayi.timeRemaining <= 10);
+
+                if (game.sayi.timeRemaining <= 0) {
+                    clearInterval(sayiTimerInterval);
+                    endSayiRound();
+                } else {
+                    game.sayi.timeRemaining--;
+                }
+            }
+            tick();
+            sayiTimerInterval = setInterval(tick, 1000);
+        }
+
+        function renderSayiNumbersRack() {
+            const rackEl = document.getElementById('sayi-numbers-rack');
+            rackEl.innerHTML = '';
+            game.sayi.numbers.forEach(tile => {
+                if (tile.used) return; // Kullanılmış (kombinlenmiş) sayılar raftan kalkar
+                const el = document.createElement('div');
+                const isSelected = game.sayi.selectedTileId === tile.id;
+                el.className = `w-16 h-16 rounded-xl shadow flex items-center justify-center font-black text-xl cursor-pointer transition-all border-2 ${isSelected ? 'bg-summer-sea text-white border-summer-sea scale-110' : 'bg-white text-summer-sea border-blue-200 hover:bg-blue-50'}`;
+                el.textContent = tile.value;
+                el.onclick = () => selectSayiTile(tile.id);
+                rackEl.appendChild(el);
+            });
+        }
+
+        function selectSayiOperator(op) {
+            if (game.sayi.selectedTileId === null) {
+                showToast('Önce bir sayı seç!');
+                return;
+            }
+            game.sayi.selectedOperator = op;
+            updateSayiExpressionDisplay();
+            document.querySelectorAll('.sayi-op-btn').forEach(btn => {
+                const isSelected = btn.dataset.sayiOp === op;
+                btn.classList.toggle('bg-summer-sea', isSelected);
+                btn.classList.toggle('text-white', isSelected);
+            });
+        }
+
+        function resetSayiOperatorButtonStyles() {
+            document.querySelectorAll('.sayi-op-btn').forEach(btn => {
+                btn.classList.remove('bg-summer-sea', 'text-white');
+            });
+        }
+
+        function selectSayiTile(tileId) {
+            const tile = game.sayi.numbers.find(t => t.id === tileId);
+            if (!tile || tile.used) return;
+
+            // Henüz hiç sayı seçilmemiş, ya da aynı karoya tekrar tıklandı (iptal)
+            if (game.sayi.selectedTileId === null || game.sayi.selectedTileId === tileId) {
+                game.sayi.selectedTileId = (game.sayi.selectedTileId === tileId) ? null : tileId;
+                game.sayi.selectedOperator = null;
+                resetSayiOperatorButtonStyles();
+                updateSayiExpressionDisplay();
+                renderSayiNumbersRack();
+                return;
+            }
+
+            // Operatör seçilmeden ikinci bir sayıya tıklandı: ilk seçimi bununla değiştir
+            if (game.sayi.selectedOperator === null) {
+                game.sayi.selectedTileId = tileId;
+                updateSayiExpressionDisplay();
+                renderSayiNumbersRack();
+                return;
+            }
+
+            // İkinci sayı + operatör tamam: işlemi uygula
+            const firstTile = game.sayi.numbers.find(t => t.id === game.sayi.selectedTileId);
+            const result = computeSayiOperation(firstTile.value, game.sayi.selectedOperator, tile.value);
+
+            if (result === null) {
+                showToast('Geçersiz işlem! (tam sayı olmalı, negatif olamaz)');
+                sounds.playError();
+                game.sayi.selectedTileId = null;
+                game.sayi.selectedOperator = null;
+                resetSayiOperatorButtonStyles();
+                updateSayiExpressionDisplay();
+                renderSayiNumbersRack();
+                return;
+            }
+
+            firstTile.used = true;
+            tile.used = true;
+            game.sayi.numbers.push({ id: `r_${Date.now()}_${Math.floor(Math.random() * 1000)}`, value: result, used: false });
+
+            game.sayi.selectedTileId = null;
+            game.sayi.selectedOperator = null;
+            resetSayiOperatorButtonStyles();
+            sounds.playClick();
+            updateSayiExpressionDisplay();
+            renderSayiNumbersRack();
+            considerSayiBestResult();
+        }
+
+        // Sadece toplama/çarpma her zaman geçerli; çıkarmada negatif, bölmede tam bölünmeyen sonuç reddedilir
+        function computeSayiOperation(a, op, b) {
+            let result;
+            if (op === '+') result = a + b;
+            else if (op === '-') {
+                if (a < b) return null;
+                result = a - b;
+            } else if (op === '×') result = a * b;
+            else if (op === '÷') {
+                if (b === 0 || a % b !== 0) return null;
+                result = a / b;
+            } else return null;
+
+            return Number.isInteger(result) ? result : null;
+        }
+
+        function updateSayiExpressionDisplay() {
+            const el = document.getElementById('sayi-expression-display');
+            if (game.sayi.selectedTileId === null) {
+                el.textContent = 'Bir sayı seç...';
+                return;
+            }
+            const tile = game.sayi.numbers.find(t => t.id === game.sayi.selectedTileId);
+            el.textContent = game.sayi.selectedOperator === null
+                ? `${tile.value} [işlem seç]`
+                : `${tile.value} ${game.sayi.selectedOperator} ?`;
+        }
+
+        // Şu ana kadar üretilmiş TÜM sayılar arasında hedefe en yakın olanı takip eder
+        // (kombinlenip raftan kalksa bile o an için "ulaşılmış" sayılıyor, geri unutulmuyor)
+        function considerSayiBestResult() {
+            game.sayi.numbers.forEach(tile => {
+                const bestDiff = game.sayi.bestResultThisRound === null ? Infinity : Math.abs(game.sayi.target - game.sayi.bestResultThisRound);
+                const diff = Math.abs(game.sayi.target - tile.value);
+                if (diff < bestDiff) {
+                    game.sayi.bestResultThisRound = tile.value;
+                }
+            });
+            document.getElementById('sayi-best-result').textContent = game.sayi.bestResultThisRound;
+        }
+
+        // Kombinlenmiş (r_ ile başlayan) sonuç sayılarını siler, orijinal 6 sayıya geri döner
+        function resetSayiNumbers() {
+            game.sayi.numbers = game.sayi.numbers.filter(t => !t.id.startsWith('r_'));
+            game.sayi.numbers.forEach(t => t.used = false);
+            game.sayi.selectedTileId = null;
+            game.sayi.selectedOperator = null;
+            resetSayiOperatorButtonStyles();
+            updateSayiExpressionDisplay();
+            renderSayiNumbersRack();
+            showToast('Sayılar sıfırlandı, tekrar dene!', 'success');
+        }
+
+        function calculateSayiPoints(target, bestResult) {
+            if (bestResult === null) return 0;
+            const diff = Math.abs(target - bestResult);
+            if (diff === 0) return 10;
+            if (diff <= 5) return 7;
+            if (diff <= 10) return 5;
+            return 0;
+        }
+
+        function endSayiRound() {
+            const points = calculateSayiPoints(game.sayi.target, game.sayi.bestResultThisRound);
+            game.sayi.score += points;
+            updateSayiUI();
+
+            document.getElementById('sayi-round-over-title').textContent = `${game.sayi.currentRound}. Tur Bitti!`;
+            document.getElementById('sayi-round-over-target').textContent = game.sayi.target;
+            document.getElementById('sayi-round-over-result').textContent = game.sayi.bestResultThisRound !== null ? game.sayi.bestResultThisRound : '-';
+            document.getElementById('sayi-round-over-points').textContent = `+${points}`;
+            document.getElementById('sayi-round-over-total').textContent = game.sayi.score;
+            document.getElementById('sayi-round-over-modal').classList.remove('hidden');
+        }
+
+        function sayiGoToNextRound() {
+            document.getElementById('sayi-round-over-modal').classList.add('hidden');
+            if (game.sayi.currentRound >= game.sayi.maxRounds) {
+                endSayiGame();
+            } else {
+                game.sayi.currentRound++;
+                startSayiRound();
+            }
+        }
+
+        function updateSayiUI() {
+            document.getElementById('sayi-current-round').textContent = game.sayi.currentRound;
+            document.getElementById('sayi-score').textContent = game.sayi.score;
+        }
+
+        async function endSayiGame() {
+            document.getElementById('sayi-game-screen').classList.add('hidden');
+            document.getElementById('sayi-game-over-screen').classList.remove('hidden');
+            document.getElementById('sayi-final-score').textContent = game.sayi.score;
+            sounds.playSuccess();
+
+            // Kalıcı skor tablosuna gönder (Apps Script'te 'sayi' modu + yeni sheet gerektirir)
+            try {
+                await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        mode: 'sayi',
+                        playerName: game.playerName,
+                        score: game.sayi.score,
+                        category: game.sayi.maxRounds
+                    })
+                });
+            } catch (err) {
+                console.error('Sayı Avı skoru kaydedilemedi:', err);
             }
         }
 
