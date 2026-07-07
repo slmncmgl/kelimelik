@@ -6,7 +6,7 @@
     <title>Bir Kelime Bir İşlem</title>
     
     <!-- Sadece Inter fontunu yüklüyoruz -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script>
@@ -85,6 +85,22 @@
             animation: tileShineSweep 0.5s ease-out;
         }
 
+        /* Retro Highscore Tablosu */
+        .font-retro {
+            font-family: 'Orbitron', sans-serif;
+        }
+        .retro-highscore-box {
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            border: 3px solid #334155;
+            border-radius: 1rem;
+            padding: 1rem;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.4);
+        }
+        .retro-row-1 { color: #fbbf24; } /* altın */
+        .retro-row-2 { color: #cbd5e1; } /* gümüş */
+        .retro-row-3 { color: #d97706; } /* bronz */
+        .retro-row-other { color: #94a3b8; }
+
         /* Özel Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
@@ -152,8 +168,16 @@
     <div id="scoreboard-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
         <h2 class="text-3xl font-extrabold text-summer-sea mb-4">🏆 Skor Tablosu</h2>
 
-        <div id="scoreboard-top-highlight" class="bg-orange-50 border-2 border-orange-200 rounded-xl p-3 mb-5 text-sm text-gray-700 font-semibold">
-            Yükleniyor...
+        <div class="retro-highscore-box mb-5">
+            <p class="font-retro text-amber-400 text-lg font-extrabold tracking-widest mb-3">HIGHSCORES</p>
+            <div class="grid grid-cols-12 font-retro text-xs text-slate-400 tracking-wider mb-2 px-1">
+                <span class="col-span-3 text-left">POS</span>
+                <span class="col-span-5 text-left">SCORE</span>
+                <span class="col-span-4 text-left">NAME</span>
+            </div>
+            <div id="retro-top10-list" class="flex flex-col gap-1">
+                <p class="text-slate-500 text-sm">Yükleniyor...</p>
+            </div>
         </div>
 
         <p class="text-left text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">📋 Tüm Oyuncular (A-Z)</p>
@@ -161,6 +185,8 @@
             <p class="text-gray-400 text-sm">Yükleniyor...</p>
         </div>
 
+        <hr class="border-gray-200 mb-4">
+        <p class="text-left text-xs text-gray-400 mb-3">Belirli bir kategoriye bakmak istersen:</p>
         <p class="text-left text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Mod</p>
         <div class="grid grid-cols-2 gap-2 mb-4">
             <button onclick="selectScoreboardMode('solo')" data-sb-mode="solo" class="sb-mode-btn py-2 bg-blue-50 text-summer-sea font-bold rounded-xl border-2 border-blue-200 transition-colors">Tek Kişilik</button>
@@ -641,7 +667,7 @@
             document.getElementById('scoreboard-list').innerHTML =
                 '<p class="text-gray-400 text-sm text-center">Mod ve kategori seç</p>';
 
-            loadOverallMultiplayerHighScore();
+            loadTop10Highscores();
             loadAllPlayersList();
         }
 
@@ -678,34 +704,102 @@
             }
         }
 
-        // Mod/kategori seçiminden bağımsız: Arkadaşlarınla Oyna'daki TÜM kategoriler
-        // arasındaki en yüksek tekil skoru bulur (sabit üst kutuda gösterilir)
-        async function loadOverallMultiplayerHighScore() {
-            const el = document.getElementById('scoreboard-top-highlight');
-            el.textContent = 'Yükleniyor...';
+        // Mod/kategori seçiminden TAMAMEN bağımsız: hem solo hem multiplayer, TÜM kategoriler
+        // birleştirilip en yüksek 10 skor retro highscore tablosu olarak gösterilir.
+        async function loadTop10Highscores() {
+            const listEl = document.getElementById('retro-top10-list');
+            listEl.innerHTML = '<p class="text-slate-500 text-sm">Yükleniyor...</p>';
 
             try {
-                const res = await fetch(`${WEB_APP_URL}?mode=multiplayer`);
-                const players = await res.json();
+                const [soloRes, mpRes] = await Promise.all([
+                    fetch(`${WEB_APP_URL}?mode=solo`),
+                    fetch(`${WEB_APP_URL}?mode=multiplayer`)
+                ]);
+                const [soloPlayers, mpPlayers] = await Promise.all([soloRes.json(), mpRes.json()]);
 
-                let best = null;
-                players.forEach(p => {
+                const allEntries = [];
+                [...soloPlayers, ...mpPlayers].forEach(p => {
                     Object.entries(p.scores || {}).forEach(([category, score]) => {
                         if (score === null || score === undefined || score === '') return;
-                        if (!best || score > best.score) {
-                            best = { name: p.name, score, category };
-                        }
+                        allEntries.push({ name: p.name, score: Number(score) });
                     });
                 });
 
-                if (!best) {
-                    el.textContent = 'Henüz Arkadaşlarınla Oyna skoru yok';
+                allEntries.sort((a, b) => b.score - a.score);
+                const top10 = allEntries.slice(0, 10);
+
+                if (top10.length === 0) {
+                    listEl.innerHTML = '<p class="text-slate-500 text-sm">Henüz skor yok</p>';
                     return;
                 }
-                el.innerHTML = `🔥 En Yüksek: <strong>${best.name}</strong> — ${best.score} puan <span class="text-xs text-gray-500">(${best.category} tur, Arkadaşlarınla Oyna)</span>`;
+
+                const medal = (pos) => pos === 1 ? '⭐' : (pos === 2 || pos === 3) ? '✨' : '';
+                const rowClass = (pos) => pos === 1 ? 'retro-row-1' : pos === 2 ? 'retro-row-2' : pos === 3 ? 'retro-row-3' : 'retro-row-other';
+
+                listEl.innerHTML = top10.map((entry, i) => {
+                    const pos = i + 1;
+                    return `
+                        <div class="grid grid-cols-12 items-center font-retro text-sm ${rowClass(pos)} py-0.5">
+                            <span class="col-span-3 text-left">${medal(pos)} ${pos}${pos === 1 ? 'ST' : pos === 2 ? 'ND' : pos === 3 ? 'RD' : 'TH'}</span>
+                            <span class="col-span-5 text-left">${entry.score}</span>
+                            <span class="col-span-4 text-left truncate">${entry.name}</span>
+                        </div>
+                    `;
+                }).join('');
             } catch (err) {
-                console.error('Genel en yüksek skor yüklenemedi:', err);
-                el.textContent = 'Yüklenemedi';
+                console.error('Top 10 yüklenemedi:', err);
+                listEl.innerHTML = '<p class="text-slate-500 text-sm">Yüklenemedi</p>';
+            }
+        }
+
+        // --- GİZLİ SIFIRLAMA KOMBİNASYONU: Scoreboard ekranı açıkken "1" ve "9" 3sn basılı tutulursa ---
+        let scoreboardResetKey1 = false;
+        let scoreboardResetKey9 = false;
+        let scoreboardResetHoldMs = 0;
+        let scoreboardResetTriggered = false;
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '1') scoreboardResetKey1 = true;
+            if (e.key === '9') scoreboardResetKey9 = true;
+        });
+        document.addEventListener('keyup', (e) => {
+            if (e.key === '1') scoreboardResetKey1 = false;
+            if (e.key === '9') scoreboardResetKey9 = false;
+            if (!scoreboardResetKey1 || !scoreboardResetKey9) scoreboardResetTriggered = false;
+        });
+
+        setInterval(() => {
+            const scoreboardVisible = !document.getElementById('scoreboard-screen').classList.contains('hidden');
+            if (!scoreboardVisible || !scoreboardResetKey1 || !scoreboardResetKey9) {
+                scoreboardResetHoldMs = 0;
+                return;
+            }
+            if (scoreboardResetTriggered) return;
+
+            scoreboardResetHoldMs += 100;
+            if (scoreboardResetHoldMs >= 3000) {
+                scoreboardResetTriggered = true;
+                resetEntireScoreboardIfConfirmed();
+            }
+        }, 100);
+
+        async function resetEntireScoreboardIfConfirmed() {
+            const confirmed = confirm('Tüm skor tablosunu (kullanıcılar + puanlar, HER İKİ MOD) kalıcı olarak silmek istediğine emin misin? Bu geri alınamaz!');
+            if (!confirmed) return;
+
+            try {
+                await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'reset' })
+                });
+                showToast('Skor tablosu sıfırlandı!', 'success');
+                loadTop10Highscores();
+                loadAllPlayersList();
+                document.getElementById('scoreboard-list').innerHTML =
+                    '<p class="text-gray-400 text-sm text-center">Mod ve kategori seç</p>';
+            } catch (err) {
+                console.error('Sıfırlama başarısız:', err);
+                showToast('Sıfırlama başarısız oldu');
             }
         }
 
