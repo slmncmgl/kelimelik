@@ -139,6 +139,7 @@
 
     <!-- KARŞILAMA EKRANI (Kelime Avı ana menüsü) -->
     <div id="welcome-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
+        <button onclick="showGameModeSelectScreen()" class="mb-2 text-sm text-gray-400 hover:text-summer-sea transition-colors">← Ana Menü</button>
         <div class="text-6xl mb-4">🏝️</div>
         <h1 class="text-4xl font-extrabold text-summer-sea mb-6 tracking-tight">Kelime Avı</h1>
         
@@ -178,32 +179,6 @@
             <div id="retro-top10-list" class="flex flex-col gap-1">
                 <p class="text-slate-500 text-sm">Yükleniyor...</p>
             </div>
-        </div>
-
-        <p class="text-left text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">📋 Tüm Oyuncular (A-Z)</p>
-        <div id="all-players-list" class="flex flex-wrap gap-2 mb-5 max-h-32 overflow-y-auto text-left">
-            <p class="text-gray-400 text-sm">Yükleniyor...</p>
-        </div>
-
-        <hr class="border-gray-200 mb-4">
-        <p class="text-left text-xs text-gray-400 mb-3">Belirli bir kategoriye bakmak istersen:</p>
-        <p class="text-left text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Mod</p>
-        <div class="grid grid-cols-2 gap-2 mb-4">
-            <button onclick="selectScoreboardMode('solo')" data-sb-mode="solo" class="sb-mode-btn py-2 bg-blue-50 text-summer-sea font-bold rounded-xl border-2 border-blue-200 transition-colors">Tek Kişilik</button>
-            <button onclick="selectScoreboardMode('multiplayer')" data-sb-mode="multiplayer" class="sb-mode-btn py-2 bg-blue-50 text-summer-sea font-bold rounded-xl border-2 border-blue-200 transition-colors">Arkadaşlarınla</button>
-        </div>
-
-        <p class="text-left text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Kategori</p>
-        <div class="grid grid-cols-5 gap-2 mb-4">
-            <button onclick="selectScoreboardCategory(3)" data-sb-cat="3" class="sb-cat-btn py-2 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200 transition-colors">3</button>
-            <button onclick="selectScoreboardCategory(5)" data-sb-cat="5" class="sb-cat-btn py-2 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200 transition-colors">5</button>
-            <button onclick="selectScoreboardCategory(7)" data-sb-cat="7" class="sb-cat-btn py-2 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200 transition-colors">7</button>
-            <button onclick="selectScoreboardCategory(10)" data-sb-cat="10" class="sb-cat-btn py-2 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200 transition-colors">10</button>
-            <button onclick="selectScoreboardCategory('Sonsuz')" data-sb-cat="Sonsuz" class="sb-cat-btn py-2 bg-blue-50 text-summer-sea font-black rounded-xl border-2 border-blue-200 transition-colors">∞</button>
-        </div>
-
-        <div id="scoreboard-list" class="flex flex-col gap-1 mb-6 text-left max-h-72 overflow-y-auto">
-            <p class="text-gray-400 text-sm text-center">Mod ve kategori seç</p>
         </div>
 
         <button onclick="showWelcomeScreen()" class="w-full py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
@@ -651,57 +626,10 @@
         }
 
         // --- SKOR TABLOSU EKRANI ---
-        let sbSelectedMode = null;
-        let sbSelectedCategory = null;
-
         function showScoreboardScreen() {
             document.getElementById('welcome-screen').classList.add('hidden');
             document.getElementById('scoreboard-screen').classList.remove('hidden');
-
-            sbSelectedMode = null;
-            sbSelectedCategory = null;
-            document.querySelectorAll('.sb-mode-btn, .sb-cat-btn').forEach(btn => {
-                btn.classList.remove('bg-summer-sea', 'text-white');
-                btn.classList.add('bg-blue-50', 'text-summer-sea');
-            });
-            document.getElementById('scoreboard-list').innerHTML =
-                '<p class="text-gray-400 text-sm text-center">Mod ve kategori seç</p>';
-
             loadTop10Highscores();
-            loadAllPlayersList();
-        }
-
-        // Solo + Multiplayer sheet'lerindeki TÜM isimleri birleştirip tekilleştirir,
-        // tur sayısı/süre'den bağımsız, alfabetik (A-Z) tek liste olarak gösterir.
-        async function loadAllPlayersList() {
-            const listEl = document.getElementById('all-players-list');
-            listEl.innerHTML = '<p class="text-gray-400 text-sm">Yükleniyor...</p>';
-
-            try {
-                const [soloRes, mpRes] = await Promise.all([
-                    fetch(`${WEB_APP_URL}?mode=solo`),
-                    fetch(`${WEB_APP_URL}?mode=multiplayer`)
-                ]);
-                const [soloPlayers, mpPlayers] = await Promise.all([soloRes.json(), mpRes.json()]);
-
-                const allNames = new Set([
-                    ...soloPlayers.map(p => p.name),
-                    ...mpPlayers.map(p => p.name)
-                ]);
-
-                if (allNames.size === 0) {
-                    listEl.innerHTML = '<p class="text-gray-400 text-sm">Henüz kimse oynamadı</p>';
-                    return;
-                }
-
-                const sortedNames = Array.from(allNames).sort((a, b) => a.localeCompare(b, 'tr'));
-                listEl.innerHTML = sortedNames.map(name =>
-                    `<span class="bg-blue-50 text-summer-sea px-3 py-1 rounded-full text-sm font-semibold">${name}</span>`
-                ).join('');
-            } catch (err) {
-                console.error('Oyuncu listesi yüklenemedi:', err);
-                listEl.innerHTML = '<p class="text-gray-400 text-sm">Yüklenemedi</p>';
-            }
         }
 
         // Mod/kategori seçiminden TAMAMEN bağımsız: hem solo hem multiplayer, TÜM kategoriler
@@ -794,72 +722,18 @@
                 });
                 showToast('Skor tablosu sıfırlandı!', 'success');
                 loadTop10Highscores();
-                loadAllPlayersList();
-                document.getElementById('scoreboard-list').innerHTML =
-                    '<p class="text-gray-400 text-sm text-center">Mod ve kategori seç</p>';
             } catch (err) {
                 console.error('Sıfırlama başarısız:', err);
                 showToast('Sıfırlama başarısız oldu');
             }
         }
 
-        function selectScoreboardMode(mode) {
-            sbSelectedMode = mode;
-            document.querySelectorAll('.sb-mode-btn').forEach(btn => {
-                const isSelected = btn.dataset.sbMode === mode;
-                btn.classList.toggle('bg-summer-sea', isSelected);
-                btn.classList.toggle('text-white', isSelected);
-                btn.classList.toggle('bg-blue-50', !isSelected);
-                btn.classList.toggle('text-summer-sea', !isSelected);
-            });
-            tryLoadScoreboard();
-        }
-
-        function selectScoreboardCategory(category) {
-            sbSelectedCategory = category;
-            document.querySelectorAll('.sb-cat-btn').forEach(btn => {
-                const isSelected = String(btn.dataset.sbCat) === String(category);
-                btn.classList.toggle('bg-summer-sea', isSelected);
-                btn.classList.toggle('text-white', isSelected);
-                btn.classList.toggle('bg-blue-50', !isSelected);
-                btn.classList.toggle('text-summer-sea', !isSelected);
-            });
-            tryLoadScoreboard();
-        }
-
-        async function tryLoadScoreboard() {
-            if (!sbSelectedMode || !sbSelectedCategory) return;
-
-            const listEl = document.getElementById('scoreboard-list');
-            listEl.innerHTML = '<p class="text-gray-400 text-sm text-center">Yükleniyor...</p>';
-
-            try {
-                const res = await fetch(`${WEB_APP_URL}?mode=${sbSelectedMode}`);
-                const players = await res.json();
-
-                const ranked = players
-                    .map(p => ({ name: p.name, score: p.scores[String(sbSelectedCategory)] }))
-                    .filter(p => p.score !== null && p.score !== undefined && p.score !== '')
-                    .sort((a, b) => b.score - a.score)
-                    .slice(0, 20);
-
-                if (ranked.length === 0) {
-                    listEl.innerHTML = '<p class="text-gray-400 text-sm text-center">Bu kategoride henüz skor yok</p>';
-                    return;
-                }
-
-                listEl.innerHTML = ranked.map((p, i) => `
-                    <div class="flex justify-between items-center px-3 py-2 rounded-lg bg-blue-50 text-gray-700">
-                        <span>${i + 1}. ${p.name}</span><span class="font-bold text-summer-sea">${p.score}</span>
-                    </div>
-                `).join('');
-            } catch (err) {
-                console.error('Skor tablosu yüklenemedi:', err);
-                listEl.innerHTML = '<p class="text-gray-400 text-sm text-center">Skor tablosuna ulaşılamadı</p>';
-            }
-        }
-
         // --- TEMEL OYUN FONKSİYONLARI ---
+
+        function showGameModeSelectScreen() {
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('game-mode-select-screen').classList.remove('hidden');
+        }
 
         function showWelcomeScreen() {
             document.getElementById('game-mode-select-screen').classList.add('hidden');
