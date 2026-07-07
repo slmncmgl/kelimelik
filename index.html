@@ -132,7 +132,7 @@
         <button onclick="showSayiEntry()" class="w-full py-4 bg-white text-summer-sea font-bold text-xl rounded-2xl shadow border-2 border-blue-200 hover:bg-blue-50 transition-all mb-3">
             🔢 Sadece İşlem
         </button>
-        <button onclick="showToast('Çok yakında! 🎲', 'success')" class="w-full py-4 bg-white text-summer-sea font-bold text-xl rounded-2xl shadow border-2 border-blue-200 hover:bg-blue-50 transition-all">
+        <button onclick="showKarmaEntry()" class="w-full py-4 bg-white text-summer-sea font-bold text-xl rounded-2xl shadow border-2 border-blue-200 hover:bg-blue-50 transition-all">
             🎲 Bir Kelime Bir İşlem
         </button>
     </div>
@@ -170,14 +170,38 @@
     <div id="scoreboard-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
         <h2 class="text-3xl font-extrabold text-summer-sea mb-4">🏆 Skor Tablosu</h2>
 
-        <div class="retro-highscore-box mb-5">
-            <p class="font-retro text-amber-400 text-lg font-extrabold tracking-widest mb-3">HIGHSCORES</p>
+        <div class="retro-highscore-box mb-4">
+            <p class="font-retro text-amber-400 text-lg font-extrabold tracking-widest mb-3">📖 KELİME AVI</p>
             <div class="grid grid-cols-12 font-retro text-xs text-slate-400 tracking-wider mb-2 px-1">
                 <span class="col-span-3 text-left">POS</span>
-                <span class="col-span-5 text-left">SCORE</span>
-                <span class="col-span-4 text-left">NAME</span>
+                <span class="col-span-5 text-left">NAME</span>
+                <span class="col-span-4 text-left">SCORE</span>
             </div>
-            <div id="retro-top10-list" class="flex flex-col gap-1">
+            <div id="retro-top10-kelime-list" class="flex flex-col gap-1">
+                <p class="text-slate-500 text-sm">Yükleniyor...</p>
+            </div>
+        </div>
+
+        <div class="retro-highscore-box mb-4">
+            <p class="font-retro text-amber-400 text-lg font-extrabold tracking-widest mb-3">🔢 SAYI AVI</p>
+            <div class="grid grid-cols-12 font-retro text-xs text-slate-400 tracking-wider mb-2 px-1">
+                <span class="col-span-3 text-left">POS</span>
+                <span class="col-span-5 text-left">NAME</span>
+                <span class="col-span-4 text-left">SCORE</span>
+            </div>
+            <div id="retro-top10-sayi-list" class="flex flex-col gap-1">
+                <p class="text-slate-500 text-sm">Yükleniyor...</p>
+            </div>
+        </div>
+
+        <div class="retro-highscore-box mb-5">
+            <p class="font-retro text-amber-400 text-lg font-extrabold tracking-widest mb-3">🎲 KARMA</p>
+            <div class="grid grid-cols-12 font-retro text-xs text-slate-400 tracking-wider mb-2 px-1">
+                <span class="col-span-3 text-left">POS</span>
+                <span class="col-span-5 text-left">NAME</span>
+                <span class="col-span-4 text-left">SCORE</span>
+            </div>
+            <div id="retro-top10-karma-list" class="flex flex-col gap-1">
                 <p class="text-slate-500 text-sm">Yükleniyor...</p>
             </div>
         </div>
@@ -308,6 +332,52 @@
         <div class="bg-orange-50 rounded-2xl p-6 mb-6">
             <p class="text-sm font-bold text-orange-400 uppercase tracking-widest mb-1">Toplam Skor</p>
             <p id="sayi-final-score" class="text-6xl font-black text-summer-coral">0</p>
+        </div>
+
+        <button onclick="showGameModeSelectScreen()" class="w-full py-4 bg-summer-sea text-white font-bold text-xl rounded-2xl shadow-lg hover:bg-blue-700 transition-all">
+            Ana Menüye Dön
+        </button>
+    </div>
+
+    <!-- KARMA MOD: ROUND SEÇİM EKRANI -->
+    <div id="karma-round-select-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
+        <h2 class="text-3xl font-extrabold text-summer-sea mb-2">🎲 Bir Kelime Bir İşlem</h2>
+        <p class="text-gray-500 mb-6">Turlar sırayla Kelime / Sayı olarak gelir. Toplam kaç tur?</p>
+
+        <div class="grid grid-cols-3 gap-2 mb-6">
+            <button onclick="selectKarmaRoundCount(3)" data-karma-round="3" class="karma-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">3</button>
+            <button onclick="selectKarmaRoundCount(5)" data-karma-round="5" class="karma-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">5</button>
+            <button onclick="selectKarmaRoundCount(7)" data-karma-round="7" class="karma-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">7</button>
+        </div>
+
+        <button onclick="startKarmaGame()" id="btn-karma-start" disabled class="w-full py-4 bg-gray-300 text-white font-bold text-xl rounded-2xl shadow-lg transition-all mb-3 cursor-not-allowed">
+            Oyunu Başlat 🚀
+        </button>
+        <button onclick="showGameModeSelectScreen()" class="w-full py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
+    </div>
+
+    <!-- KARMA MOD: TUR SONU MODALI -->
+    <div id="karma-round-over-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center border-4 border-summer-sun">
+            <div class="text-5xl mb-2">🎲</div>
+            <h3 class="text-3xl font-extrabold text-summer-sea mb-1"><span id="karma-round-over-title">Tur Bitti!</span></h3>
+            <p class="text-gray-500 mb-2">Bu Turdan Kazandığın: <span id="karma-round-over-points" class="font-bold text-summer-coral">+0</span></p>
+            <p class="text-gray-500 mb-6">Toplam Skorun: <span id="karma-round-over-total" class="font-black text-2xl text-summer-coral">0</span></p>
+            <button onclick="karmaGoToNextRound()" class="w-full py-4 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-xl rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
+                Sonraki Tur ➜
+            </button>
+        </div>
+    </div>
+
+    <!-- KARMA MOD: OYUN BİTİŞ EKRANI -->
+    <div id="karma-game-over-screen" class="hidden max-w-md w-full bg-white/95 backdrop-blur-md p-8 rounded-3xl shadow-2xl text-center border-4 border-summer-sun relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-summer-sun to-summer-coral"></div>
+        <h2 class="text-4xl font-extrabold text-gray-800 mb-2 mt-4">Oyun Bitti!</h2>
+        <p class="text-gray-500 mb-6">Bir Kelime Bir İşlem'de harika iş çıkardın.</p>
+
+        <div class="bg-orange-50 rounded-2xl p-6 mb-6">
+            <p class="text-sm font-bold text-orange-400 uppercase tracking-widest mb-1">Toplam Skor</p>
+            <p id="karma-final-score" class="text-6xl font-black text-summer-coral">0</p>
         </div>
 
         <button onclick="showGameModeSelectScreen()" class="w-full py-4 bg-summer-sea text-white font-bold text-xl rounded-2xl shadow-lg hover:bg-blue-700 transition-all">
@@ -597,7 +667,7 @@
         }
 
         // --- SCOREBOARD API ---
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxQsG8gZHTGN5g6UTgbyPbZFX3wrC4UBaKZN_Ttbq5chU0AaxGu5GieZIPciZi-g6S4/exec';
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzru6X7J2V4gPWfsO9JwMgXs5p1R_ndQuEenDK91Kf7gZDqBJWGyWqse8lROEpMmK5I/exec';
 
         // --- OYUN DEĞİŞKENLERİ ---
         const VOWELS = ['A', 'E', 'I', 'İ', 'O', 'Ö', 'U', 'Ü'];
@@ -614,7 +684,13 @@
             previousLetters: null, // Bir önceki turun harfleri (min 5 harf farkı kuralı için)
             selectedRoundCount: null, // Round-select ekranında seçilen (solo)
             selectedDurationMinutes: null, // Round-select ekranında seçilen tur süresi (solo)
-            pendingGameType: 'kelime', // İsim ekranından sonra hangi oyuna gidileceği ('kelime' | 'sayi')
+            pendingGameType: 'kelime', // İsim ekranından sonra hangi oyuna gidileceği ('kelime' | 'sayi' | 'karma')
+            karma: {
+                active: false,
+                currentRound: 1,
+                maxRounds: 3,
+                score: 0
+            },
             roundLetters: [], // Seçilen 7+1 harf. Format: { id: string, letter: string, isJoker: boolean, isUsed: boolean, originalId: string }
             activeWord: [],   // Ekrandaki oluşturulan kelime dizisi
             foundWords: [],   // Bu tur bulunan kelimeler (Puanlamayı engellemek için)
@@ -726,21 +802,26 @@
             loadTop10Highscores();
         }
 
-        // Mod/kategori seçiminden TAMAMEN bağımsız: hem solo hem multiplayer, TÜM kategoriler
-        // birleştirilip en yüksek 10 skor retro highscore tablosu olarak gösterilir.
-        async function loadTop10Highscores() {
-            const listEl = document.getElementById('retro-top10-list');
+        // Üç oyun türünün (Kelime, Sayı, Karma) her biri için kategoriden bağımsız Top 10'u yükler
+        function loadTop10Highscores() {
+            loadHighscoreTable(['solo', 'multiplayer'], 'retro-top10-kelime-list');
+            loadHighscoreTable(['sayi'], 'retro-top10-sayi-list');
+            loadHighscoreTable(['karma'], 'retro-top10-karma-list');
+        }
+
+        // Verilen mod(lar)daki TÜM kategorileri birleştirip en yüksek 10 skoru
+        // verilen liste elemanına retro highscore tablosu olarak çizer (POS-NAME-SCORE sırayla)
+        async function loadHighscoreTable(modes, listElementId) {
+            const listEl = document.getElementById(listElementId);
             listEl.innerHTML = '<p class="text-slate-500 text-sm">Yükleniyor...</p>';
 
             try {
-                const [soloRes, mpRes] = await Promise.all([
-                    fetch(`${WEB_APP_URL}?mode=solo`),
-                    fetch(`${WEB_APP_URL}?mode=multiplayer`)
-                ]);
-                const [soloPlayers, mpPlayers] = await Promise.all([soloRes.json(), mpRes.json()]);
+                const responses = await Promise.all(modes.map(m => fetch(`${WEB_APP_URL}?mode=${m}`)));
+                const playersArrays = await Promise.all(responses.map(r => r.json()));
+                const allPlayers = playersArrays.flat();
 
                 const allEntries = [];
-                [...soloPlayers, ...mpPlayers].forEach(p => {
+                allPlayers.forEach(p => {
                     Object.entries(p.scores || {}).forEach(([category, score]) => {
                         if (score === null || score === undefined || score === '') return;
                         allEntries.push({ name: p.name, score: Number(score) });
@@ -763,13 +844,13 @@
                     return `
                         <div class="grid grid-cols-12 items-center font-retro text-sm ${rowClass(pos)} py-0.5">
                             <span class="col-span-3 text-left">${medal(pos)} ${pos}${pos === 1 ? 'ST' : pos === 2 ? 'ND' : pos === 3 ? 'RD' : 'TH'}</span>
-                            <span class="col-span-5 text-left">${entry.score}</span>
-                            <span class="col-span-4 text-left truncate">${entry.name}</span>
+                            <span class="col-span-5 text-left truncate">${entry.name}</span>
+                            <span class="col-span-4 text-left">${entry.score}</span>
                         </div>
                     `;
                 }).join('');
             } catch (err) {
-                console.error('Top 10 yüklenemedi:', err);
+                console.error('Highscore tablosu yüklenemedi:', err);
                 listEl.innerHTML = '<p class="text-slate-500 text-sm">Yüklenemedi</p>';
             }
         }
@@ -831,7 +912,14 @@
             document.getElementById('sayi-game-screen').classList.add('hidden');
             document.getElementById('sayi-game-over-screen').classList.add('hidden');
             document.getElementById('sayi-round-over-modal').classList.add('hidden');
+            document.getElementById('karma-round-select-screen').classList.add('hidden');
+            document.getElementById('karma-round-over-modal').classList.add('hidden');
+            document.getElementById('karma-game-over-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('round-over-modal').classList.add('hidden');
             clearInterval(sayiTimerInterval);
+            clearInterval(timerInterval);
+            game.karma.active = false;
             document.getElementById('game-mode-select-screen').classList.remove('hidden');
         }
 
@@ -880,6 +968,19 @@
             game.pendingGameType = 'sayi';
             if (game.playerName) {
                 showSayiRoundSelectScreen();
+                return;
+            }
+            document.getElementById('game-mode-select-screen').classList.add('hidden');
+            document.getElementById('name-screen').classList.remove('hidden');
+            document.getElementById('name-input').value = '';
+            setTimeout(() => document.getElementById('name-input').focus(), 100);
+        }
+
+        // Karma mod (Bir Kelime Bir İşlem) için giriş — aynı isim akışını (hatırlama dahil) kullanır
+        function showKarmaEntry() {
+            game.pendingGameType = 'karma';
+            if (game.playerName) {
+                showKarmaRoundSelectScreen();
                 return;
             }
             document.getElementById('game-mode-select-screen').classList.add('hidden');
@@ -974,6 +1075,8 @@
             btn.textContent = 'Devam Et →';
             if (game.pendingGameType === 'sayi') {
                 showSayiRoundSelectScreen();
+            } else if (game.pendingGameType === 'karma') {
+                showKarmaRoundSelectScreen();
             } else {
                 showRoundSelectScreen();
             }
@@ -1352,6 +1455,11 @@
             game.isPlaying = false;
             sounds.playStart(); // Tur bitişi sesi
 
+            if (game.karma.active) {
+                karmaHandleRoundEnd(game.score);
+                return;
+            }
+
             if (game.currentRound < game.maxRounds) {
                 // Otomatik geçiş yerine pop-up göster, kullanıcı "Sonraki Tur" diyene kadar bekle
                 document.getElementById('round-over-title').textContent = `${game.currentRound}. Tur Bitti!`;
@@ -1480,15 +1588,23 @@
         }
 
         // --- SAYI AVI ---
-        const SAYI_SMALL_POOL = [1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10]; // Her küçük sayıdan 2 tane (torba mantığı)
-        const SAYI_LARGE_POOL = [25, 50, 75, 100];
+        const SAYI_SMALL_RANGE = [1, 2, 3, 4, 5, 6, 7, 8, 9]; // Küçük sayılar — İADELİ seçilir, tekrar edebilir
+        const SAYI_LARGE_POOL = [10, 25, 50, 75, 100]; // Büyük sayılar grubu
         let sayiTimerInterval = null;
 
         function generateSayiRound() {
-            const largeCountOptions = [0, 1, 1, 2, 2]; // 0:%20, 1:%40, 2:%40 ağırlıklı rastgele
+            // Genellikle 1 büyük sayı, bazen 2 — asla 0 (kural gereği her zaman en az 1 büyük sayı gelir)
+            const largeCountOptions = [1, 1, 1, 2, 2];
             const largeCount = largeCountOptions[Math.floor(Math.random() * largeCountOptions.length)];
             const largeNumbers = [...SAYI_LARGE_POOL].sort(() => Math.random() - 0.5).slice(0, largeCount);
-            const smallNumbers = [...SAYI_SMALL_POOL].sort(() => Math.random() - 0.5).slice(0, 6 - largeCount);
+
+            // Küçük sayılar iadeli seçilir (aynı sayı birden fazla kez gelebilir)
+            const smallCount = 6 - largeCount;
+            const smallNumbers = [];
+            for (let i = 0; i < smallCount; i++) {
+                smallNumbers.push(SAYI_SMALL_RANGE[Math.floor(Math.random() * SAYI_SMALL_RANGE.length)]);
+            }
+
             const numbers = [...largeNumbers, ...smallNumbers].sort(() => Math.random() - 0.5);
             const target = Math.floor(Math.random() * 900) + 100; // 100-999
             return { numbers, target };
@@ -1543,7 +1659,8 @@
                 bestResultThisRound: null,
                 selectedTileId: null,
                 selectedOperator: null,
-                timeRemaining: 60
+                timeRemaining: 60,
+                isPlaying: false
             };
             document.getElementById('sayi-round-select-screen').classList.add('hidden');
             document.getElementById('sayi-game-screen').classList.remove('hidden');
@@ -1561,16 +1678,26 @@
             game.sayi.selectedTileId = null;
             game.sayi.selectedOperator = null;
             game.sayi.timeRemaining = 60;
+            game.sayi.isPlaying = false;
 
             document.getElementById('sayi-target').textContent = target;
             document.getElementById('sayi-best-result').textContent = '-';
             resetSayiOperatorButtonStyles();
             updateSayiExpressionDisplay();
             updateSayiUI();
-            renderSayiNumbersRack();
             considerSayiBestResult(); // Başlangıç 6 sayısı da (0 işlemle) aday olarak değerlendirilir
+
+            const timeDisplay = document.getElementById('sayi-time-left');
+            clearInterval(sayiTimerInterval);
+            timeDisplay.textContent = 'Dağıtılıyor...';
+            timeDisplay.classList.add('text-sm', 'animate-pulse');
+
             sounds.playStart();
-            startSayiTimer();
+            renderSayiNumbersRack(true, () => {
+                game.sayi.isPlaying = true;
+                timeDisplay.classList.remove('text-sm', 'animate-pulse');
+                startSayiTimer();
+            });
         }
 
         function startSayiTimer() {
@@ -1594,21 +1721,57 @@
             sayiTimerInterval = setInterval(tick, 1000);
         }
 
-        function renderSayiNumbersRack() {
+        // Sayı karosunun üzerinde kısa süre rastgele rakamlar gösterip gerçek değerinde sabitler
+        function animateScrambleNumber(element, tile, duration) {
+            let soundTick = 0;
+            const interval = setInterval(() => {
+                element.textContent = Math.floor(Math.random() * 100);
+                if (soundTick % 3 === 0) sounds.playRoll();
+                soundTick++;
+            }, 50);
+
+            setTimeout(() => {
+                clearInterval(interval);
+                element.textContent = tile.value;
+                element.classList.remove('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+                element.classList.add('bg-white', 'text-summer-sea', 'border-blue-200', 'hover:bg-blue-50', 'cursor-pointer');
+                element.onclick = () => selectSayiTile(tile.id);
+                sounds.playClick();
+            }, duration);
+        }
+
+        function renderSayiNumbersRack(animate = false, onAnimationComplete = null) {
             const rackEl = document.getElementById('sayi-numbers-rack');
             rackEl.innerHTML = '';
-            game.sayi.numbers.forEach(tile => {
-                if (tile.used) return; // Kullanılmış (kombinlenmiş) sayılar raftan kalkar
+            const visibleTiles = game.sayi.numbers.filter(t => !t.used);
+
+            visibleTiles.forEach((tile, index) => {
                 const el = document.createElement('div');
-                const isSelected = game.sayi.selectedTileId === tile.id;
-                el.className = `w-16 h-16 rounded-xl shadow flex items-center justify-center font-black text-xl cursor-pointer transition-all border-2 ${isSelected ? 'bg-summer-sea text-white border-summer-sea scale-110' : 'bg-white text-summer-sea border-blue-200 hover:bg-blue-50'}`;
-                el.textContent = tile.value;
-                el.onclick = () => selectSayiTile(tile.id);
+
+                if (animate) {
+                    el.className = 'w-16 h-16 rounded-xl shadow flex items-center justify-center font-black text-xl select-none border-2 bg-gray-300 text-gray-500 cursor-not-allowed';
+                    el.textContent = '?';
+                    setTimeout(() => {
+                        animateScrambleNumber(el, tile, LETTER_SCRAMBLE_STEP_MS);
+                    }, index * LETTER_SCRAMBLE_STEP_MS);
+                } else {
+                    const isSelected = game.sayi.selectedTileId === tile.id;
+                    el.className = `w-16 h-16 rounded-xl shadow flex items-center justify-center font-black text-xl cursor-pointer transition-all border-2 ${isSelected ? 'bg-summer-sea text-white border-summer-sea scale-110' : 'bg-white text-summer-sea border-blue-200 hover:bg-blue-50'}`;
+                    el.textContent = tile.value;
+                    el.onclick = () => selectSayiTile(tile.id);
+                }
                 rackEl.appendChild(el);
             });
+
+            if (animate) {
+                setTimeout(() => {
+                    if (onAnimationComplete) onAnimationComplete();
+                }, visibleTiles.length * LETTER_SCRAMBLE_STEP_MS);
+            }
         }
 
         function selectSayiOperator(op) {
+            if (!game.sayi.isPlaying) return;
             if (game.sayi.selectedTileId === null) {
                 showToast('Önce bir sayı seç!');
                 return;
@@ -1629,6 +1792,7 @@
         }
 
         function selectSayiTile(tileId) {
+            if (!game.sayi.isPlaying) return;
             const tile = game.sayi.numbers.find(t => t.id === tileId);
             if (!tile || tile.used) return;
 
@@ -1742,6 +1906,12 @@
 
         function endSayiRound() {
             const points = calculateSayiPoints(game.sayi.target, game.sayi.bestResultThisRound);
+
+            if (game.karma.active) {
+                karmaHandleRoundEnd(points);
+                return;
+            }
+
             game.sayi.score += points;
             updateSayiUI();
 
@@ -1787,6 +1957,134 @@
                 });
             } catch (err) {
                 console.error('Sayı Avı skoru kaydedilemedi:', err);
+            }
+        }
+
+        // --- KARMA MOD: BİR KELİME BİR İŞLEM ---
+        // Turlar sırayla kelime/sayı diye değişir: tek round'lar kelime, çift round'lar sayı.
+        // Mevcut Kelime Avı ve Sayı Avı motorlarını (startRound/endRound, startSayiRound/endSayiRound)
+        // AYNEN kullanır — sadece endRound()/endSayiRound() içindeki 'game.karma.active' kontrolü
+        // sayesinde, o motorların kendi round-sonu akışı yerine karmaHandleRoundEnd()'e yönlenir.
+
+        function showKarmaRoundSelectScreen() {
+            document.getElementById('name-screen').classList.add('hidden');
+            document.getElementById('game-mode-select-screen').classList.add('hidden');
+            document.getElementById('karma-round-select-screen').classList.remove('hidden');
+
+            game.selectedRoundCount = null;
+            document.querySelectorAll('.karma-round-btn').forEach(btn => {
+                btn.classList.remove('bg-summer-sea', 'text-white');
+                btn.classList.add('bg-blue-50', 'text-summer-sea');
+            });
+            updateKarmaStartButtonState();
+        }
+
+        function selectKarmaRoundCount(count) {
+            game.selectedRoundCount = count;
+            document.querySelectorAll('.karma-round-btn').forEach(btn => {
+                const isSelected = String(btn.dataset.karmaRound) === String(count);
+                btn.classList.toggle('bg-summer-sea', isSelected);
+                btn.classList.toggle('text-white', isSelected);
+                btn.classList.toggle('bg-blue-50', !isSelected);
+                btn.classList.toggle('text-summer-sea', !isSelected);
+            });
+            updateKarmaStartButtonState();
+        }
+
+        function updateKarmaStartButtonState() {
+            const startBtn = document.getElementById('btn-karma-start');
+            const ready = game.selectedRoundCount !== null;
+            startBtn.disabled = !ready;
+            startBtn.classList.toggle('bg-gray-300', !ready);
+            startBtn.classList.toggle('cursor-not-allowed', !ready);
+            startBtn.classList.toggle('bg-gradient-to-r', ready);
+            startBtn.classList.toggle('from-summer-sun', ready);
+            startBtn.classList.toggle('to-summer-coral', ready);
+            startBtn.classList.toggle('hover:shadow-xl', ready);
+        }
+
+        function startKarmaGame() {
+            if (game.selectedRoundCount === null) return;
+            game.karma = { active: true, currentRound: 1, maxRounds: game.selectedRoundCount, score: 0 };
+            document.getElementById('karma-round-select-screen').classList.add('hidden');
+            startKarmaRound();
+        }
+
+        // Tur numarasına göre kelime/sayı motorlarından birini TEK ROUND için başlatır
+        function startKarmaRound() {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('sayi-game-screen').classList.add('hidden');
+            document.getElementById('round-over-modal').classList.add('hidden');
+            document.getElementById('sayi-round-over-modal').classList.add('hidden');
+
+            const roundType = (game.karma.currentRound % 2 === 1) ? 'kelime' : 'sayi';
+
+            if (roundType === 'kelime') {
+                game.selectedDurationMinutes = 1; // Karma modda kelime turları da sabit 1dk (Sayı Avı ile tutarlı)
+                game.previousLetters = null;
+                game.score = 0; // Bu turun puanı sıfırdan başlasın (karma.score zaten kümülatif tutuyor)
+                document.getElementById('game-screen').classList.remove('hidden');
+                document.getElementById('btn-solo-finish').classList.add('hidden'); // Karma modda tekil 'Oyunu Bitir' yok
+                document.getElementById('btn-mp-finish').classList.add('hidden');
+                document.getElementById('btn-mp-leave').classList.add('hidden');
+                startRound();
+            } else {
+                document.getElementById('sayi-game-screen').classList.remove('hidden');
+                startSayiRound();
+            }
+
+            // Ekrandaki tur göstergesini KARMA'nın kendi tur/skor bilgisiyle güncelle
+            document.getElementById('current-round').textContent = game.karma.currentRound;
+            document.getElementById('max-round-display').textContent = game.karma.maxRounds;
+            document.getElementById('sayi-current-round').textContent = game.karma.currentRound;
+            document.getElementById('sayi-max-round').textContent = game.karma.maxRounds;
+        }
+
+        // endRound() (kelime) ve endSayiRound() (sayı), game.karma.active true iken
+        // kendi normal akışları yerine buraya yönlenir (bkz. o fonksiyonların başındaki kontrol)
+        function karmaHandleRoundEnd(pointsThisRound) {
+            clearInterval(timerInterval);
+            clearInterval(sayiTimerInterval);
+            game.karma.score += pointsThisRound;
+
+            const roundTypeLabel = (game.karma.currentRound % 2 === 1) ? 'Kelime' : 'Sayı';
+            document.getElementById('karma-round-over-title').textContent = `${game.karma.currentRound}. Tur Bitti! (${roundTypeLabel})`;
+            document.getElementById('karma-round-over-points').textContent = `+${pointsThisRound}`;
+            document.getElementById('karma-round-over-total').textContent = game.karma.score;
+            document.getElementById('karma-round-over-modal').classList.remove('hidden');
+        }
+
+        function karmaGoToNextRound() {
+            document.getElementById('karma-round-over-modal').classList.add('hidden');
+            if (game.karma.currentRound >= game.karma.maxRounds) {
+                endKarmaGame();
+                return;
+            }
+            game.karma.currentRound++;
+            startKarmaRound();
+        }
+
+        async function endKarmaGame() {
+            game.karma.active = false;
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('sayi-game-screen').classList.add('hidden');
+            document.getElementById('karma-game-over-screen').classList.remove('hidden');
+            document.getElementById('karma-final-score').textContent = game.karma.score;
+            sounds.playSuccess();
+
+            // Kalıcı skor tablosuna gönder (Apps Script'te 'karma' modu + yeni sheet gerektirir)
+            try {
+                await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        mode: 'karma',
+                        playerName: game.playerName,
+                        score: game.karma.score,
+                        category: game.karma.maxRounds
+                    })
+                });
+            } catch (err) {
+                console.error('Karma mod skoru kaydedilemedi:', err);
             }
         }
 
