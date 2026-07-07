@@ -339,6 +339,7 @@
             </div>
         </div>
         
+        <div class="absolute bottom-4 left-4 text-xs text-white/60">v1.7</div>
     </div>
 
     <!-- JOKER SEÇİM MODALI -->
@@ -489,10 +490,47 @@
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzru6X7J2V4gPWfsO9JwMgXs5p1R_ndQuEenDK91Kf7gZDqBJWGyWqse8lROEpMmK5I/exec';
 
         // --- OYUN DEĞİŞKENLERİ ---
+        // Türkçe harf frekanslarına göre ağırlıklı havuzlar (TDK ve genel kullanım sıklığı baz alınmıştır)
+        // Sık kullanılan harfler daha fazla tekrar eder, nadir harfler daha az
+        const VOWEL_POOL = [
+            'A', 'A', 'A', 'A', 'A',  // A - en sık
+            'E', 'E', 'E', 'E', 'E',  // E - en sık
+            'İ', 'İ', 'İ', 'İ',       // İ - sık
+            'I', 'I', 'I', 'I',       // I - sık
+            'N', 'N', 'N', 'N',       // N - çok sık (sessiz ama sesli gibi davranır kelime türetmede)
+            'R', 'R', 'R', 'R',       // R - çok sık
+            'L', 'L', 'L', 'L',       // L - sık
+            'S', 'S', 'S', 'S',       // S - sık
+            'T', 'T', 'T', 'T',       // T - sık
+            'O', 'O', 'O',            // O - orta
+            'U', 'U', 'U',            // U - orta
+            'Ü', 'Ü',                 // Ü - az
+            'Ö', 'Ö'                  // Ö - az
+        ];
+        
+        const CONSONANT_POOL = [
+            'K', 'K', 'K', 'K',       // K - çok sık
+            'M', 'M', 'M', 'M',       // M - çok sık
+            'C', 'C', 'C', 'C',       // C - sık
+            'D', 'D', 'D', 'D',       // D - sık
+            'B', 'B', 'B', 'B',       // B - sık
+            'Y', 'Y', 'Y', 'Y',       // Y - sık
+            'Z', 'Z', 'Z',            // Z - orta
+            'G', 'G', 'G',            // G - orta
+            'Ç', 'Ç', 'Ç',            // Ç - orta
+            'Ş', 'Ş', 'Ş',            // Ş - orta
+            'P', 'P', 'P',            // P - az
+            'H', 'H', 'H',            // H - az
+            'V', 'V', 'V',            // V - az
+            'F', 'F', 'F',            // F - az
+            'Ğ', 'Ğ',                 // Ğ - çok az
+            'J', 'J'                  // J - en az
+        ];
+        
         const VOWELS = ['A', 'E', 'I', 'İ', 'O', 'Ö', 'U', 'Ü'];
         const CONSONANTS = ['B', 'C', 'Ç', 'D', 'F', 'G', 'Ğ', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'R', 'S', 'Ş', 'T', 'V', 'Y', 'Z'];
         const ALPHABET = [...VOWELS, ...CONSONANTS].sort((a, b) => a.localeCompare(b, 'tr'));
-        const LETTER_SCRAMBLE_STEP_MS = 500; // Her harfin karışma/sabitlenme adımı (8 harf x 500ms = 4sn toplam)
+        const LETTER_SCRAMBLE_STEP_MS = 500;
         
         let game = {
             isPlaying: false,
@@ -935,26 +973,78 @@
             return common;
         }
 
+        // Sık kullanılan harfler (bu harfler tekrar etsin sorun değil)
+        const FREQUENT_LETTERS = new Set(['A', 'E', 'İ', 'N', 'R', 'S', 'T', 'L', 'K', 'M', 'O', 'U']);
+
         // Ortak harf üretici — hem solo hem multiplayer kullanır.
         // Kurallar: sesli VE sessiz harfler ASLA tekrar etmez (iadesiz seçim);
         // previousLetters verilmişse yeni set ile en fazla 2 ortak harf olacak şekilde
         // (yani en az 5 harf farklı) üretilene kadar dener (güvenlik amaçlı 200 deneme sınırı var).
-        // Bir harf dizisini karıştırır ama joker'i (varsa) her zaman en sona sabitler
+        // Harf seçimi Türkçe frekanslarına göre ağırlıklı havuzlardan yapılır.
+        // Sık kullanılan harfler (FREQUENT_LETTERS) ortak harf sayısına dahil edilmez.
         function shuffleKeepingJokerLast(letters) {
             const joker = letters.find(t => t.isJoker);
             const rest = letters.filter(t => !t.isJoker).sort(() => Math.random() - 0.5);
             return joker ? [...rest, joker] : rest;
         }
 
+        // Ağırlıklı havuzdan tekrar etmeyen harf seçer
+        function pickWeightedUnique(pool, count, excludeSet) {
+            const available = pool.filter(h => !excludeSet.has(h));
+            if (available.length < count) return null; // yetersiz havuz
+            
+            const result = [];
+            const used = new Set();
+            let attempts = 0;
+            
+            while (result.length < count && attempts < 1000) {
+                const idx = Math.floor(Math.random() * available.length);
+                const letter = available[idx];
+                if (!used.has(letter)) {
+                    result.push(letter);
+                    used.add(letter);
+                }
+                attempts++;
+            }
+            
+            return result.length === count ? result : null;
+        }
+
+        // Sık kullanılan harfleri ortak harf sayısına dahil etmeyen fonksiyon
+        function countNonFrequentCommonLetters(setA, setB) {
+            const bCounts = {};
+            // Sadece nadir/orta frekanslı harfleri say
+            setB.forEach(l => {
+                if (!FREQUENT_LETTERS.has(l)) {
+                    bCounts[l] = (bCounts[l] || 0) + 1;
+                }
+            });
+            let common = 0;
+            setA.forEach(l => {
+                // Sadece nadir/orta frekanslı harfleri say
+                if (!FREQUENT_LETTERS.has(l) && bCounts[l] > 0) {
+                    common++;
+                    bCounts[l]--;
+                }
+            });
+            return common;
+        }
+
         function generateRoundLetterSet(previousLetters) {
             let vowels, consonants, combined;
             let attempt = 0;
+            const prevSet = previousLetters ? new Set(previousLetters) : new Set();
+            
             do {
-                vowels = [...VOWELS].sort(() => Math.random() - 0.5).slice(0, 3);
-                consonants = [...CONSONANTS].sort(() => Math.random() - 0.5).slice(0, 4);
+                // Ağırlıklı havuzlardan tekrar etmeyen harfler seç
+                vowels = pickWeightedUnique(VOWEL_POOL, 3, prevSet);
+                consonants = pickWeightedUnique(CONSONANT_POOL, 4, prevSet);
+                
+                if (!vowels || !consonants) break; // havuz yetersiz
+                
                 combined = [...vowels, ...consonants];
                 attempt++;
-            } while (previousLetters && countCommonLetters(combined, previousLetters) > 2 && attempt < 200);
+            } while (previousLetters && countNonFrequentCommonLetters(combined, previousLetters) > 2 && attempt < 200);
 
             const letters = [
                 ...vowels.map((letter, i) => ({ id: `v_${i}`, letter, isJoker: false })),
