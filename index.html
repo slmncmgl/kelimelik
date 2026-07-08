@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bir Kelime Bir İşlem</title>
     
-    <!-- Sadece Inter fontunu yüklüyoruz -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -33,12 +32,10 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: #e0f7fa;
-            /* Yaz esintisi hissi için okyanus mavisi gradyanı */
             background-image: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 50%, #80deea 100%);
             min-height: 100vh;
         }
         
-        /* Taşlara tıklama hissiyatı */
         .tile {
             transition: all 0.15s ease;
         }
@@ -47,7 +44,6 @@
             box-shadow: 0 0 0 rgba(0,0,0,0);
         }
 
-        /* Okyanus dalgası animasyonu (Arka plan için) */
         @keyframes wave {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -58,7 +54,6 @@
             animation: wave 15s ease infinite;
         }
 
-        /* Kurallar paneli - daktilo imleci */
         @keyframes rulesCursorBlink {
             0%, 50% { opacity: 1; }
             51%, 100% { opacity: 0; }
@@ -74,7 +69,6 @@
             max-height: 0;
         }
 
-        /* Kelime onayı sonrası harflerin üzerinden geçen kısa ışık efekti */
         @keyframes tileShineSweep {
             0% { background-position: -150% 0; }
             100% { background-position: 250% 0; }
@@ -85,7 +79,6 @@
             animation: tileShineSweep 0.5s ease-out;
         }
 
-        /* Retro Highscore Tablosu */
         .font-retro {
             font-family: 'Orbitron', sans-serif;
         }
@@ -96,12 +89,11 @@
             padding: 1rem;
             box-shadow: inset 0 0 20px rgba(0,0,0,0.4);
         }
-        .retro-row-1 { color: #fbbf24; } /* altın */
-        .retro-row-2 { color: #cbd5e1; } /* gümüş */
-        .retro-row-3 { color: #d97706; } /* bronz */
+        .retro-row-1 { color: #fbbf24; }
+        .retro-row-2 { color: #cbd5e1; }
+        .retro-row-3 { color: #d97706; }
         .retro-row-other { color: #94a3b8; }
 
-        /* Özel Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -120,7 +112,7 @@
 </head>
 <body class="text-gray-800 flex flex-col items-center justify-center p-4">
 
-    <!-- OYUN MODU SEÇİM EKRANI (yeni kök ekran) -->
+    <!-- OYUN MODU SEÇİM EKRANI -->
     <div id="game-mode-select-screen" class="max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
         <div class="text-6xl mb-4">🏝️</div>
         <h1 class="text-3xl font-extrabold text-summer-sea mb-1 tracking-tight">Bir Kelime Bir İşlem</h1>
@@ -135,10 +127,10 @@
         <button onclick="showKarmaEntry()" class="w-full py-4 bg-white text-summer-sea font-bold text-xl rounded-2xl shadow border-2 border-blue-200 hover:bg-blue-50 transition-all">
             🎲 Bir Kelime Bir İşlem
         </button>
-        <p class="text-xs text-gray-300 mt-6">v1.1</p>
+        <p class="text-xs text-gray-300 mt-8">v1.1</p>
     </div>
 
-    <!-- KARŞILAMA EKRANI (Kelime Avı ana menüsü) -->
+    <!-- KARŞILAMA EKRANI -->
     <div id="welcome-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
         <div class="text-6xl mb-4">🏝️</div>
         <h1 class="text-4xl font-extrabold text-summer-sea mb-6 tracking-tight">Kelime Avı</h1>
@@ -168,46 +160,29 @@
     </div>
 
     <!-- SKOR TABLOSU EKRANI -->
-    <div id="scoreboard-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
+    <div id="scoreboard-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-6 rounded-3xl shadow-2xl text-center border-4 border-white">
         <h2 class="text-3xl font-extrabold text-summer-sea mb-4">🏆 Skor Tablosu</h2>
 
-        <div class="retro-highscore-box mb-4">
-            <p class="font-retro text-amber-400 text-lg font-extrabold tracking-widest mb-3">📖 KELİME AVI</p>
-            <div class="grid grid-cols-12 font-retro text-xs text-slate-400 tracking-wider mb-2 px-1">
-                <span class="col-span-3 text-left">POS</span>
+        <!-- Tab butonları -->
+        <div class="flex bg-gray-100 rounded-xl p-1 mb-4">
+            <button onclick="switchScoreTab('kelime')" id="score-tab-kelime" class="score-tab-btn flex-1 py-2 rounded-lg font-bold text-sm transition-all bg-summer-sea text-white">📖 Kelime</button>
+            <button onclick="switchScoreTab('sayi')" id="score-tab-sayi" class="score-tab-btn flex-1 py-2 rounded-lg font-bold text-sm transition-all text-gray-500">🔢 Sayı</button>
+            <button onclick="switchScoreTab('karma')" id="score-tab-karma" class="score-tab-btn flex-1 py-2 rounded-lg font-bold text-sm transition-all text-gray-500">🎲 Karma</button>
+        </div>
+
+        <!-- Tab içeriği -->
+        <div id="score-tab-content" class="retro-highscore-box">
+            <div class="grid grid-cols-12 font-retro text-xs text-slate-400 tracking-wider mb-3 px-2">
+                <span class="col-span-2 text-left">POS</span>
                 <span class="col-span-5 text-left">NAME</span>
-                <span class="col-span-4 text-left">SCORE</span>
+                <span class="col-span-5 text-left">SCORE</span>
             </div>
-            <div id="retro-top10-kelime-list" class="flex flex-col gap-1">
+            <div id="retro-top10-list" class="flex flex-col gap-1">
                 <p class="text-slate-500 text-sm">Yükleniyor...</p>
             </div>
         </div>
 
-        <div class="retro-highscore-box mb-4">
-            <p class="font-retro text-amber-400 text-lg font-extrabold tracking-widest mb-3">🔢 SAYI AVI</p>
-            <div class="grid grid-cols-12 font-retro text-xs text-slate-400 tracking-wider mb-2 px-1">
-                <span class="col-span-3 text-left">POS</span>
-                <span class="col-span-5 text-left">NAME</span>
-                <span class="col-span-4 text-left">SCORE</span>
-            </div>
-            <div id="retro-top10-sayi-list" class="flex flex-col gap-1">
-                <p class="text-slate-500 text-sm">Yükleniyor...</p>
-            </div>
-        </div>
-
-        <div class="retro-highscore-box mb-5">
-            <p class="font-retro text-amber-400 text-lg font-extrabold tracking-widest mb-3">🎲 KARMA</p>
-            <div class="grid grid-cols-12 font-retro text-xs text-slate-400 tracking-wider mb-2 px-1">
-                <span class="col-span-3 text-left">POS</span>
-                <span class="col-span-5 text-left">NAME</span>
-                <span class="col-span-4 text-left">SCORE</span>
-            </div>
-            <div id="retro-top10-karma-list" class="flex flex-col gap-1">
-                <p class="text-slate-500 text-sm">Yükleniyor...</p>
-            </div>
-        </div>
-
-        <button onclick="showWelcomeScreen()" class="w-full py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
+        <button onclick="showWelcomeScreen()" class="w-full mt-4 py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
     </div>
 
     <!-- İSİM GİRME EKRANI -->
@@ -288,15 +263,12 @@
             <p class="text-sm text-gray-500 mt-2">En Yakın Sonucun: <span id="sayi-best-result" class="font-bold text-summer-coral">-</span></p>
         </div>
 
-        <!-- İşlem kurma alanı -->
         <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md p-4 mb-4 flex flex-col items-center justify-center min-h-[70px] border-2 border-white">
             <p id="sayi-expression-display" class="text-2xl font-bold text-summer-sea">Bir sayı seç...</p>
         </div>
 
-        <!-- Sayı karoları -->
         <div id="sayi-numbers-rack" class="flex flex-wrap justify-center gap-2 md:gap-3 mb-4 min-h-[5rem]"></div>
 
-        <!-- İşlem butonları -->
         <div class="grid grid-cols-4 gap-2 mb-4">
             <button onclick="selectSayiOperator('+')" data-sayi-op="+" class="sayi-op-btn py-3 bg-white text-summer-sea font-black text-2xl rounded-xl shadow border-2 border-blue-200 hover:bg-blue-50">+</button>
             <button onclick="selectSayiOperator('-')" data-sayi-op="-" class="sayi-op-btn py-3 bg-white text-summer-sea font-black text-2xl rounded-xl shadow border-2 border-blue-200 hover:bg-blue-50">−</button>
@@ -426,7 +398,6 @@
         <p class="text-left text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Oyuncular</p>
         <div id="mp-player-list" class="flex flex-col gap-1 mb-6 text-left"></div>
 
-        <!-- Sadece host görür -->
         <div id="mp-host-controls" class="hidden">
             <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Kaç Tur?</p>
             <div class="grid grid-cols-3 gap-2 mb-4">
@@ -445,7 +416,6 @@
             </button>
         </div>
 
-        <!-- Sadece misafir görür -->
         <p id="mp-guest-waiting-text" class="hidden text-gray-500 mb-3 animate-pulse">Host'un oyunu başlatmasını bekliyorsun...</p>
 
         <button onclick="leaveMultiplayerLobby()" class="w-full py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">Lobiden Ayrıl</button>
@@ -454,7 +424,6 @@
     <!-- OYUN EKRANI -->
     <div id="game-screen" class="hidden w-full max-w-2xl flex flex-col h-full max-h-[90vh]">
         
-        <!-- Üst Panel: Skor ve Süre -->
         <div class="flex justify-between items-center bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-md mb-4 border-2 border-white">
             <div class="text-center">
                 <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Tur</p>
@@ -470,15 +439,11 @@
             </div>
         </div>
 
-        <!-- Kelime Giriş ve Gösterim Alanı -->
         <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md p-4 mb-4 flex flex-col items-center justify-center min-h-[100px] border-2 border-white relative" onclick="focusMobileKeyboard()">
             <div id="active-word-display" class="flex gap-2 min-h-[3rem] items-center justify-center flex-wrap">
-                <!-- Seçilen harfler buraya gelecek -->
                 <p class="text-gray-400 font-medium">Harflere tıklayın veya klavyeyi kullanın...</p>
             </div>
 
-            <!-- Mobilde klavye açmak için görünmez input. Görsel olarak hiçbir şey göstermiyor,
-                 sadece dokunulduğunda OS klavyesini tetikliyor. Harf tıklama mekanizmasına dokunmuyor. -->
             <input id="mobile-keyboard-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
                 class="absolute inset-0 w-full h-full opacity-0 cursor-text" style="font-size:16px;" />
 
@@ -487,12 +452,9 @@
             </button>
         </div>
 
-        <!-- Harf Tepsisi (Rack) -->
         <div id="letters-rack" class="flex flex-wrap justify-center gap-2 md:gap-3 mb-6 min-h-[5rem]">
-            <!-- Harfler buraya JS ile çizilecek -->
         </div>
 
-        <!-- Multiplayer: host için 'Oyunu Bitir', misafir için 'Oyundan Ayrıl' — ikisi de sağ altta, kibar, varsayılan gizli -->
         <button onclick="hostFinishGameNow()" id="btn-mp-finish" class="hidden fixed bottom-4 right-4 z-40 px-4 py-2 bg-red-50/90 backdrop-blur-sm text-red-400 font-semibold text-xs rounded-full shadow-md border border-red-200 hover:bg-red-100 hover:text-red-600 transition-colors">
             🏁 Oyunu Bitir
         </button>
@@ -500,12 +462,10 @@
             🚪 Oyundan Ayrıl
         </button>
 
-        <!-- Tek kişilik mod için — sağ altta, kibar, varsayılan gizli -->
         <button onclick="soloFinishGameNow()" id="btn-solo-finish" class="hidden fixed bottom-4 right-4 z-40 px-4 py-2 bg-red-50/90 backdrop-blur-sm text-red-400 font-semibold text-xs rounded-full shadow-md border border-red-200 hover:bg-red-100 hover:text-red-600 transition-colors">
             🏁 Oyunu Bitir
         </button>
 
-        <!-- Kontrol Butonları -->
         <div class="flex gap-4 mb-6">
             <button onclick="shuffleLettersAndPlay()" id="btn-shuffle" class="flex-1 py-3 bg-white text-summer-sea font-bold rounded-xl shadow border-2 border-blue-200 hover:bg-blue-50 transition-colors flex items-center justify-center gap-2">
                 <span>🔄</span> Karıştır
@@ -515,14 +475,12 @@
             </button>
         </div>
 
-        <!-- Bulunan Kelimeler Listesi -->
         <div class="bg-white/90 backdrop-blur-sm flex-1 rounded-2xl shadow-md p-4 overflow-hidden flex flex-col border-2 border-white">
             <h3 class="font-bold text-gray-700 mb-3 border-b pb-2 flex justify-between">
                 <span>Bulunan Kelimeler</span>
                 <span class="text-sm font-normal text-summer-sea"><span id="word-count">0</span> Kelime</span>
             </h3>
             <div id="found-words-list" class="flex-1 overflow-y-auto flex flex-wrap gap-2 content-start">
-                <!-- Bulunan kelimeler -->
             </div>
         </div>
         
@@ -536,19 +494,18 @@
                 <p class="text-sm text-gray-500">Klavyeden de basabilirsin</p>
             </div>
             <div id="joker-keyboard" class="flex flex-wrap justify-center gap-2">
-                <!-- Harfler JS ile doldurulacak -->
             </div>
             <button onclick="closeJokerModal()" class="w-full mt-4 py-2 bg-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-300">İptal</button>
         </div>
     </div>
 
-    <!-- TUR SONU MODALI -->
     <!-- MULTIPLAYER: TUR BAŞI GERİ SAYIM -->
     <div id="mp-countdown-overlay" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex flex-col items-center justify-center z-50">
         <p class="text-white text-xl font-bold mb-2">Hazır ol!</p>
         <span id="mp-countdown-number" class="text-white text-9xl font-black">5</span>
     </div>
 
+    <!-- TUR SONU MODALI -->
     <div id="round-over-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
         <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center border-4 border-summer-sun">
             <div class="text-5xl mb-2">⏱️</div>
@@ -556,27 +513,21 @@
             <p class="text-gray-500 mb-4">Toplam Skorun</p>
             <p id="round-over-score" class="text-5xl font-black text-summer-coral mb-6">0</p>
 
-            <!-- En uzun kelime bonusu (multiplayer'da, varsa doldurulur) -->
             <div id="round-over-bonus-banner" class="hidden bg-amber-50 border-2 border-amber-300 text-amber-700 text-sm font-bold rounded-xl p-3 mb-4"></div>
 
-            <!-- Multiplayer'da doldurulur, solo'da boş kalır -->
             <div id="round-over-leaderboard" class="flex flex-col gap-1 mb-6 text-left"></div>
 
-            <!-- Sadece multiplayer'da, başkalarının bulup benim bulamadığım kelimeler -->
             <div id="round-over-missed-words" class="hidden text-left mb-4">
                 <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Kaçırdığın Kelimeler</p>
                 <div id="round-over-missed-words-list" class="flex flex-wrap gap-2"></div>
             </div>
 
-            <!-- Solo VE multiplayer host için -->
             <button onclick="goToNextRound()" id="btn-next-round" class="w-full py-4 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-xl rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
                 Sonraki Tur ➜
             </button>
-            <!-- Sadece multiplayer + sonsuz modda host'a ek buton -->
             <button onclick="hostFinishGameNow()" id="btn-round-over-finish" class="hidden w-full mt-2 py-2 bg-red-50 text-red-500 font-bold rounded-xl border-2 border-red-200 hover:bg-red-100 transition-colors text-sm">
                 🏁 Oyunu Burada Bitir
             </button>
-            <!-- Sadece multiplayer misafirine -->
             <p id="round-over-guest-text" class="hidden text-gray-500 animate-pulse">Host'un kararını bekliyorsun...</p>
         </div>
     </div>
@@ -592,7 +543,6 @@
             <p id="final-score" class="text-6xl font-black text-summer-coral">0</p>
         </div>
 
-        <!-- En uzun kelime bonusu (multiplayer'da, varsa doldurulur) -->
         <div id="game-over-bonus-banner" class="hidden bg-amber-50 border-2 border-amber-300 text-amber-700 text-sm font-bold rounded-xl p-3 mb-4"></div>
 
         <div class="bg-blue-50 rounded-2xl p-4 mb-6 text-left">
@@ -611,8 +561,7 @@
     <div id="toast-container" class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
     <script>
-        // --- SES EFEKTLERİ SİSTEMİ (Web Audio API) ---
-        // Harici dosya kullanmadan tarayıcı içinde ses üretiyoruz
+        // --- SES EFEKTLERİ SİSTEMİ ---
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         const audioCtx = new AudioContext();
 
@@ -630,21 +579,20 @@
                 osc.start();
                 osc.stop(audioCtx.currentTime + duration);
             },
-            // Birden fazla frekansı AYNI ANDA çalar (polifonik akor) — tek tona göre çok daha yumuşak/tatlı durur
             playChord: function(freqs, type, duration, vol = 0.07) {
                 freqs.forEach(freq => sounds.playTone(freq, type, duration, vol));
             },
-            playClick: () => sounds.playChord([659.25, 987.77], 'sine', 0.08, 0.05), // E5 + B5, hafif ikili
-            playError: () => sounds.playChord([233.08, 277.18], 'sine', 0.25, 0.06), // Bb3 + Db4, yumuşak/donuk
+            playClick: () => sounds.playChord([659.25, 987.77], 'sine', 0.08, 0.05),
+            playError: () => sounds.playChord([233.08, 277.18], 'sine', 0.25, 0.06),
             playSuccess: () => {
-                sounds.playChord([523.25, 659.25], 'sine', 0.15, 0.07); // C5 + E5
-                setTimeout(() => sounds.playChord([523.25, 659.25, 783.99], 'sine', 0.45, 0.06), 120); // C-E-G majör akor
+                sounds.playChord([523.25, 659.25], 'sine', 0.15, 0.07);
+                setTimeout(() => sounds.playChord([523.25, 659.25, 783.99], 'sine', 0.45, 0.06), 120);
             },
             playStart: () => {
-                sounds.playChord([392.00, 493.88], 'sine', 0.18, 0.06); // G4 + B4
-                setTimeout(() => sounds.playChord([523.25, 659.25, 783.99], 'sine', 0.4, 0.07), 160); // C-E-G majör akor
+                sounds.playChord([392.00, 493.88], 'sine', 0.18, 0.06);
+                setTimeout(() => sounds.playChord([523.25, 659.25, 783.99], 'sine', 0.4, 0.07), 160);
             },
-            playRoll: () => sounds.playTone(880, 'sine', 0.04, 0.02) // Kısa, yumuşak tık
+            playRoll: () => sounds.playTone(880, 'sine', 0.04, 0.02)
         };
 
         // --- BİLDİRİM (TOAST) SİSTEMİ ---
@@ -658,13 +606,11 @@
             
             container.appendChild(toast);
             
-            // Animate in
             setTimeout(() => {
                 toast.classList.remove('translate-y-[-20px]', 'opacity-0');
                 toast.classList.add('translate-y-0', 'opacity-100');
             }, 10);
             
-            // Animate out & remove
             setTimeout(() => {
                 toast.classList.remove('translate-y-0', 'opacity-100');
                 toast.classList.add('translate-y-[-20px]', 'opacity-0');
@@ -679,7 +625,7 @@
         const VOWELS = ['A', 'E', 'I', 'İ', 'O', 'Ö', 'U', 'Ü'];
         const CONSONANTS = ['B', 'C', 'Ç', 'D', 'F', 'G', 'Ğ', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'R', 'S', 'Ş', 'T', 'V', 'Y', 'Z'];
         const ALPHABET = [...VOWELS, ...CONSONANTS].sort((a, b) => a.localeCompare(b, 'tr'));
-        const LETTER_SCRAMBLE_STEP_MS = 500; // Her harfin karışma/sabitlenme adımı (8 harf x 500ms = 4sn toplam)
+        const LETTER_SCRAMBLE_STEP_MS = 500;
         
         let game = {
             isPlaying: false,
@@ -687,46 +633,43 @@
             currentRound: 1,
             maxRounds: 10,
             playerName: '',
-            previousLetters: null, // Bir önceki turun harfleri (min 5 harf farkı kuralı için)
-            selectedRoundCount: null, // Round-select ekranında seçilen (solo)
-            selectedDurationMinutes: null, // Round-select ekranında seçilen tur süresi (solo)
-            pendingGameType: 'kelime', // İsim ekranından sonra hangi oyuna gidileceği ('kelime' | 'sayi' | 'karma')
+            previousLetters: null,
+            selectedRoundCount: null,
+            selectedDurationMinutes: null,
+            pendingGameType: 'kelime',
             karma: {
                 active: false,
                 currentRound: 1,
                 maxRounds: 3,
                 score: 0
             },
-            roundLetters: [], // Seçilen 7+1 harf. Format: { id: string, letter: string, isJoker: boolean, isUsed: boolean, originalId: string }
-            activeWord: [],   // Ekrandaki oluşturulan kelime dizisi
-            foundWords: [],   // Bu tur bulunan kelimeler (Puanlamayı engellemek için)
+            roundLetters: [],
+            activeWord: [],
+            foundWords: [],
             jokerAvailable: false,
-            timeRemaining: 180, // 3 dakika
-            pendingJokerTile: null, // Hangi joker taşına tıklandıysa onu tutar
-            // --- MULTIPLAYER STATE ---
+            timeRemaining: 180,
+            pendingJokerTile: null,
             mp: {
                 gameId: null,
                 isHost: false,
-                pendingRole: null,        // 'host' | 'guest' — isim ekranına hangi amaçla girildiği
-                pendingJoinGameId: null,  // katılınacak oyunun id'si (guest akışında)
-                selectedRoundCount: null, // host'un seçtiği round sayısı (henüz DB'ye yazılmadan)
-                selectedDurationMinutes: null, // host'un seçtiği tur süresi (dakika)
-                previousLetters: null, // Bir önceki turun harfleri (host bunu takip eder)
-                lobbyListActive: false,   // aktif oyunlar listesi dinleniyor mu
-                waitingActive: false,     // bekleme odası dinleniyor mu
-                lastSyncedRound: null,    // en son senkronlanan round no (gereksiz re-render'ı önler)
-                lastBonusAppliedRound: null, // en uzun kelime bonusunun uygulandığı round no (tekrar uygulanmasın diye)
-                currentPlayerCount: 1 // bekleme odasındaki anlık oyuncu sayısı (host dahil)
+                pendingRole: null,
+                pendingJoinGameId: null,
+                selectedRoundCount: null,
+                selectedDurationMinutes: null,
+                previousLetters: null,
+                lobbyListActive: false,
+                waitingActive: false,
+                lastSyncedRound: null,
+                lastBonusAppliedRound: null,
+                currentPlayerCount: 1
             }
         };
         let timerInterval = null;
-        let mpTimerInterval = null; // multiplayer round süresi için (solo timerInterval'dan bağımsız)
+        let mpTimerInterval = null;
 
-        // --- BASİT YEDEK SÖZLÜK (büyük liste yüklenemezse veya yüklenene kadar ek güvence) ---
         const dictionary = new Set(["YAZ", "SU", "KUM", "GÜNEŞ", "DENİZ", "PLAJ", "TATİL", "SICAK", "ADA", "KAMP"]);
 
-        // --- TÜRKÇE KELİME DOĞRULAMA (statik liste) ---
-        // null = henüz yüklenmedi (bu sırada kontrol atlanır, oyun kilitlenmez)
+        // --- TÜRKÇE KELİME DOĞRULAMA ---
         let turkishWordSet = null;
 
         async function loadTurkishDictionary() {
@@ -737,19 +680,19 @@
                 text.split('\n').forEach(line => {
                     const w = line.trim();
                     if (!w) return;
-                    if (/[\s/'’\-0-9]/.test(w)) return; // çok kelimeli öbekler / tire / kesme / rakam içerenleri atla
-                    if (w.length < 3) return; // oyun zaten 3 harften kısa kelime kabul etmiyor
+                    if (/[\s/'\-0-9]/.test(w)) return;
+                    if (w.length < 3) return;
                     set.add(w.toLocaleUpperCase('tr-TR'));
                 });
                 turkishWordSet = set;
                 console.log('Türkçe sözlük yüklendi:', set.size, 'kelime');
             } catch (err) {
-                console.error('Sözlük yüklenemedi, kelime kontrolü devre dışı kalacak:', err);
+                console.error('Sözlük yüklenemedi:', err);
             }
         }
         loadTurkishDictionary();
 
-        // --- KURALLAR PANELİ (daktilo efekti) ---
+        // --- KURALLAR PANELİ ---
         const RULES_LINES = [
             'Her tur 3 Sesli, 4 Sessiz ve 1 Joker harf düşer. Sesli/sessiz harfler asla tekrar etmez.',
             'Yeni tur, bir önceki turdan en az 5 harf farklı olur.',
@@ -796,72 +739,87 @@
                     await new Promise(r => setTimeout(r, 18));
                 }
 
-                await new Promise(r => setTimeout(r, 1000)); // Satır bitince ~1sn imleç yanıp söner
+                await new Promise(r => setTimeout(r, 1000));
                 cursorSpan.remove();
             }
         }
 
-        // --- SKOR TABLOSU EKRANI ---
+        // --- YENİ SKOR TABLOSU (TAB'LI) ---
+        let currentScoreTab = 'kelime';
+
         function showScoreboardScreen() {
             document.getElementById('welcome-screen').classList.add('hidden');
             document.getElementById('scoreboard-screen').classList.remove('hidden');
-            loadTop10Highscores();
+            document.getElementById('game-mode-select-screen').classList.add('hidden');
+            switchScoreTab('kelime');
         }
 
-        // Üç oyun türünün (Kelime, Sayı, Karma) her biri için kategoriden bağımsız Top 10'u yükler
-        function loadTop10Highscores() {
-            loadHighscoreTable(['solo', 'multiplayer'], 'retro-top10-kelime-list');
-            loadHighscoreTable(['sayi'], 'retro-top10-sayi-list');
-            loadHighscoreTable(['karma'], 'retro-top10-karma-list');
+        function switchScoreTab(tab) {
+            currentScoreTab = tab;
+            document.querySelectorAll('.score-tab-btn').forEach(btn => {
+                btn.classList.remove('bg-summer-sea', 'text-white');
+                btn.classList.add('text-gray-500');
+            });
+            const activeBtn = document.getElementById(`score-tab-${tab}`);
+            activeBtn.classList.add('bg-summer-sea', 'text-white');
+            activeBtn.classList.remove('text-gray-500');
+
+            loadScoreTabContent(tab);
         }
 
-        // Verilen mod(lar)daki TÜM kategorileri birleştirip en yüksek 10 skoru
-        // verilen liste elemanına retro highscore tablosu olarak çizer (POS-NAME-SCORE sırayla)
-        async function loadHighscoreTable(modes, listElementId) {
-            const listEl = document.getElementById(listElementId);
+        async function loadScoreTabContent(tab) {
+            const listEl = document.getElementById('retro-top10-list');
             listEl.innerHTML = '<p class="text-slate-500 text-sm">Yükleniyor...</p>';
 
+            const modeMap = {
+                'kelime': 'solo',
+                'sayi': 'sayi',
+                'karma': 'karma'
+            };
+            const mode = modeMap[tab];
+
             try {
-                const responses = await Promise.all(modes.map(m => fetch(`${WEB_APP_URL}?mode=${m}`)));
-                const playersArrays = await Promise.all(responses.map(r => r.json()));
-                const allPlayers = playersArrays.flat();
+                const res = await fetch(`${WEB_APP_URL}?mode=${mode}`);
+                const players = await res.json();
 
-                const allEntries = [];
-                allPlayers.forEach(p => {
-                    Object.entries(p.scores || {}).forEach(([category, score]) => {
-                        if (score === null || score === undefined || score === '') return;
-                        allEntries.push({ name: p.name, score: Number(score) });
+                let entries = [];
+                if (players.length > 0 && players[0].pos !== undefined && players[0].score !== undefined) {
+                    entries = players.slice(0, 10);
+                } else {
+                    players.forEach(p => {
+                        if (p.scores) {
+                            Object.entries(p.scores).forEach(([cat, sc]) => {
+                                if (sc !== null && sc !== undefined && sc !== '') {
+                                    entries.push({ name: p.name, score: Number(sc) });
+                                }
+                            });
+                        }
                     });
-                });
+                    entries.sort((a, b) => b.score - a.score);
+                    entries = entries.slice(0, 10).map((e, i) => ({ pos: i + 1, name: e.name, score: e.score }));
+                }
 
-                allEntries.sort((a, b) => b.score - a.score);
-                const top10 = allEntries.slice(0, 10);
-
-                if (top10.length === 0) {
+                if (entries.length === 0) {
                     listEl.innerHTML = '<p class="text-slate-500 text-sm">Henüz skor yok</p>';
                     return;
                 }
 
-                const medal = (pos) => pos === 1 ? '⭐' : (pos === 2 || pos === 3) ? '✨' : '';
                 const rowClass = (pos) => pos === 1 ? 'retro-row-1' : pos === 2 ? 'retro-row-2' : pos === 3 ? 'retro-row-3' : 'retro-row-other';
+                const medal = (pos) => pos === 1 ? '👑' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : '';
 
-                listEl.innerHTML = top10.map((entry, i) => {
-                    const pos = i + 1;
-                    return `
-                        <div class="grid grid-cols-12 items-center font-retro text-sm ${rowClass(pos)} py-0.5">
-                            <span class="col-span-3 text-left">${medal(pos)} ${pos}${pos === 1 ? 'ST' : pos === 2 ? 'ND' : pos === 3 ? 'RD' : 'TH'}</span>
-                            <span class="col-span-5 text-left truncate">${entry.name}</span>
-                            <span class="col-span-4 text-left">${entry.score}</span>
-                        </div>
-                    `;
-                }).join('');
+                listEl.innerHTML = entries.map(e => `
+                    <div class="grid grid-cols-12 items-center font-retro text-sm ${rowClass(e.pos)} py-1">
+                        <span class="col-span-2 text-left">${medal} ${e.pos}</span>
+                        <span class="col-span-5 text-left truncate">${e.name}</span>
+                        <span class="col-span-5 text-left">${e.score}</span>
+                    </div>
+                `).join('');
             } catch (err) {
-                console.error('Highscore tablosu yüklenemedi:', err);
+                console.error('Skor tablosu yüklenemedi:', err);
                 listEl.innerHTML = '<p class="text-slate-500 text-sm">Yüklenemedi</p>';
             }
         }
 
-        // --- GİZLİ SIFIRLAMA KOMBİNASYONU: Scoreboard ekranı açıkken "1" ve "9" 3sn basılı tutulursa ---
         let scoreboardResetKey1 = false;
         let scoreboardResetKey9 = false;
         let scoreboardResetHoldMs = 0;
@@ -884,7 +842,6 @@
                 return;
             }
             if (scoreboardResetTriggered) return;
-
             scoreboardResetHoldMs += 100;
             if (scoreboardResetHoldMs >= 3000) {
                 scoreboardResetTriggered = true;
@@ -893,16 +850,15 @@
         }, 100);
 
         async function resetEntireScoreboardIfConfirmed() {
-            const confirmed = confirm('Tüm skor tablosunu (kullanıcılar + puanlar, HER İKİ MOD) kalıcı olarak silmek istediğine emin misin? Bu geri alınamaz!');
+            const confirmed = confirm('Tüm skor tablosunu kalıcı olarak silmek istediğine emin misin? Bu geri alınamaz!');
             if (!confirmed) return;
-
             try {
                 await fetch(WEB_APP_URL, {
                     method: 'POST',
                     body: JSON.stringify({ action: 'reset' })
                 });
                 showToast('Skor tablosu sıfırlandı!', 'success');
-                loadTop10Highscores();
+                loadScoreTabContent(currentScoreTab);
             } catch (err) {
                 console.error('Sıfırlama başarısız:', err);
                 showToast('Sıfırlama başarısız oldu');
@@ -914,6 +870,7 @@
         function showGameModeSelectScreen() {
             document.getElementById('welcome-screen').classList.add('hidden');
             document.getElementById('name-screen').classList.add('hidden');
+            document.getElementById('round-select-screen').classList.add('hidden');
             document.getElementById('sayi-round-select-screen').classList.add('hidden');
             document.getElementById('sayi-game-screen').classList.add('hidden');
             document.getElementById('sayi-game-over-screen').classList.add('hidden');
@@ -924,6 +881,7 @@
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('round-over-modal').classList.add('hidden');
             document.getElementById('mp-countdown-overlay').classList.add('hidden');
+            document.getElementById('scoreboard-screen').classList.add('hidden');
             clearInterval(sayiTimerInterval);
             clearInterval(timerInterval);
             game.karma.active = false;
@@ -948,7 +906,6 @@
             clearInterval(mpTimerInterval);
             clearInterval(roundOverUnlockInterval);
             detachMpListeners();
-            // Multiplayer state'ini temizle (oyun bitip menüye dönüldüğünde eski lobiye yazmayı önler)
             game.mp.gameId = null;
             game.mp.isHost = false;
             game.mp.selectedRoundCount = null;
@@ -959,7 +916,6 @@
 
         function showNameScreen() {
             game.pendingGameType = 'kelime';
-            // İsim bu oturumda zaten belirlendiyse tekrar sormaya gerek yok
             if (game.playerName) {
                 showRoundSelectScreen();
                 return;
@@ -970,7 +926,6 @@
             setTimeout(() => document.getElementById('name-input').focus(), 100);
         }
 
-        // Sayı Avı'ya giriş — aynı isim akışını (hatırlama dahil) kullanır, sadece hedef ekran farklı
         function showSayiEntry() {
             game.pendingGameType = 'sayi';
             if (game.playerName) {
@@ -983,7 +938,6 @@
             setTimeout(() => document.getElementById('name-input').focus(), 100);
         }
 
-        // Karma mod (Bir Kelime Bir İşlem) için giriş — aynı isim akışını (hatırlama dahil) kullanır
         function showKarmaEntry() {
             game.pendingGameType = 'karma';
             if (game.playerName) {
@@ -1046,8 +1000,6 @@
             startBtn.classList.toggle('hover:shadow-xl', ready);
         }
 
-        // Girilen ismi, sheet'teki mevcut isimlerle karşılaştırıp çakışırsa
-        // sessizce "İsim (2)", "İsim (3)"... şeklinde benzersizleştirir.
         async function proceedFromNameScreen() {
             const rawName = document.getElementById('name-input').value.trim();
             if (!rawName) {
@@ -1073,7 +1025,6 @@
                     finalName = `${rawName} (${counter})`;
                 }
             } catch (err) {
-                // Scoreboard'a ulaşılamazsa oyunu engelleme, girilen ismiyle devam et
                 console.error('İsim kontrolü başarısız:', err);
             }
 
@@ -1104,7 +1055,6 @@
             document.getElementById('game-screen').classList.remove('hidden');
             document.getElementById('game-over-screen').classList.add('hidden');
 
-            // Solo mod buton görünürlüğü: kendi 'Oyunu Bitir' butonu var, multiplayer'ınkiler gizli
             document.getElementById('btn-solo-finish').classList.remove('hidden');
             document.getElementById('btn-mp-finish').classList.add('hidden');
             document.getElementById('btn-mp-leave').classList.add('hidden');
@@ -1130,7 +1080,6 @@
             generateLetters();
             sounds.playStart();
 
-            // Animasyonlu çizimi başlat (artık 4 saniye sürüyor, eskiden 8sn'ydi)
             renderLettersRack(true, () => {
                 game.isPlaying = true;
                 timeDisplay.classList.remove('text-sm', 'md:text-lg', 'animate-pulse');
@@ -1138,7 +1087,6 @@
             });
         }
 
-        // İki 7-harflik set arasındaki ortak harf sayısını (multiset olarak) hesaplar
         function countCommonLetters(setA, setB) {
             const bCounts = {};
             setB.forEach(l => { bCounts[l] = (bCounts[l] || 0) + 1; });
@@ -1149,11 +1097,6 @@
             return common;
         }
 
-        // Ortak harf üretici — hem solo hem multiplayer kullanır.
-        // Kurallar: sesli VE sessiz harfler ASLA tekrar etmez (iadesiz seçim);
-        // previousLetters verilmişse yeni set ile en fazla 2 ortak harf olacak şekilde
-        // (yani en az 5 harf farklı) üretilene kadar dener (güvenlik amaçlı 200 deneme sınırı var).
-        // Bir harf dizisini karıştırır ama joker'i (varsa) her zaman en sona sabitler
         function shuffleKeepingJokerLast(letters) {
             const joker = letters.find(t => t.isJoker);
             const rest = letters.filter(t => !t.isJoker).sort(() => Math.random() - 0.5);
@@ -1184,13 +1127,10 @@
             game.jokerAvailable = true;
         }
 
-        // --- SLOT MAKİNESİ / ŞİFRE ÇÖZÜCÜ ANİMASYONU ---
-        
         function animateScrambleLetter(element, tileData, duration) {
             const span = element.querySelector('span');
             const chars = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ!?*@#";
             
-            // Sesi sadece değişirken arada bir oynat
             let soundTick = 0;
             
             const interval = setInterval(() => {
@@ -1202,7 +1142,7 @@
             setTimeout(() => {
                 clearInterval(interval);
                 setFinalTileAppearance(element, tileData);
-                sounds.playClick(); // Sabitlenince hafif bir click sesi
+                sounds.playClick();
             }, duration);
         }
 
@@ -1210,7 +1150,6 @@
             const span = element.querySelector('span');
             span.textContent = tile.letter;
             
-            // Sınıfları temizle
             element.className = `tile w-12 h-14 md:w-16 md:h-18 rounded-xl shadow-[0_4px_0_0_rgba(0,0,0,0.1)] flex items-center justify-center font-bold text-xl md:text-2xl transition-all select-none border-2 border-transparent`;
             
             if (tile.isUsed) {
@@ -1243,14 +1182,11 @@
             game.roundLetters.forEach((tile, index) => {
                 const tileBtn = document.createElement('div');
                 
-                // Başlangıç için span
                 tileBtn.innerHTML = `<span class="text-2xl md:text-3xl title-font font-black drop-shadow-sm"></span>`;
                 
-                // Eğer animasyon varsa önce gri duracaklar
                 if (animate) {
                     tileBtn.className = `tile w-12 h-14 md:w-16 md:h-18 rounded-xl shadow-inner flex items-center justify-center font-bold text-xl md:text-2xl select-none bg-gray-300 text-gray-500 cursor-not-allowed`;
                     
-                    // Her harf bir öncekinden yarım saniye sonra karıştırılmaya başlasın
                     setTimeout(() => {
                         animateScrambleLetter(tileBtn, tile, LETTER_SCRAMBLE_STEP_MS);
                     }, index * LETTER_SCRAMBLE_STEP_MS);
@@ -1268,7 +1204,6 @@
                 rackEl.appendChild(tileBtn);
             });
 
-            // Eğer animasyon varsa, tüm harfler yerleştikten sonra butonları geri aç ve çağırana haber ver
             if (animate) {
                 setTimeout(() => {
                     btnShuffle.disabled = false;
@@ -1282,7 +1217,6 @@
 
         function shuffleLettersAndPlay() {
             if(!game.isPlaying) return;
-            // Oynanırken karıştırılırsa, 8 saniye beklemeden anında karışsın ama ses çıksın
             sounds.playRoll();
             game.roundLetters = shuffleKeepingJokerLast(game.roundLetters);
             renderLettersRack(false);
@@ -1323,7 +1257,7 @@
                 tile.isUsed = true;
                 sounds.playClick();
                 updateActiveWordDisplay();
-                renderLettersRack(false); // Sadece güncelle, animasyon yapma
+                renderLettersRack(false);
             }
         }
 
@@ -1343,7 +1277,6 @@
                 el.className = `w-10 h-10 md:w-12 md:h-12 rounded-lg flex items-center justify-center font-bold text-xl text-white cursor-pointer transform transition-transform hover:scale-110 shadow-md ${isFromJoker ? 'bg-summer-sun' : 'bg-summer-sea'}`;
                 el.textContent = item.letter;
                 
-                // Tıklayınca harfi geri al
                 el.onclick = () => removeLetterFromWord(index);
                 display.appendChild(el);
             });
@@ -1354,11 +1287,10 @@
             const item = game.activeWord[index];
             game.activeWord.splice(index, 1);
             
-            // Asıl harfi tekrar kullanılabilir yap
             const originalTile = game.roundLetters.find(t => t.id === item.originId);
             if (originalTile) {
                 originalTile.isUsed = false;
-                if(originalTile.isJoker) originalTile.letter = '★'; // Jokeri sıfırla
+                if(originalTile.isJoker) originalTile.letter = '★';
             }
             
             sounds.playClick();
@@ -1400,7 +1332,6 @@
                 return;
             }
 
-            // Sözlük yüklendiyse gerçek kontrol yap; yüklenmediyse (henüz/başarısız) oyunu kilitlemeden geç
             if (turkishWordSet && !turkishWordSet.has(wordStr) && !dictionary.has(wordStr)) {
                 showToast("Bu bir kelime değil!");
                 sounds.playError();
@@ -1417,7 +1348,6 @@
             addWordToList(wordStr, points);
             updateUI();
 
-            // Multiplayer'da: sadece kendi skor düğümüne yaz, başkasına dokunma
             if (game.mp.gameId) {
                 window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}/scores/${game.playerName}`), {
                     total: game.score,
@@ -1425,7 +1355,6 @@
                 }).catch(err => console.error('Skor yazılamadı:', err));
             }
 
-            // Sadece kelimeyi temizle, kullanılan harfleri GERİ VER (Çünkü aynı harflerle başka kelime yazılacak)
             game.activeWord.forEach(item => {
                 const originalTile = game.roundLetters.find(t => t.id === item.originId);
                 if(originalTile) {
@@ -1438,7 +1367,6 @@
             shuffleAndShineLetters();
         }
 
-        // Kelime onaylandıktan sonra harfleri karıştırır ve üzerlerinden kısa bir ışık efekti geçirir
         function shuffleAndShineLetters() {
             game.roundLetters = shuffleKeepingJokerLast(game.roundLetters);
             renderLettersRack(false);
@@ -1452,7 +1380,7 @@
         function addWordToList(word, points) {
             const list = document.getElementById('found-words-list');
             const el = document.createElement('div');
-            el.className = "bg-blue-50 border border-blue-100 text-summer-sea px-3 py-1 rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm animate-[wave_0.3s_ease]";
+            el.className = "bg-blue-50 border border-blue-100 text-summer-sea px-3 py-1 rounded-lg text-sm font-bold flex items-center gap-2 shadow-sm";
             el.innerHTML = `<span>${word}</span> <span class="bg-summer-sun text-white text-xs px-2 py-0.5 rounded-full">+${points}</span>`;
             list.prepend(el);
             document.getElementById('word-count').textContent = game.foundWords.length;
@@ -1460,7 +1388,7 @@
 
         function endRound() {
             game.isPlaying = false;
-            sounds.playStart(); // Tur bitişi sesi
+            sounds.playStart();
 
             if (game.karma.active) {
                 karmaHandleRoundEnd(game.score);
@@ -1468,7 +1396,6 @@
             }
 
             if (game.currentRound < game.maxRounds) {
-                // Otomatik geçiş yerine pop-up göster, kullanıcı "Sonraki Tur" diyene kadar bekle
                 document.getElementById('round-over-title').textContent = `${game.currentRound}. Tur Bitti!`;
                 document.getElementById('round-over-score').textContent = game.score;
                 document.getElementById('round-over-modal').classList.remove('hidden');
@@ -1483,8 +1410,6 @@
             startRound();
         }
 
-        // Solo modda kullanıcı istediği an oyunu bitirebilir — mevcut endGame() zaten
-        // skoru Apps Script'e gönderip leaderboard'u gösteriyor, ek bir şey gerekmiyor.
         function soloFinishGameNow() {
             clearInterval(timerInterval);
             endGame();
@@ -1500,7 +1425,6 @@
             submitScoreAndShowLeaderboard();
         }
 
-        // category: Infinity -> "Sonsuz" string'ine çevrilir (JSON Infinity'yi taşıyamaz)
         function categoryLabel(roundCount) {
             return (roundCount === Infinity) ? 'Sonsuz' : roundCount;
         }
@@ -1511,8 +1435,6 @@
             document.getElementById('leaderboard-title').textContent = `🏆 Skor Tablosu — ${category} Tur`;
 
             try {
-                // Content-Type belirtmeden gönderiyoruz (tarayıcı text/plain yapar),
-                // böylece Apps Script'e CORS preflight'a takılmadan ulaşıyoruz.
                 await fetch(WEB_APP_URL, {
                     method: 'POST',
                     body: JSON.stringify({
@@ -1582,7 +1504,7 @@
         function selectJokerLetter(letter) {
             if (game.pendingJokerTile) {
                 const tile = game.pendingJokerTile;
-                tile.letter = letter; // Jokere harf atandı
+                tile.letter = letter;
                 tile.isUsed = true;
                 
                 game.activeWord.push({ ...tile, originId: tile.id });
@@ -1595,17 +1517,15 @@
         }
 
         // --- SAYI AVI ---
-        const SAYI_SMALL_RANGE = [1, 2, 3, 4, 5, 6, 7, 8, 9]; // Küçük sayılar — İADELİ seçilir, tekrar edebilir
-        const SAYI_LARGE_POOL = [10, 25, 50, 75, 100]; // Büyük sayılar grubu
+        const SAYI_SMALL_RANGE = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+        const SAYI_LARGE_POOL = [10, 25, 50, 75, 100];
         let sayiTimerInterval = null;
 
         function generateSayiRound() {
-            // Genellikle 1 büyük sayı, bazen 2 — asla 0 (kural gereği her zaman en az 1 büyük sayı gelir)
             const largeCountOptions = [1, 1, 1, 2, 2];
             const largeCount = largeCountOptions[Math.floor(Math.random() * largeCountOptions.length)];
             const largeNumbers = [...SAYI_LARGE_POOL].sort(() => Math.random() - 0.5).slice(0, largeCount);
 
-            // Küçük sayılar iadeli seçilir (aynı sayı birden fazla kez gelebilir)
             const smallCount = 6 - largeCount;
             const smallNumbers = [];
             for (let i = 0; i < smallCount; i++) {
@@ -1613,7 +1533,7 @@
             }
 
             const numbers = [...largeNumbers, ...smallNumbers].sort(() => Math.random() - 0.5);
-            const target = Math.floor(Math.random() * 900) + 100; // 100-999
+            const target = Math.floor(Math.random() * 900) + 100;
             return { numbers, target };
         }
 
@@ -1694,12 +1614,12 @@
             resetSayiOperatorButtonStyles();
             updateSayiExpressionDisplay();
             updateSayiUI();
-            considerSayiBestResult(); // Başlangıç 6 sayısı da (0 işlemle) aday olarak değerlendirilir
+            considerSayiBestResult();
 
             const timeDisplay = document.getElementById('sayi-time-left');
             clearInterval(sayiTimerInterval);
             timeDisplay.textContent = 'Hazırlanıyor...';
-            document.getElementById('sayi-numbers-rack').innerHTML = ''; // Geri sayım bitene kadar sayı gösterilmesin
+            document.getElementById('sayi-numbers-rack').innerHTML = '';
 
             runLocalCountdown(5, () => {
                 timeDisplay.textContent = 'Dağıtılıyor...';
@@ -1734,7 +1654,6 @@
             sayiTimerInterval = setInterval(tick, 1000);
         }
 
-        // Sayı karosunun üzerinde kısa süre rastgele rakamlar gösterip gerçek değerinde sabitler
         function animateScrambleNumber(element, tile, duration) {
             let soundTick = 0;
             const interval = setInterval(() => {
@@ -1809,7 +1728,6 @@
             const tile = game.sayi.numbers.find(t => t.id === tileId);
             if (!tile || tile.used) return;
 
-            // Henüz hiç sayı seçilmemiş, ya da aynı karoya tekrar tıklandı (iptal)
             if (game.sayi.selectedTileId === null || game.sayi.selectedTileId === tileId) {
                 game.sayi.selectedTileId = (game.sayi.selectedTileId === tileId) ? null : tileId;
                 game.sayi.selectedOperator = null;
@@ -1819,7 +1737,6 @@
                 return;
             }
 
-            // Operatör seçilmeden ikinci bir sayıya tıklandı: ilk seçimi bununla değiştir
             if (game.sayi.selectedOperator === null) {
                 game.sayi.selectedTileId = tileId;
                 updateSayiExpressionDisplay();
@@ -1827,7 +1744,6 @@
                 return;
             }
 
-            // İkinci sayı + operatör tamam: işlemi uygula
             const firstTile = game.sayi.numbers.find(t => t.id === game.sayi.selectedTileId);
             const result = computeSayiOperation(firstTile.value, game.sayi.selectedOperator, tile.value);
 
@@ -1857,7 +1773,6 @@
             considerSayiBestResult();
         }
 
-        // Sadece toplama/çarpma her zaman geçerli; çıkarmada negatif, bölmede tam bölünmeyen sonuç reddedilir
         function computeSayiOperation(a, op, b) {
             let result;
             if (op === '+') result = a + b;
@@ -1885,8 +1800,6 @@
                 : `${tile.value} ${game.sayi.selectedOperator} ?`;
         }
 
-        // Şu ana kadar üretilmiş TÜM sayılar arasında hedefe en yakın olanı takip eder
-        // (kombinlenip raftan kalksa bile o an için "ulaşılmış" sayılıyor, geri unutulmuyor)
         function considerSayiBestResult() {
             game.sayi.numbers.forEach(tile => {
                 const bestDiff = game.sayi.bestResultThisRound === null ? Infinity : Math.abs(game.sayi.target - game.sayi.bestResultThisRound);
@@ -1898,7 +1811,6 @@
             document.getElementById('sayi-best-result').textContent = game.sayi.bestResultThisRound;
         }
 
-        // Kombinlenmiş (r_ ile başlayan) sonuç sayılarını siler, orijinal 6 sayıya geri döner
         function resetSayiNumbers() {
             game.sayi.numbers = game.sayi.numbers.filter(t => !t.id.startsWith('r_'));
             game.sayi.numbers.forEach(t => t.used = false);
@@ -1911,7 +1823,6 @@
             showToast('Sayılar sıfırlandı, tekrar dene!', 'success');
         }
 
-        // Sadece SON işlemi geri alır: kombinlenen iki sayıyı tekrar müsait hale getirir, sonucu siler
         function undoSayiOperation() {
             if (!game.sayi.isPlaying) return;
             if (game.sayi.history.length === 0) {
@@ -1982,7 +1893,6 @@
             document.getElementById('sayi-final-score').textContent = game.sayi.score;
             sounds.playSuccess();
 
-            // Kalıcı skor tablosuna gönder (Apps Script'te 'sayi' modu + yeni sheet gerektirir)
             try {
                 await fetch(WEB_APP_URL, {
                     method: 'POST',
@@ -1998,12 +1908,7 @@
             }
         }
 
-        // --- KARMA MOD: BİR KELİME BİR İŞLEM ---
-        // Turlar sırayla kelime/sayı diye değişir: tek round'lar kelime, çift round'lar sayı.
-        // Mevcut Kelime Avı ve Sayı Avı motorlarını (startRound/endRound, startSayiRound/endSayiRound)
-        // AYNEN kullanır — sadece endRound()/endSayiRound() içindeki 'game.karma.active' kontrolü
-        // sayesinde, o motorların kendi round-sonu akışı yerine karmaHandleRoundEnd()'e yönlenir.
-
+        // --- KARMA MOD ---
         function showKarmaRoundSelectScreen() {
             document.getElementById('name-screen').classList.add('hidden');
             document.getElementById('game-mode-select-screen').classList.add('hidden');
@@ -2048,7 +1953,6 @@
             startKarmaRound();
         }
 
-        // Tur numarasına göre kelime/sayı motorlarından birini TEK ROUND için başlatır
         function startKarmaRound() {
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('sayi-game-screen').classList.add('hidden');
@@ -2058,11 +1962,11 @@
             const roundType = (game.karma.currentRound % 2 === 1) ? 'kelime' : 'sayi';
 
             if (roundType === 'kelime') {
-                game.selectedDurationMinutes = 1; // Karma modda kelime turları da sabit 1dk (Sayı Avı ile tutarlı)
+                game.selectedDurationMinutes = 1;
                 game.previousLetters = null;
-                game.score = 0; // Bu turun puanı sıfırdan başlasın (karma.score zaten kümülatif tutuyor)
+                game.score = 0;
                 document.getElementById('game-screen').classList.remove('hidden');
-                document.getElementById('btn-solo-finish').classList.add('hidden'); // Karma modda tekil 'Oyunu Bitir' yok
+                document.getElementById('btn-solo-finish').classList.add('hidden');
                 document.getElementById('btn-mp-finish').classList.add('hidden');
                 document.getElementById('btn-mp-leave').classList.add('hidden');
                 startRound();
@@ -2071,15 +1975,12 @@
                 startSayiRound();
             }
 
-            // Ekrandaki tur göstergesini KARMA'nın kendi tur/skor bilgisiyle güncelle
             document.getElementById('current-round').textContent = game.karma.currentRound;
             document.getElementById('max-round-display').textContent = game.karma.maxRounds;
             document.getElementById('sayi-current-round').textContent = game.karma.currentRound;
             document.getElementById('sayi-max-round').textContent = game.karma.maxRounds;
         }
 
-        // endRound() (kelime) ve endSayiRound() (sayı), game.karma.active true iken
-        // kendi normal akışları yerine buraya yönlenir (bkz. o fonksiyonların başındaki kontrol)
         function karmaHandleRoundEnd(pointsThisRound) {
             clearInterval(timerInterval);
             clearInterval(sayiTimerInterval);
@@ -2110,7 +2011,6 @@
             document.getElementById('karma-final-score').textContent = game.karma.score;
             sounds.playSuccess();
 
-            // Kalıcı skor tablosuna gönder (Apps Script'te 'karma' modu + yeni sheet gerektirir)
             try {
                 await fetch(WEB_APP_URL, {
                     method: 'POST',
@@ -2126,10 +2026,9 @@
             }
         }
 
-        // --- MULTİPLAYER: LOBİ ve BEKLEME ODASI ---
-
-        let mpActiveListenerPath = null;   // 'lobbies-index' dinleniyorsa
-        let mpWaitingListenerPath = null;  // 'lobbies/{gameId}' dinleniyorsa
+        // --- MULTIPLAYER ---
+        let mpActiveListenerPath = null;
+        let mpWaitingListenerPath = null;
 
         function detachMpListeners() {
             if (mpActiveListenerPath) {
@@ -2143,14 +2042,13 @@
         }
 
         function generateGameId() {
-            // Karışıklık yaratan karakterler (0/O, 1/I) çıkarıldı
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             let id = '';
             for (let i = 0; i < 5; i++) id += chars[Math.floor(Math.random() * chars.length)];
             return id;
         }
 
-        const STALE_LOBBY_MS = 3 * 60 * 1000; // 3 dakikadan eski 'waiting' (başlamamış) lobiler hayalet sayılır
+        const STALE_LOBBY_MS = 3 * 60 * 1000;
 
         function showMpLobbyScreen() {
             document.getElementById('welcome-screen').classList.add('hidden');
@@ -2169,7 +2067,6 @@
                     if (l.status !== 'waiting') return;
                     const isStale = !l.createdAt || (now - l.createdAt) > STALE_LOBBY_MS;
                     if (isStale) {
-                        // Hayalet lobi: listeye koyma ve fırsatçı olarak veritabanından da temizle
                         window.fb.remove(window.fb.ref(window.fb.db, `lobbies-index/${id}`)).catch(() => {});
                         window.fb.remove(window.fb.ref(window.fb.db, `lobbies/${id}`)).catch(() => {});
                         return;
@@ -2204,8 +2101,6 @@
             game.mp.pendingJoinGameId = gameId;
             document.getElementById('mp-lobby-screen').classList.add('hidden');
 
-            // İsim bu oturumda zaten belirlendiyse tekrar sormadan direkt devam et
-            // (her lobi kendi çakışma kontrolünü createLobby/joinLobby içinde zaten yapıyor)
             if (game.playerName) {
                 proceedWithMpName(game.playerName, false);
                 return;
@@ -2322,7 +2217,6 @@
             });
         }
 
-        // Lobiden gelen HER güncellemede çağrılır (status'a göre doğru ekranı yönetir)
         function handleLobbyUpdate(data) {
             if (data.status === 'waiting') {
                 document.getElementById('mp-waiting-screen').classList.remove('hidden');
@@ -2353,7 +2247,7 @@
                 </div>
             `).join('');
 
-            updateMpStartButtonState(); // Oyuncu sayısı değiştikçe (biri katıldıkça/ayrıldıkça) butonu güncelle
+            updateMpStartButtonState();
         }
 
         function selectMpRoundCount(count) {
@@ -2380,7 +2274,6 @@
             updateMpStartButtonState();
         }
 
-        // "Oyunu Başlat" butonu, round sayısı + süre seçilmeden VE en az 1 arkadaş katılmadan aktif olmasın
         function updateMpStartButtonState() {
             const startBtn = document.getElementById('btn-mp-start');
             const hasEnoughPlayers = game.mp.currentPlayerCount >= 2;
@@ -2399,13 +2292,13 @@
 
         async function startMultiplayerGame() {
             if (!game.mp.selectedRoundCount || !game.mp.selectedDurationMinutes || !game.mp.gameId) return;
-            if (game.mp.currentPlayerCount < 2) return; // Kimse katılmadan başlatılamaz (savunma amaçlı, buton zaten pasif)
+            if (game.mp.currentPlayerCount < 2) return;
 
-            game.mp.previousLetters = null; // Yeni oyun, önceki tur kısıtı geçerli değil
+            game.mp.previousLetters = null;
             const letters = generateRoundLetterSet(game.mp.previousLetters);
             game.mp.previousLetters = letters.filter(t => !t.isJoker).map(t => t.letter);
-            const countdownEndsAt = window.fb.serverNow() + 5000; // 5sn geri sayım (sunucu saatine göre)
-            const letterAnimationMs = letters.length * LETTER_SCRAMBLE_STEP_MS; // Geri sayımdan sonra harf sıralanma süresi
+            const countdownEndsAt = window.fb.serverNow() + 5000;
+            const letterAnimationMs = letters.length * LETTER_SCRAMBLE_STEP_MS;
             const roundEndsAt = countdownEndsAt + letterAnimationMs + (game.mp.selectedDurationMinutes * 60000);
 
             await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`), {
@@ -2422,18 +2315,15 @@
             });
         }
 
-        // Yeni round'a girildiğinde (veya ilk kez) ekranı ve state'i senkronlar.
-        // Aynı round için tekrar tekrar tetiklenen (skor güncellemesi gibi) çağrılarda hiçbir şey yapmaz.
         function enterOrSyncMultiplayerRound(data) {
             document.getElementById('game-screen').classList.remove('hidden');
 
-            // Host: her zaman 'Oyunu Bitir' görür. Misafir: her zaman 'Oyundan Ayrıl' görür.
             document.getElementById('btn-mp-finish').classList.toggle('hidden', !game.mp.isHost);
             document.getElementById('btn-mp-leave').classList.toggle('hidden', game.mp.isHost);
             document.getElementById('btn-solo-finish').classList.add('hidden');
 
             if (game.mp.lastSyncedRound === data.currentRound) {
-                return; // Bu round zaten senkronlandı, sadece skor güncellemesi tetiklemiş olabilir
+                return;
             }
             game.mp.lastSyncedRound = data.currentRound;
 
@@ -2442,11 +2332,11 @@
             game.roundLetters = data.letters.map(t => ({ ...t, isUsed: false }));
             game.activeWord = [];
             game.foundWords = [];
-            game.isPlaying = false; // Geri sayım bitene kadar oynanamaz
+            game.isPlaying = false;
 
             document.getElementById('found-words-list').innerHTML = '';
             document.getElementById('word-count').textContent = '0';
-            document.getElementById('letters-rack').innerHTML = ''; // Geri sayım bitene kadar harf gösterilmesin
+            document.getElementById('letters-rack').innerHTML = '';
             updateUI();
             updateActiveWordDisplay();
 
@@ -2458,8 +2348,6 @@
             });
         }
 
-        // Round başlarken 5'ten geri sayım gösterir (countdownEndsAt yoksa veya geçmişse direkt devam eder)
-        // Sunucu senkronu gerektirmeyen, tamamen yerel 5-4-3-2-1 geri sayım (Sayı Avı tur geçişleri için)
         function runLocalCountdown(seconds, onComplete) {
             const overlay = document.getElementById('mp-countdown-overlay');
             const numberEl = document.getElementById('mp-countdown-number');
@@ -2518,7 +2406,6 @@
                 if (remaining <= 0) {
                     clearInterval(mpTimerInterval);
                     game.isPlaying = false;
-                    // Round'u sonlandırma yazma işlemini SADECE host yapar (çakışmayı önlemek için)
                     if (game.mp.isHost) hostEndRound();
                 }
             }
@@ -2526,11 +2413,9 @@
             mpTimerInterval = setInterval(tick, 1000);
         }
 
-        // Bu turda en uzun kelimeyi kim(ler) yazdı hesaplar.
-        // Berabere durumunda: toplam puanı DÜŞÜK olan(lar) kazanır (rekabeti kızıştırmak için).
         function computeLongestWordBonus(scoresObj) {
             let maxLen = 0;
-            let candidates = []; // { name, word, total }
+            let candidates = [];
 
             Object.entries(scoresObj || {}).forEach(([name, s]) => {
                 const words = s.foundWords || [];
@@ -2552,14 +2437,11 @@
                 return { winners: [{ name: candidates[0].name, word: candidates[0].word }], length: maxLen };
             }
 
-            // Berabere: en düşük puanlı(lar) kazanır
             const minTotal = Math.min(...candidates.map(c => c.total));
             const winners = candidates.filter(c => c.total === minTotal).map(c => ({ name: c.name, word: c.word }));
             return { winners, length: maxLen };
         }
 
-        // data.longestWordBonus'u kontrol eder; ben kazanmışsam ve bu round için daha önce
-        // uygulanmadıysa kendi skoruma +5 ekleyip kendi skor düğümüme yazarım (başkasına dokunmam).
         function processLongestWordBonus(data) {
             const bonusData = data.longestWordBonus;
             if (!bonusData || bonusData.round !== data.currentRound) return null;
@@ -2608,7 +2490,6 @@
 
         let roundOverUnlockInterval = null;
 
-        // Başka oyuncuların bulup BENİM bulamadığım kelimeleri hesaplar (tersi değil)
         function computeMissedWords(data) {
             const myWords = new Set(game.foundWords);
             const missedSet = new Set();
@@ -2621,7 +2502,6 @@
             return Array.from(missedSet);
         }
 
-        // "Sonraki Tur" butonunu N saniye pasif tutar (kaçırılan kelimeler okunsun diye), sonra otomatik aktifleştirir
         function lockNextRoundButton(btn, seconds) {
             clearInterval(roundOverUnlockInterval);
             let remaining = seconds;
@@ -2662,7 +2542,6 @@
                 </div>
             `).join('');
 
-            // Kaçırdığın kelimeler (sadece herkese gösterilir, hesap kişiye özel)
             const missed = computeMissedWords(data);
             const missedSection = document.getElementById('round-over-missed-words');
             const missedList = document.getElementById('round-over-missed-words-list');
@@ -2683,9 +2562,9 @@
             if (game.mp.isHost) {
                 nextBtn.classList.remove('hidden');
                 nextBtn.onclick = hostStartNextRound;
-                finishBtn.classList.remove('hidden'); // Host için her modda gösterilir
+                finishBtn.classList.remove('hidden');
                 guestText.classList.add('hidden');
-                lockNextRoundButton(nextBtn, 5); // Kelimeler okunsun diye 5sn pasif
+                lockNextRoundButton(nextBtn, 5);
             } else {
                 clearInterval(roundOverUnlockInterval);
                 nextBtn.classList.add('hidden');
@@ -2698,11 +2577,11 @@
 
         async function hostStartNextRound() {
             const snapshot = await window.fb.get(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}/roundDurationMinutes`));
-            const durationMinutes = snapshot.val() || 3; // güvenlik amaçlı varsayılan
+            const durationMinutes = snapshot.val() || 3;
 
             const letters = generateRoundLetterSet(game.mp.previousLetters);
             game.mp.previousLetters = letters.filter(t => !t.isJoker).map(t => t.letter);
-            const countdownEndsAt = window.fb.serverNow() + 5000; // 5sn geri sayım (sunucu saatine göre)
+            const countdownEndsAt = window.fb.serverNow() + 5000;
             const letterAnimationMs = letters.length * LETTER_SCRAMBLE_STEP_MS;
             const roundEndsAt = countdownEndsAt + letterAnimationMs + (durationMinutes * 60000);
 
@@ -2725,7 +2604,6 @@
             await window.fb.update(window.fb.ref(window.fb.db, `lobbies-index/${game.mp.gameId}`), { status: 'finished' });
         }
 
-        // Misafir oyundan ayrılır: sadece kendi oyuncu kaydını siler, host/diğer oyuncular etkilenmez
         async function guestLeaveGame() {
             if (!game.mp.gameId || game.mp.isHost) return;
             try {
@@ -2743,7 +2621,7 @@
             document.getElementById('game-over-screen').classList.remove('hidden');
             sounds.playSuccess();
 
-            const bonusData = processLongestWordBonus(data); // game.score'u gerekirse burada günceller
+            const bonusData = processLongestWordBonus(data);
             renderBonusBanner(bonusData, 'game-over-bonus-banner');
             document.getElementById('final-score').textContent = game.score;
 
@@ -2758,7 +2636,6 @@
                 </div>
             `).join('');
 
-            // Kalıcı skor tablosuna (Apps Script, 2. sekme) kendi skorunu gönder
             try {
                 await fetch(WEB_APP_URL, {
                     method: 'POST',
@@ -2785,11 +2662,9 @@
             if (gameId) {
                 try {
                     if (isHost) {
-                        // Host ayrılırsa oyun devam edemez, lobiyi tamamen sil (aktif oyunlar listesinde hayalet kalmasın)
                         await window.fb.remove(window.fb.ref(window.fb.db, `lobbies/${gameId}`));
                         await window.fb.remove(window.fb.ref(window.fb.db, `lobbies-index/${gameId}`));
                     } else {
-                        // Misafir sadece kendi kaydını siler, host ve diğer oyuncular etkilenmez
                         await window.fb.remove(window.fb.ref(window.fb.db, `lobbies/${gameId}/players/${playerName}`));
                     }
                 } catch (err) {
@@ -2809,11 +2684,10 @@
             showWelcomeScreen();
         }
 
-        // --- OYUN İÇİ TUŞ/KARAKTER İŞLEME (masaüstü klavye VE mobil input ortak kullanır) ---
+        // --- KLAVYE DESTEĞİ ---
         function processGameplayKeyInput(rawKey) {
             if (!game.isPlaying) return;
 
-            // Eğer Joker modalı açıksa, basılan harfi jokere ata
             if (!document.getElementById('joker-modal').classList.contains('hidden')) {
                 const key = rawKey.toLocaleUpperCase('tr-TR');
                 if (ALPHABET.includes(key)) {
@@ -2837,7 +2711,6 @@
                 return;
             }
 
-            // Joker tetikleyici tuşlar (*, ?, .)
             if (rawKey === '*' || rawKey === '?' || rawKey === '.') {
                 const jokerTile = game.roundLetters.find(t => t.isJoker && !t.isUsed);
                 if (jokerTile) {
@@ -2846,12 +2719,10 @@
                 return;
             }
 
-            // Normal harf arama
             const availableTile = game.roundLetters.find(t => !t.isUsed && !t.isJoker && t.letter === key);
             if (availableTile) {
                 selectLetter(availableTile);
             } else if (ALPHABET.includes(key)) {
-                // Harf rack'te yok: boşta joker varsa direkt o harfi jokere atayıp kullan
                 const jokerTile = game.roundLetters.find(t => t.isJoker && !t.isUsed);
                 if (jokerTile) {
                     jokerTile.letter = key;
@@ -2861,23 +2732,16 @@
                     updateActiveWordDisplay();
                     renderLettersRack(false);
                 }
-                // Joker de yoksa sessizce yoksay
             }
         }
 
-        // --- KLAVYE DESTEĞİ (masaüstü fiziksel klavye) ---
         window.addEventListener('keydown', (e) => {
-            // Mobil klavye input'u odaktaysa bu olayı işleme — o input kendi dinleyicisinde
-            // zaten aynı tuşu işliyor. İkisi birden çalışırsa aynı harf çift kez eklenir (bug).
             if (document.activeElement && document.activeElement.id === 'mobile-keyboard-input') {
                 return;
             }
             processGameplayKeyInput(e.key);
         });
 
-        // --- MOBİL KLAVYE DESTEĞİ ---
-        // Kelime alanına dokunulunca bu görünmez input odaklanır, OS klavyesi açılır.
-        // Harflere dokunarak seçme mekanizmasına hiç dokunulmuyor, ikisi paralel çalışır.
         function focusMobileKeyboard() {
             if (game.isPlaying) {
                 document.getElementById('mobile-keyboard-input').focus();
@@ -2894,22 +2758,21 @@
                     processGameplayKeyInput(ch);
                 }
             }
-            e.target.value = ''; // Her zaman boşalt: "sıradaki karakter" yakalayıcısı gibi çalışır
+            e.target.value = '';
         });
 
         mobileKeyboardInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === 'Backspace') {
-                e.preventDefault(); // Mobil klavyenin varsayılan davranışını (form gönderme vs.) engelle
+                e.preventDefault();
                 processGameplayKeyInput(e.key);
             }
         });
 
-        // Başlangıç Kurulumları
         buildJokerKeyboard();
 
     </script>
 
-    <!-- FIREBASE (Multiplayer için) -->
+    <!-- FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
         import {
@@ -2929,15 +2792,11 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Cihaz saatinin Firebase sunucu saatinden farkını takip ediyoruz.
-        // Round bitiş zamanlarını hesaplarken bunu kullanmak, farklı telefonların
-        // saat ayarlarındaki (birkaç saniyelik) sapmaları telafi eder.
         let serverTimeOffsetMs = 0;
         onValue(ref(db, '.info/serverTimeOffset'), (snap) => {
             serverTimeOffsetMs = snap.val() || 0;
         });
 
-        // Klasik <script> içindeki fonksiyonların erişebilmesi için global'e bağlıyoruz
         window.fb = {
             db, ref, set, get, update, onValue, off, remove, serverTimestamp,
             serverNow: () => Date.now() + serverTimeOffsetMs
