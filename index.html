@@ -192,11 +192,11 @@
             <button onclick="selectSayiOperator('×')" data-sayi-op="×" class="sayi-op-btn py-3 bg-white text-summer-sea font-black text-2xl rounded-xl shadow border-2 border-blue-200 hover:bg-blue-50">×</button>
             <button onclick="selectSayiOperator('÷')" data-sayi-op="÷" class="sayi-op-btn py-3 bg-white text-summer-sea font-black text-2xl rounded-xl shadow border-2 border-blue-200 hover:bg-blue-50">÷</button>
         </div>
-        <div class="grid grid-cols-2 gap-2 mb-3">
+        <div class="grid grid-cols-2 gap-2">
             <button onclick="undoSayiOperation()" class="py-2 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors text-sm">↩️ Geri Al</button>
             <button onclick="resetSayiNumbers()" class="py-2 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors text-sm">🔄 Baştan Kombinle</button>
         </div>
-        <button onclick="sayiFinishGameNow()" id="btn-sayi-finish" class="hidden w-full py-2 bg-red-50 text-red-400 font-semibold text-xs rounded-xl border border-red-200 hover:bg-red-100 transition-colors">🏁 Oyunu Bitir</button>
+        <button onclick="sayiFinishGameNow()" id="btn-sayi-finish" class="hidden fixed bottom-4 right-4 z-40 px-4 py-2 bg-red-50/90 backdrop-blur-sm text-red-400 font-semibold text-xs rounded-full shadow-md border border-red-200 hover:bg-red-100 hover:text-red-600 transition-colors">🏁 Oyunu Bitir</button>
     </div>
 
     <!-- SAYI AVI: TUR SONU MODALI -->
@@ -306,6 +306,7 @@
         <button onclick="hostFinishGameNow()" id="btn-mp-finish" class="hidden fixed bottom-4 right-4 z-40 px-4 py-2 bg-red-50/90 backdrop-blur-sm text-red-400 font-semibold text-xs rounded-full shadow-md border border-red-200 hover:bg-red-100 hover:text-red-600 transition-colors">🏁 Oyunu Bitir</button>
         <button onclick="guestLeaveGame()" id="btn-mp-leave" class="hidden fixed bottom-4 right-4 z-40 px-4 py-2 bg-white/90 backdrop-blur-sm text-gray-400 font-semibold text-xs rounded-full shadow-md border border-gray-200 hover:bg-gray-100 hover:text-gray-600 transition-colors">🚪 Oyundan Ayrıl</button>
         <button onclick="soloFinishGameNow()" id="btn-solo-finish" class="hidden fixed bottom-4 right-4 z-40 px-4 py-2 bg-red-50/90 backdrop-blur-sm text-red-400 font-semibold text-xs rounded-full shadow-md border border-red-200 hover:bg-red-100 hover:text-red-600 transition-colors">🏁 Oyunu Bitir</button>
+        <button onclick="karmaFinishGameNow()" id="btn-karma-finish" class="hidden fixed bottom-4 right-4 z-40 px-4 py-2 bg-red-50/90 backdrop-blur-sm text-red-400 font-semibold text-xs rounded-full shadow-md border border-red-200 hover:bg-red-100 hover:text-red-600 transition-colors">🏁 Oyunu Bitir</button>
         <div class="flex gap-4 mb-6">
             <button onclick="shuffleLettersAndPlay()" id="btn-shuffle" class="flex-1 py-3 bg-white text-summer-sea font-bold rounded-xl shadow border-2 border-blue-200 hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"><span>🔄</span> Karıştır</button>
             <button onclick="submitWord()" id="btn-submit" class="flex-2 w-2/3 py-3 bg-summer-sea text-white font-bold rounded-xl shadow-md hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 text-lg"><span>✅</span> Kelimeyi Onayla</button>
@@ -422,24 +423,39 @@
         let timerInterval = null, mpTimerInterval = null, sayiTimerInterval = null;
         let computerSolutionAnimationInterval = null, roundOverUnlockInterval = null;
 
-        // ==================== OYUNCU ADI ====================
-        async function getOrCreatePlayerName() {
-    // Zaten hazırsa direkt dön
-    if (playerNameReady && game.playerName) {
-        return game.playerName;
-    }
-    // Henüz hazır değilse, başlangıçta başlatılan promise'i bekle
-    if (playerNamePromise) {
-        await playerNamePromise;
-    }
-    // Hâlâ yoksa (bağlantı hatası vs), fallback
-    if (!game.playerName) {
-        game.playerName = 'Oyuncu#' + (Math.floor(Math.random() * 9000) + 1000);
-    }
-    return game.playerName;
-}
+        // ==================== OYUNCU ADI (SAYFA AÇILIR AÇILMAZ ÇEK) ====================
+        let playerNameReady = false;
+        let playerNamePromise = null;
 
-    
+        async function initPlayerName() {
+            try {
+                const res = await fetch(`${WEB_APP_URL}?mode=oyuncu`);
+                const data = await res.json();
+                const registerRes = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'registerPlayer' }) });
+                const registerData = await registerRes.json();
+                game.playerName = registerData.playerName;
+                playerNameReady = true;
+                console.log('Oyuncu adı hazır:', game.playerName);
+            } catch (err) {
+                console.error('Oyuncu kaydı başarısız:', err);
+                game.playerName = 'Oyuncu#' + (Math.floor(Math.random() * 9000) + 1000);
+                playerNameReady = true;
+            }
+        }
+
+        playerNamePromise = initPlayerName();
+
+        async function getOrCreatePlayerName() {
+            if (playerNameReady && game.playerName) return game.playerName;
+            if (playerNamePromise) await playerNamePromise;
+            if (!game.playerName) game.playerName = 'Oyuncu#' + (Math.floor(Math.random() * 9000) + 1000);
+            return game.playerName;
+        }
+
+        function updatePlayerNameDisplay(elementId) {
+            const el = document.getElementById(elementId);
+            if (el && game.playerName) el.textContent = '🎮 ' + game.playerName;
+        }
 
         // ==================== KURALLAR ====================
         const RULES_LINES = ['Her tur 3 Sesli, 4 Sessiz ve 1 Joker harf düşer.', 'Yeni tur, bir önceki turdan en az 5 harf farklı olur.', 'Süre, harfler dizildikten sonra başlar.', 'Harfleri kullanarak en uzun kelimeleri yaz. Harf başına 1 Puan!', 'Sayı Avı\'nda 6 sayı verilir, hedefe en yakın sonucu bul!'];
@@ -514,6 +530,11 @@
         function showGameModeSelectScreen() {
             ['round-select-screen','sayi-round-select-screen','sayi-game-screen','sayi-game-over-screen','sayi-round-over-modal','karma-round-select-screen','karma-round-over-modal','karma-game-over-screen','game-screen','round-over-modal','scoreboard-screen','mp-lobby-screen','mp-waiting-screen'].forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById('mp-countdown-overlay').classList.add('hidden');
+            document.getElementById('btn-solo-finish').classList.add('hidden');
+            document.getElementById('btn-sayi-finish').classList.add('hidden');
+            document.getElementById('btn-karma-finish').classList.add('hidden');
+            document.getElementById('btn-mp-finish').classList.add('hidden');
+            document.getElementById('btn-mp-leave').classList.add('hidden');
             clearInterval(sayiTimerInterval); clearInterval(timerInterval); clearInterval(computerSolutionAnimationInterval);
             game.karma.active = false;
             document.getElementById('game-mode-select-screen').classList.remove('hidden');
@@ -575,7 +596,7 @@
             document.getElementById('round-select-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden'); document.getElementById('game-over-screen').classList.add('hidden');
             document.getElementById('btn-solo-finish').classList.remove('hidden');
-            document.getElementById('btn-mp-finish').classList.add('hidden'); document.getElementById('btn-mp-leave').classList.add('hidden');
+            document.getElementById('btn-mp-finish').classList.add('hidden'); document.getElementById('btn-mp-leave').classList.add('hidden'); document.getElementById('btn-karma-finish').classList.add('hidden');
             updatePlayerNameDisplay('player-name-display'); updateUI(); startRound();
         }
 
@@ -658,10 +679,11 @@
         function endRound() { game.isPlaying = false; sounds.playStart(); if (game.karma.active) { karmaHandleRoundEnd(game.score); return; } if (game.currentRound < game.maxRounds) { document.getElementById('round-over-title').textContent = `${game.currentRound}. Tur Bitti!`; document.getElementById('round-over-score').textContent = game.score; document.getElementById('round-over-modal').classList.remove('hidden'); } else endGame(); }
         function goToNextRound() { document.getElementById('round-over-modal').classList.add('hidden'); game.currentRound++; startRound(); }
         function soloFinishGameNow() { clearInterval(timerInterval); endGame(); }
+        function karmaFinishGameNow() { clearInterval(timerInterval); clearInterval(sayiTimerInterval); game.karma.active = false; endKarmaGame(); }
 
         function endGame() {
             document.getElementById('game-screen').classList.add('hidden'); document.getElementById('game-over-screen').classList.remove('hidden');
-            document.getElementById('final-score').textContent = game.score; document.getElementById('btn-solo-finish').classList.add('hidden');
+            document.getElementById('final-score').textContent = game.score; document.getElementById('btn-solo-finish').classList.add('hidden'); document.getElementById('btn-karma-finish').classList.add('hidden');
             sounds.playSuccess(); setTimeout(() => sounds.playSuccess(), 500); submitScoreAndShowLeaderboard();
         }
 
@@ -681,33 +703,6 @@
 
         function updateUI() { document.getElementById('score').textContent = game.score; document.getElementById('current-round').textContent = game.currentRound; document.getElementById('max-round-display').textContent = game.maxRounds === Infinity ? '∞' : game.maxRounds; }
 
-
-
-
-// ==================== SAYFA AÇILIR AÇILMAZ OYUNCU ADINI ÇEK ====================
-let playerNameReady = false;
-let playerNamePromise = null;
-
-async function initPlayerName() {
-    try {
-        const res = await fetch(`${WEB_APP_URL}?mode=oyuncu`);
-        const data = await res.json();
-        const registerRes = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'registerPlayer' }) });
-        const registerData = await registerRes.json();
-        game.playerName = registerData.playerName;
-        playerNameReady = true;
-        console.log('Oyuncu adı hazır:', game.playerName);
-    } catch (err) {
-        console.error('Oyuncu kaydı başarısız:', err);
-        game.playerName = 'Oyuncu#' + (Math.floor(Math.random() * 9000) + 1000);
-        playerNameReady = true;
-    }
-}
-
-// Sayfa yüklenir yüklenmez başlat
-playerNamePromise = initPlayerName();
-
-        
         // ==================== JOKER (KELİME) ====================
         function buildJokerKeyboard() { const c = document.getElementById('joker-keyboard'); c.innerHTML = ''; ALPHABET.forEach(l => { const b = document.createElement('button'); b.className = "w-10 h-10 bg-gray-100 rounded-lg font-bold text-gray-700 hover:bg-summer-sun hover:text-white transition-colors border border-gray-200 shadow-sm"; b.textContent = l; b.onclick = () => selectJokerLetter(l); c.appendChild(b); }); }
         function openJokerModal(tile) { game.pendingJokerTile = tile; document.getElementById('joker-modal').classList.remove('hidden'); }
@@ -730,7 +725,10 @@ playerNamePromise = initPlayerName();
             if (game.selectedRoundCount === null) return;
             game.sayi = { numbers: [], target: 0, currentRound: 1, maxRounds: game.selectedRoundCount, score: 0, bestResultThisRound: null, selectedTileId: null, selectedOperator: null, timeRemaining: 90, isPlaying: false, history: [] };
             document.getElementById('sayi-round-select-screen').classList.add('hidden'); document.getElementById('sayi-game-screen').classList.remove('hidden'); document.getElementById('sayi-game-over-screen').classList.add('hidden');
-            document.getElementById('sayi-max-round').textContent = game.sayi.maxRounds; document.getElementById('btn-sayi-finish').classList.remove('hidden');
+            document.getElementById('sayi-max-round').textContent = game.sayi.maxRounds;
+            document.getElementById('btn-sayi-finish').classList.remove('hidden');
+            document.getElementById('btn-solo-finish').classList.add('hidden');
+            document.getElementById('btn-karma-finish').classList.add('hidden');
             updatePlayerNameDisplay('sayi-player-name-display'); updateSayiUI(); startSayiRound();
         }
 
@@ -785,7 +783,7 @@ playerNamePromise = initPlayerName();
         function undoSayiOperation() { if (!game.sayi.isPlaying) return; if (game.sayi.history.length === 0) { showToast('Geri alınacak işlem yok'); return; } const last = game.sayi.history.pop(); const f = game.sayi.numbers.find(t => t.id === last.firstId); const s = game.sayi.numbers.find(t => t.id === last.secondId); if (f) f.used = false; if (s) s.used = false; game.sayi.numbers = game.sayi.numbers.filter(t => t.id !== last.resultId); game.sayi.selectedTileId = null; game.sayi.selectedOperator = null; resetSayiOperatorButtonStyles(); sounds.playClick(); updateSayiExpressionDisplay(); renderSayiNumbersRack(); }
         function calculateSayiPoints(target, best) { if (best === null) return 0; const d = Math.abs(target - best); if (d === 0) return 10; if (d <= 5) return 7; if (d <= 10) return 5; return 0; }
 
-        function sayiFinishGameNow() { clearInterval(sayiTimerInterval); clearInterval(computerSolutionAnimationInterval); game.sayi.isPlaying = false; const points = calculateSayiPoints(game.sayi.target, game.sayi.bestResultThisRound); game.sayi.score += points; endSayiGame(); }
+        function sayiFinishGameNow() { clearInterval(sayiTimerInterval); clearInterval(computerSolutionAnimationInterval); game.sayi.isPlaying = false; const points = calculateSayiPoints(game.sayi.target, game.sayi.bestResultThisRound); game.sayi.score += points; document.getElementById('btn-sayi-finish').classList.add('hidden'); endSayiGame(); }
 
         // ==================== BİLGİSAYAR ÇÖZÜMÜ ====================
         function findBestSolution(numbers, target) {
@@ -864,6 +862,9 @@ playerNamePromise = initPlayerName();
             if (game.selectedRoundCount === null) return;
             game.karma = { active: true, currentRound: 1, maxRounds: game.selectedRoundCount, score: 0 };
             document.getElementById('karma-round-select-screen').classList.add('hidden');
+            document.getElementById('btn-karma-finish').classList.remove('hidden');
+            document.getElementById('btn-solo-finish').classList.add('hidden');
+            document.getElementById('btn-sayi-finish').classList.add('hidden');
             updatePlayerNameDisplay('player-name-display'); updatePlayerNameDisplay('sayi-player-name-display');
             startKarmaRound();
         }
@@ -872,8 +873,8 @@ playerNamePromise = initPlayerName();
             document.getElementById('game-screen').classList.add('hidden'); document.getElementById('sayi-game-screen').classList.add('hidden');
             document.getElementById('round-over-modal').classList.add('hidden'); document.getElementById('sayi-round-over-modal').classList.add('hidden');
             const rt = game.karma.currentRound % 2 === 1 ? 'kelime' : 'sayi';
-            if (rt === 'kelime') { game.selectedDurationMinutes = 1; game.previousLetters = null; game.score = 0; document.getElementById('game-screen').classList.remove('hidden'); document.getElementById('btn-solo-finish').classList.add('hidden'); document.getElementById('btn-mp-finish').classList.add('hidden'); document.getElementById('btn-mp-leave').classList.add('hidden'); startRound(); }
-            else { document.getElementById('sayi-game-screen').classList.remove('hidden'); document.getElementById('btn-sayi-finish').classList.remove('hidden'); startSayiRound(); }
+            if (rt === 'kelime') { game.selectedDurationMinutes = 1; game.previousLetters = null; game.score = 0; document.getElementById('game-screen').classList.remove('hidden'); document.getElementById('btn-solo-finish').classList.add('hidden'); document.getElementById('btn-mp-finish').classList.add('hidden'); document.getElementById('btn-mp-leave').classList.add('hidden'); document.getElementById('btn-karma-finish').classList.remove('hidden'); startRound(); }
+            else { document.getElementById('sayi-game-screen').classList.remove('hidden'); document.getElementById('btn-sayi-finish').classList.add('hidden'); document.getElementById('btn-karma-finish').classList.remove('hidden'); startSayiRound(); }
             document.getElementById('current-round').textContent = game.karma.currentRound; document.getElementById('max-round-display').textContent = game.karma.maxRounds;
             document.getElementById('sayi-current-round').textContent = game.karma.currentRound; document.getElementById('sayi-max-round').textContent = game.karma.maxRounds;
         }
@@ -883,7 +884,8 @@ playerNamePromise = initPlayerName();
 
         async function endKarmaGame() {
             game.karma.active = false; document.getElementById('game-screen').classList.add('hidden'); document.getElementById('sayi-game-screen').classList.add('hidden');
-            document.getElementById('karma-game-over-screen').classList.remove('hidden'); document.getElementById('karma-final-score').textContent = game.karma.score; sounds.playSuccess();
+            document.getElementById('karma-game-over-screen').classList.remove('hidden'); document.getElementById('karma-final-score').textContent = game.karma.score;
+            document.getElementById('btn-karma-finish').classList.add('hidden'); sounds.playSuccess();
             try { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ mode: 'karma', playerName: game.playerName, score: game.karma.score, category: game.karma.maxRounds }) }); } catch (err) {}
         }
 
@@ -934,7 +936,7 @@ playerNamePromise = initPlayerName();
         function updateMpStartButtonState() { const b = document.getElementById('btn-mp-start'); const hep = game.mp.currentPlayerCount >= 2; const ready = game.mp.selectedRoundCount && game.mp.selectedDurationMinutes && hep; b.disabled = !ready; b.classList.toggle('bg-gray-300', !ready); b.classList.toggle('cursor-not-allowed', !ready); b.classList.toggle('bg-gradient-to-r', ready); b.classList.toggle('from-summer-sun', ready); b.classList.toggle('to-summer-coral', ready); b.classList.toggle('hover:shadow-xl', ready); b.textContent = hep ? 'Oyunu Başlat 🚀' : 'Arkadaşının katılmasını bekle...'; }
 
         async function startMultiplayerGame() { if (!game.mp.selectedRoundCount || !game.mp.selectedDurationMinutes || !game.mp.gameId || game.mp.currentPlayerCount < 2) return; game.mp.previousLetters = null; const letters = generateRoundLetterSet(game.mp.previousLetters); game.mp.previousLetters = letters.filter(t => !t.isJoker).map(t => t.letter); const cdEnd = window.fb.serverNow() + 5000; const animMs = letters.length * LETTER_SCRAMBLE_STEP_MS; const roundEnd = cdEnd + animMs + (game.mp.selectedDurationMinutes * 60000); await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${game.mp.gameId}`), { status: 'playing', roundCount: game.mp.selectedRoundCount, roundDurationMinutes: game.mp.selectedDurationMinutes, currentRound: 1, letters: letters, countdownEndsAt: cdEnd, roundEndsAt: roundEnd }); await window.fb.update(window.fb.ref(window.fb.db, `lobbies-index/${game.mp.gameId}`), { status: 'playing' }); }
-        function enterOrSyncMultiplayerRound(data) { document.getElementById('game-screen').classList.remove('hidden'); document.getElementById('btn-mp-finish').classList.toggle('hidden', !game.mp.isHost); document.getElementById('btn-mp-leave').classList.toggle('hidden', game.mp.isHost); document.getElementById('btn-solo-finish').classList.add('hidden'); updatePlayerNameDisplay('player-name-display'); if (game.mp.lastSyncedRound === data.currentRound) return; game.mp.lastSyncedRound = data.currentRound; game.currentRound = data.currentRound; game.maxRounds = (data.roundCount === 'Sonsuz') ? Infinity : data.roundCount; game.roundLetters = data.letters.map(t => ({ ...t, isUsed: false })); game.activeWord = []; game.foundWords = []; game.isPlaying = false; document.getElementById('found-words-list').innerHTML = ''; document.getElementById('word-count').textContent = '0'; document.getElementById('letters-rack').innerHTML = ''; updateUI(); updateActiveWordDisplay(); runMultiplayerCountdown(data.countdownEndsAt, () => { renderLettersRack(true, () => { game.isPlaying = true; startMultiplayerTimer(data.roundEndsAt); }); }); }
+        function enterOrSyncMultiplayerRound(data) { document.getElementById('game-screen').classList.remove('hidden'); document.getElementById('btn-mp-finish').classList.toggle('hidden', !game.mp.isHost); document.getElementById('btn-mp-leave').classList.toggle('hidden', game.mp.isHost); document.getElementById('btn-solo-finish').classList.add('hidden'); document.getElementById('btn-karma-finish').classList.add('hidden'); updatePlayerNameDisplay('player-name-display'); if (game.mp.lastSyncedRound === data.currentRound) return; game.mp.lastSyncedRound = data.currentRound; game.currentRound = data.currentRound; game.maxRounds = (data.roundCount === 'Sonsuz') ? Infinity : data.roundCount; game.roundLetters = data.letters.map(t => ({ ...t, isUsed: false })); game.activeWord = []; game.foundWords = []; game.isPlaying = false; document.getElementById('found-words-list').innerHTML = ''; document.getElementById('word-count').textContent = '0'; document.getElementById('letters-rack').innerHTML = ''; updateUI(); updateActiveWordDisplay(); runMultiplayerCountdown(data.countdownEndsAt, () => { renderLettersRack(true, () => { game.isPlaying = true; startMultiplayerTimer(data.roundEndsAt); }); }); }
         function runLocalCountdown(seconds, onComplete) { const overlay = document.getElementById('mp-countdown-overlay'); const numberEl = document.getElementById('mp-countdown-number'); let remaining = seconds; numberEl.textContent = remaining; overlay.classList.remove('hidden'); const iv = setInterval(() => { remaining--; if (remaining <= 0) { clearInterval(iv); overlay.classList.add('hidden'); onComplete(); } else { numberEl.textContent = remaining; sounds.playClick(); } }, 1000); }
         function runMultiplayerCountdown(cdEnd, onComplete) { if (!cdEnd || cdEnd - window.fb.serverNow() <= 0) { onComplete(); return; } const overlay = document.getElementById('mp-countdown-overlay'); const numberEl = document.getElementById('mp-countdown-number'); numberEl.textContent = '5'; overlay.classList.remove('hidden'); const iv = setInterval(() => { const remaining = Math.ceil((cdEnd - window.fb.serverNow()) / 1000); if (remaining <= 0) { clearInterval(iv); overlay.classList.add('hidden'); onComplete(); } else { numberEl.textContent = remaining; sounds.playClick(); } }, 1000); }
         function startMultiplayerTimer(roundEndsAt) { clearInterval(mpTimerInterval); const td = document.getElementById('time-left'); function tick() { const remaining = Math.max(0, Math.round((roundEndsAt - window.fb.serverNow()) / 1000)); const m = Math.floor(remaining / 60), s = remaining % 60; td.textContent = `${m}:${s.toString().padStart(2, '0')}`; td.classList.toggle('text-red-500', remaining <= 10); if (remaining <= 0) { clearInterval(mpTimerInterval); game.isPlaying = false; if (game.mp.isHost) hostEndRound(); } } tick(); mpTimerInterval = setInterval(tick, 1000); }
@@ -962,7 +964,6 @@ playerNamePromise = initPlayerName();
         // ==================== BAŞLANGIÇ ====================
         buildJokerKeyboard();
 
-        // Skor tablosu gizli sıfırlama
         let srk1 = false, srk9 = false, srHold = 0, srTrig = false;
         document.addEventListener('keydown', (e) => { if (e.key === '1') srk1 = true; if (e.key === '9') srk9 = true; });
         document.addEventListener('keyup', (e) => { if (e.key === '1') srk1 = false; if (e.key === '9') srk9 = false; if (!srk1 || !srk9) srTrig = false; });
