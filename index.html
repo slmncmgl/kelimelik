@@ -278,7 +278,7 @@ function updateMpStartButtonState() {
     const hep = game.mp.currentPlayerCount >= 2;
     const ready = game.mp.selectedRoundCount && game.mp.selectedDurationMinutes && hep;
     b.disabled = !ready;
-    b.classList.toggle('bg-gray-300', !ready);
+    b.classList.toggle('bg-blue-100', !ready);
     b.classList.toggle('cursor-not-allowed', !ready);
     b.classList.toggle('bg-gradient-to-r', ready);
     b.classList.toggle('from-summer-sun', ready);
