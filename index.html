@@ -981,191 +981,527 @@
         function closeJokerModal(){document.getElementById('joker-modal').classList.add('hidden');game.pendingJokerTile=null;}
         function selectJokerLetter(letter){if(game.pendingJokerTile){const t=game.pendingJokerTile;t.letter=letter;t.isUsed=true;game.activeWord.push({...t,originId:t.id});sounds.playClick();closeJokerModal();updateActiveWordDisplay();renderLettersRack(false);}}
 
-        // --- SAYI AVI ---
-        function generateSayiRound() {
-            const largeCount=[1,1,1,2,2][Math.floor(Math.random()*5)];
-            const largeNumbers=[...SAYI_LARGE_POOL].sort(()=>Math.random()-0.5).slice(0,largeCount);
-            const smallNumbers=[]; for(let i=0;i<6-largeCount;i++) smallNumbers.push(SAYI_SMALL_RANGE[Math.floor(Math.random()*SAYI_SMALL_RANGE.length)]);
-            // 6 sayı + 1 joker
-            const numbers=[...largeNumbers,...smallNumbers].sort(()=>Math.random()-0.5);
-            const target=Math.floor(Math.random()*900)+100;
-            return {numbers,target};
+      // --- SAYI AVI ---
+
+// generateSayiRound - ORİJİNAL HALİNE DÖNDÜR (joker yok, 6 sayı)
+function generateSayiRound() {
+    const largeCountOptions = [1, 1, 1, 2, 2];
+    const largeCount = largeCountOptions[Math.floor(Math.random() * largeCountOptions.length)];
+    const largeNumbers = [...SAYI_LARGE_POOL].sort(() => Math.random() - 0.5).slice(0, largeCount);
+
+    const smallCount = 6 - largeCount;
+    const smallNumbers = [];
+    for (let i = 0; i < smallCount; i++) {
+        smallNumbers.push(SAYI_SMALL_RANGE[Math.floor(Math.random() * SAYI_SMALL_RANGE.length)]);
+    }
+
+    const numbers = [...largeNumbers, ...smallNumbers].sort(() => Math.random() - 0.5);
+    const target = Math.floor(Math.random() * 900) + 100; // 100-999
+    return { numbers, target };
+}
+
+function showSayiRoundSelectScreen() {
+    document.getElementById('name-screen').classList.add('hidden');
+    document.getElementById('welcome-screen').classList.add('hidden');
+    document.getElementById('game-mode-select-screen').classList.add('hidden');
+    document.getElementById('sayi-round-select-screen').classList.remove('hidden');
+
+    game.selectedRoundCount = null;
+    document.querySelectorAll('.sayi-round-btn').forEach(btn => {
+        btn.classList.remove('bg-summer-sea', 'text-white');
+        btn.classList.add('bg-blue-50', 'text-summer-sea');
+    });
+    updateSayiStartButtonState();
+}
+
+function selectSayiRoundCount(count) {
+    game.selectedRoundCount = count;
+    document.querySelectorAll('.sayi-round-btn').forEach(btn => {
+        const isSelected = String(btn.dataset.sayiRound) === String(count);
+        btn.classList.toggle('bg-summer-sea', isSelected);
+        btn.classList.toggle('text-white', isSelected);
+        btn.classList.toggle('bg-blue-50', !isSelected);
+        btn.classList.toggle('text-summer-sea', !isSelected);
+    });
+    updateSayiStartButtonState();
+}
+
+function updateSayiStartButtonState() {
+    const startBtn = document.getElementById('btn-sayi-start');
+    const ready = game.selectedRoundCount !== null;
+    startBtn.disabled = !ready;
+    startBtn.classList.toggle('bg-gray-300', !ready);
+    startBtn.classList.toggle('cursor-not-allowed', !ready);
+    startBtn.classList.toggle('bg-gradient-to-r', ready);
+    startBtn.classList.toggle('from-summer-sun', ready);
+    startBtn.classList.toggle('to-summer-coral', ready);
+    startBtn.classList.toggle('hover:shadow-xl', ready);
+}
+
+function startSayiGame() {
+    if (game.selectedRoundCount === null) return;
+    game.sayi = {
+        numbers: [],
+        target: 0,
+        currentRound: 1,
+        maxRounds: game.selectedRoundCount,
+        score: 0,
+        bestResultThisRound: null,
+        selectedTileId: null,
+        selectedOperator: null,
+        timeRemaining: 90,
+        isPlaying: false,
+        history: []
+    };
+    document.getElementById('sayi-round-select-screen').classList.add('hidden');
+    document.getElementById('sayi-game-screen').classList.remove('hidden');
+    document.getElementById('sayi-game-over-screen').classList.add('hidden');
+    document.getElementById('sayi-max-round').textContent = game.sayi.maxRounds;
+    updateSayiUI();
+    startSayiRound();
+}
+
+function startSayiRound() {
+    const { numbers, target } = generateSayiRound();
+    // Her sayıya isJoker: false ekle
+    game.sayi.numbers = numbers.map((val, i) => ({ id: `n_${i}`, value: val, used: false, isJoker: false }));
+    game.sayi.target = target;
+    game.sayi.bestResultThisRound = null;
+    game.sayi.selectedTileId = null;
+    game.sayi.selectedOperator = null;
+    game.sayi.timeRemaining = 90;
+    game.sayi.isPlaying = false;
+    game.sayi.history = [];
+
+    document.getElementById('sayi-target').textContent = target;
+    document.getElementById('sayi-best-result').textContent = '-';
+    resetSayiOperatorButtonStyles();
+    updateSayiExpressionDisplay();
+    updateSayiUI();
+    considerSayiBestResult();
+
+    const timeDisplay = document.getElementById('sayi-time-left');
+    clearInterval(sayiTimerInterval);
+    timeDisplay.textContent = 'Hazırlanıyor...';
+    document.getElementById('sayi-numbers-rack').innerHTML = '';
+
+    runLocalCountdown(5, () => {
+        timeDisplay.textContent = 'Dağıtılıyor...';
+        timeDisplay.classList.add('text-sm', 'animate-pulse');
+        sounds.playStart();
+        renderSayiNumbersRack(true, () => {
+            game.sayi.isPlaying = true;
+            timeDisplay.classList.remove('text-sm', 'animate-pulse');
+            startSayiTimer();
+        });
+    });
+}
+
+function startSayiTimer() {
+    clearInterval(sayiTimerInterval);
+    const timeDisplay = document.getElementById('sayi-time-left');
+
+    function tick() {
+        const m = Math.floor(game.sayi.timeRemaining / 60);
+        const s = game.sayi.timeRemaining % 60;
+        timeDisplay.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+        timeDisplay.classList.toggle('text-red-500', game.sayi.timeRemaining <= 10);
+
+        if (game.sayi.timeRemaining <= 0) {
+            clearInterval(sayiTimerInterval);
+            endSayiRound();
+        } else {
+            game.sayi.timeRemaining--;
         }
+    }
+    tick();
+    sayiTimerInterval = setInterval(tick, 1000);
+}
 
-        function showSayiRoundSelectScreen(){
-            document.getElementById('name-screen').classList.add('hidden');document.getElementById('game-mode-select-screen').classList.add('hidden');document.getElementById('sayi-round-select-screen').classList.remove('hidden');
-            game.selectedRoundCount=null;document.querySelectorAll('.sayi-round-btn').forEach(b=>{b.classList.remove('bg-summer-sea','text-white');b.classList.add('bg-blue-50','text-summer-sea');});updateSayiStartButtonState();
+// animateScrambleNumber - DÜZELTİLDİ: animasyon sonunda onclick düzgün atanıyor
+function animateScrambleNumber(element, tileData, duration) {
+    let soundTick = 0;
+    const interval = setInterval(() => {
+        element.textContent = Math.floor(Math.random() * 100);
+        if (soundTick % 3 === 0) sounds.playRoll();
+        soundTick++;
+    }, 50);
+
+    setTimeout(() => {
+        clearInterval(interval);
+        // Animasyon bitince normal görünüme dön
+        element.textContent = tileData.value;
+        element.className = 'w-16 h-16 rounded-xl shadow flex items-center justify-center font-black text-xl cursor-pointer transition-all border-2 bg-white text-summer-sea border-blue-200 hover:bg-blue-50';
+        element.onclick = () => selectSayiTile(tileData.id);
+        sounds.playClick();
+    }, duration);
+}
+
+// renderSayiNumbersRack - DÜZELTİLDİ: orijinal stil korundu
+function renderSayiNumbersRack(animate = false, onAnimationComplete = null) {
+    const rackEl = document.getElementById('sayi-numbers-rack');
+    rackEl.innerHTML = '';
+    // Kullanılmayanları değere göre sırala
+    const visibleTiles = game.sayi.numbers.filter(t => !t.used).sort((a, b) => a.value - b.value);
+
+    visibleTiles.forEach((tile, index) => {
+        const el = document.createElement('div');
+
+        if (animate) {
+            // Animasyon başlangıcı: gri, tıklanamaz
+            el.className = 'w-16 h-16 rounded-xl shadow flex items-center justify-center font-black text-xl select-none border-2 bg-gray-300 text-gray-500 cursor-not-allowed';
+            el.textContent = '?';
+            setTimeout(() => {
+                animateScrambleNumber(el, tile, LETTER_SCRAMBLE_STEP_MS);
+            }, index * LETTER_SCRAMBLE_STEP_MS);
+        } else {
+            // Normal render: seçiliyse vurgulu
+            const isSelected = game.sayi.selectedTileId === tile.id;
+            el.className = `w-16 h-16 rounded-xl shadow flex items-center justify-center font-black text-xl cursor-pointer transition-all border-2 ${
+                isSelected 
+                    ? 'bg-summer-sea text-white border-summer-sea scale-110' 
+                    : 'bg-white text-summer-sea border-blue-200 hover:bg-blue-50'
+            }`;
+            el.textContent = tile.value;
+            el.onclick = () => selectSayiTile(tile.id);
         }
-        function selectSayiRoundCount(count){game.selectedRoundCount=count;document.querySelectorAll('.sayi-round-btn').forEach(b=>{const s=String(b.dataset.sayiRound)===String(count);b.classList.toggle('bg-summer-sea',s);b.classList.toggle('text-white',s);b.classList.toggle('bg-blue-50',!s);b.classList.toggle('text-summer-sea',!s);});updateSayiStartButtonState();}
-        function updateSayiStartButtonState(){const b=document.getElementById('btn-sayi-start');const r=game.selectedRoundCount!==null;b.disabled=!r;b.classList.toggle('bg-gray-300',!r);b.classList.toggle('cursor-not-allowed',!r);b.classList.toggle('bg-gradient-to-r',r);b.classList.toggle('from-summer-sun',r);b.classList.toggle('to-summer-coral',r);b.classList.toggle('hover:shadow-xl',r);}
+        rackEl.appendChild(el);
+    });
 
-        function startSayiGame() {
-            if(game.selectedRoundCount===null) return;
-            game.sayi={numbers:[],target:0,currentRound:1,maxRounds:game.selectedRoundCount,score:0,bestResultThisRound:null,selectedTileId:null,selectedOperator:null,timeRemaining:90,isPlaying:false,history:[],pendingJokerTileId:null};
-            document.getElementById('sayi-round-select-screen').classList.add('hidden');document.getElementById('sayi-game-screen').classList.remove('hidden');document.getElementById('sayi-game-over-screen').classList.add('hidden');
-            document.getElementById('sayi-max-round').textContent=game.sayi.maxRounds;updateSayiUI();startSayiRound();
+    if (animate) {
+        setTimeout(() => {
+            if (onAnimationComplete) onAnimationComplete();
+        }, visibleTiles.length * LETTER_SCRAMBLE_STEP_MS);
+    }
+}
+
+function selectSayiOperator(op) {
+    if (!game.sayi.isPlaying) return;
+    if (game.sayi.selectedTileId === null) {
+        showToast('Önce bir sayı seç!');
+        return;
+    }
+    game.sayi.selectedOperator = op;
+    updateSayiExpressionDisplay();
+    document.querySelectorAll('.sayi-op-btn').forEach(btn => {
+        const isSelected = btn.dataset.sayiOp === op;
+        btn.classList.toggle('bg-summer-sea', isSelected);
+        btn.classList.toggle('text-white', isSelected);
+    });
+}
+
+function resetSayiOperatorButtonStyles() {
+    document.querySelectorAll('.sayi-op-btn').forEach(btn => {
+        btn.classList.remove('bg-summer-sea', 'text-white');
+    });
+}
+
+function selectSayiTile(tileId) {
+    if (!game.sayi.isPlaying) return;
+    const tile = game.sayi.numbers.find(t => t.id === tileId);
+    if (!tile || tile.used) return;
+
+    // Henüz hiç sayı seçilmemiş, ya da aynı karoya tekrar tıklandı (iptal)
+    if (game.sayi.selectedTileId === null || game.sayi.selectedTileId === tileId) {
+        game.sayi.selectedTileId = (game.sayi.selectedTileId === tileId) ? null : tileId;
+        game.sayi.selectedOperator = null;
+        resetSayiOperatorButtonStyles();
+        updateSayiExpressionDisplay();
+        renderSayiNumbersRack();
+        return;
+    }
+
+    // Operatör seçilmeden ikinci bir sayıya tıklandı: ilk seçimi bununla değiştir
+    if (game.sayi.selectedOperator === null) {
+        game.sayi.selectedTileId = tileId;
+        updateSayiExpressionDisplay();
+        renderSayiNumbersRack();
+        return;
+    }
+
+    // İkinci sayı + operatör tamam: işlemi uygula
+    const firstTile = game.sayi.numbers.find(t => t.id === game.sayi.selectedTileId);
+    const result = computeSayiOperation(firstTile.value, game.sayi.selectedOperator, tile.value);
+
+    if (result === null) {
+        showToast('Geçersiz işlem! (tam sayı olmalı, negatif olamaz)');
+        sounds.playError();
+        game.sayi.selectedTileId = null;
+        game.sayi.selectedOperator = null;
+        resetSayiOperatorButtonStyles();
+        updateSayiExpressionDisplay();
+        renderSayiNumbersRack();
+        return;
+    }
+
+    firstTile.used = true;
+    tile.used = true;
+    const resultId = `r_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+    game.sayi.numbers.push({ id: resultId, value: result, used: false, isJoker: false });
+    game.sayi.history.push({ firstId: firstTile.id, secondId: tile.id, resultId: resultId });
+
+    game.sayi.selectedTileId = null;
+    game.sayi.selectedOperator = null;
+    resetSayiOperatorButtonStyles();
+    sounds.playClick();
+    updateSayiExpressionDisplay();
+    renderSayiNumbersRack();
+    considerSayiBestResult();
+}
+
+function computeSayiOperation(a, op, b) {
+    let result;
+    if (op === '+') result = a + b;
+    else if (op === '-') {
+        if (a < b) return null;
+        result = a - b;
+    } else if (op === '×') result = a * b;
+    else if (op === '÷') {
+        if (b === 0 || a % b !== 0) return null;
+        result = a / b;
+    } else return null;
+
+    return Number.isInteger(result) ? result : null;
+}
+
+function updateSayiExpressionDisplay() {
+    const el = document.getElementById('sayi-expression-display');
+    if (game.sayi.selectedTileId === null) {
+        el.textContent = 'Bir sayı seç...';
+        return;
+    }
+    const tile = game.sayi.numbers.find(t => t.id === game.sayi.selectedTileId);
+    el.textContent = game.sayi.selectedOperator === null
+        ? `${tile.value} [işlem seç]`
+        : `${tile.value} ${game.sayi.selectedOperator} ?`;
+}
+
+function considerSayiBestResult() {
+    game.sayi.numbers.forEach(tile => {
+        const bestDiff = game.sayi.bestResultThisRound === null ? Infinity : Math.abs(game.sayi.target - game.sayi.bestResultThisRound);
+        const diff = Math.abs(game.sayi.target - tile.value);
+        if (diff < bestDiff) {
+            game.sayi.bestResultThisRound = tile.value;
         }
+    });
+    document.getElementById('sayi-best-result').textContent = game.sayi.bestResultThisRound;
+}
 
-        function startSayiRound() {
-            const {numbers,target}=generateSayiRound();
-            game.sayi.numbers=numbers.map((v,i)=>({id:`n_${i}`,value:v,used:false,isJoker:false}));
-            // Joker ekle (1-9 arası seçilebilir, başlangıçta '★')
-            game.sayi.numbers.push({id:'sayi_joker',value:'★',used:false,isJoker:true,assignedValue:null});
-            game.sayi.target=target;game.sayi.bestResultThisRound=null;game.sayi.selectedTileId=null;game.sayi.selectedOperator=null;game.sayi.timeRemaining=90;game.sayi.isPlaying=false;game.sayi.history=[];game.sayi.pendingJokerTileId=null;
-            document.getElementById('sayi-target').textContent=target;document.getElementById('sayi-best-result').textContent='-';
-            resetSayiOperatorButtonStyles();updateSayiExpressionDisplay();updateSayiUI();considerSayiBestResult();
-            const td=document.getElementById('sayi-time-left');clearInterval(sayiTimerInterval);td.textContent='Hazırlanıyor...';document.getElementById('sayi-numbers-rack').innerHTML='';
-            runLocalCountdown(5,()=>{td.textContent='Dağıtılıyor...';td.classList.add('text-sm','animate-pulse');sounds.playStart();renderSayiNumbersRack(true,()=>{game.sayi.isPlaying=true;td.classList.remove('text-sm','animate-pulse');startSayiTimer();});});
-        }
+function resetSayiNumbers() {
+    game.sayi.numbers = game.sayi.numbers.filter(t => !t.id.startsWith('r_'));
+    game.sayi.numbers.forEach(t => t.used = false);
+    game.sayi.history = [];
+    game.sayi.selectedTileId = null;
+    game.sayi.selectedOperator = null;
+    resetSayiOperatorButtonStyles();
+    updateSayiExpressionDisplay();
+    renderSayiNumbersRack();
+    showToast('Sayılar sıfırlandı, tekrar dene!', 'success');
+}
 
-        function startSayiTimer(){clearInterval(sayiTimerInterval);const td=document.getElementById('sayi-time-left');function tick(){const m=Math.floor(game.sayi.timeRemaining/60),s=game.sayi.timeRemaining%60;td.textContent=`${m}:${s.toString().padStart(2,'0')}`;td.classList.toggle('text-red-500',game.sayi.timeRemaining<=10);if(game.sayi.timeRemaining<=0){clearInterval(sayiTimerInterval);endSayiRound();}else game.sayi.timeRemaining--;}tick();sayiTimerInterval=setInterval(tick,1000);}
+function undoSayiOperation() {
+    if (!game.sayi.isPlaying) return;
+    if (game.sayi.history.length === 0) {
+        showToast('Geri alınacak işlem yok');
+        return;
+    }
+    const last = game.sayi.history.pop();
+    const firstTile = game.sayi.numbers.find(t => t.id === last.firstId);
+    const secondTile = game.sayi.numbers.find(t => t.id === last.secondId);
+    if (firstTile) firstTile.used = false;
+    if (secondTile) secondTile.used = false;
+    game.sayi.numbers = game.sayi.numbers.filter(t => t.id !== last.resultId);
 
-        function renderSayiNumbersRack(animate=false,onComplete=null){
-            const rack=document.getElementById('sayi-numbers-rack');rack.innerHTML='';
-            const visible=game.sayi.numbers.filter(t=>!t.used).sort((a,b)=>(a.isJoker?1:0)-(b.isJoker?1:0)||(typeof a.value==='number'&&typeof b.value==='number'?a.value-b.value:0));
-            visible.forEach((tile,idx)=>{
-                const el=document.createElement('div');
-                if(animate){el.className='w-16 h-16 rounded-xl shadow flex items-center justify-center font-black text-xl select-none border-2 bg-gray-300 text-gray-500 cursor-not-allowed';el.textContent='?';setTimeout(()=>animateScrambleNumber(el,tile,LETTER_SCRAMBLE_STEP_MS),idx*LETTER_SCRAMBLE_STEP_MS);}
-                else {
-                    const sel=game.sayi.selectedTileId===tile.id;
-                    const displayVal=tile.isJoker?(tile.assignedValue||'★'):tile.value;
-                    el.className=`w-16 h-16 rounded-xl shadow flex items-center justify-center font-black text-xl cursor-pointer transition-all border-2 ${sel?'bg-summer-sea text-white border-summer-sea scale-110':tile.isJoker?'bg-gradient-to-b from-summer-sun to-orange-500 text-white border-orange-400':'bg-white text-summer-sea border-blue-200 hover:bg-blue-50'}`;
-                    el.textContent=displayVal;
-                    el.onclick=()=>{if(tile.isJoker)openSayiJokerModal(tile);else selectSayiTile(tile.id);};
-                }
-                rack.appendChild(el);
-            });
-            if(animate) setTimeout(()=>{if(onComplete)onComplete();},visible.length*LETTER_SCRAMBLE_STEP_MS);
-        }
+    game.sayi.selectedTileId = null;
+    game.sayi.selectedOperator = null;
+    resetSayiOperatorButtonStyles();
+    sounds.playClick();
+    updateSayiExpressionDisplay();
+    renderSayiNumbersRack();
+}
 
-        function animateScrambleNumber(el,tile,duration){let tick=0;const iv=setInterval(()=>{el.textContent=Math.floor(Math.random()*100);if(tick%3===0)sounds.playRoll();tick++;},50);setTimeout(()=>{clearInterval(iv);el.textContent=tile.isJoker?'★':tile.value;el.classList.remove('bg-gray-300','text-gray-500','cursor-not-allowed');el.classList.add(tile.isJoker?'bg-gradient-to-b from-summer-sun to-orange-500 text-white border-orange-400':'bg-white text-summer-sea border-blue-200 hover:bg-blue-50','cursor-pointer');el.onclick=()=>{if(tile.isJoker)openSayiJokerModal(tile);else selectSayiTile(tile.id);};sounds.playClick();},duration);}
+function calculateSayiPoints(target, bestResult) {
+    if (bestResult === null) return 0;
+    const diff = Math.abs(target - bestResult);
+    if (diff === 0) return 10;
+    if (diff <= 5) return 7;
+    if (diff <= 10) return 5;
+    return 0;
+}
 
-        // --- SAYI AVI JOKER ---
-        function buildSayiJokerGrid(){
-            const grid=document.getElementById('sayi-joker-grid');grid.innerHTML='';
-            for(let i=1;i<=9;i++){const b=document.createElement('button');b.className="w-16 h-16 bg-gray-100 rounded-xl font-black text-2xl text-gray-700 hover:bg-summer-sun hover:text-white transition-all border border-gray-200 shadow-sm";b.textContent=i;b.onclick=()=>selectSayiJokerValue(i);grid.appendChild(b);}
-        }
-        function openSayiJokerModal(tile){game.sayi.pendingJokerTileId=tile.id;document.getElementById('sayi-joker-modal').classList.remove('hidden');}
-        function closeSayiJokerModal(){document.getElementById('sayi-joker-modal').classList.add('hidden');game.sayi.pendingJokerTileId=null;}
-        function selectSayiJokerValue(val){if(game.sayi.pendingJokerTileId){const t=game.sayi.numbers.find(t=>t.id===game.sayi.pendingJokerTileId);if(t){t.assignedValue=val;t.value=val;t.isJoker=false;t.id=`joker_assigned_${Date.now()}`;}closeSayiJokerModal();renderSayiNumbersRack();considerSayiBestResult();}}
+// --- BİLGİSAYAR ÇÖZÜMÜ (BRUTE-FORCE) ---
+function findBestSolution(numbers, target) {
+    let bestResult = null;
+    let bestDiff = Infinity;
+    let bestSteps = null;
 
-        function selectSayiOperator(op){if(!game.sayi.isPlaying)return;if(game.sayi.selectedTileId===null){showToast('Önce bir sayı seç!');return;}game.sayi.selectedOperator=op;updateSayiExpressionDisplay();document.querySelectorAll('.sayi-op-btn').forEach(b=>{b.classList.toggle('bg-summer-sea',b.dataset.sayiOp===op);b.classList.toggle('text-white',b.dataset.sayiOp===op);});}
-        function resetSayiOperatorButtonStyles(){document.querySelectorAll('.sayi-op-btn').forEach(b=>b.classList.remove('bg-summer-sea','text-white'));}
+    const initialTiles = numbers.map((val, i) => ({ value: val, id: `s_${i}` }));
 
-        function selectSayiTile(tileId){
-            if(!game.sayi.isPlaying)return;
-            const tile=game.sayi.numbers.find(t=>t.id===tileId);if(!tile||tile.used)return;
-            if(game.sayi.selectedTileId===null||game.sayi.selectedTileId===tileId){game.sayi.selectedTileId=(game.sayi.selectedTileId===tileId)?null:tileId;game.sayi.selectedOperator=null;resetSayiOperatorButtonStyles();updateSayiExpressionDisplay();renderSayiNumbersRack();return;}
-            if(game.sayi.selectedOperator===null){game.sayi.selectedTileId=tileId;updateSayiExpressionDisplay();renderSayiNumbersRack();return;}
-            const first=game.sayi.numbers.find(t=>t.id===game.sayi.selectedTileId);
-            const result=computeSayiOperation(first.value,game.sayi.selectedOperator,tile.value);
-            if(result===null){showToast('Geçersiz işlem!');sounds.playError();game.sayi.selectedTileId=null;game.sayi.selectedOperator=null;resetSayiOperatorButtonStyles();updateSayiExpressionDisplay();renderSayiNumbersRack();return;}
-            first.used=true;tile.used=true;
-            const rid=`r_${Date.now()}_${Math.floor(Math.random()*1000)}`;
-            game.sayi.numbers.push({id:rid,value:result,used:false,isJoker:false});
-            game.sayi.history.push({firstId:first.id,secondId:tile.id,resultId:rid});
-            game.sayi.selectedTileId=null;game.sayi.selectedOperator=null;resetSayiOperatorButtonStyles();sounds.playClick();updateSayiExpressionDisplay();renderSayiNumbersRack();considerSayiBestResult();
-        }
+    function solve(tiles, steps) {
+        tiles.forEach(tile => {
+            const diff = Math.abs(target - tile.value);
+            if (diff < bestDiff) {
+                bestDiff = diff;
+                bestResult = tile.value;
+                bestSteps = [...steps];
+            }
+        });
 
-        function computeSayiOperation(a,op,b){if(op==='+')return a+b;if(op==='-'){if(a<b)return null;return a-b;}if(op==='×')return a*b;if(op==='÷'){if(b===0||a%b!==0)return null;return a/b;}return null;}
-        function updateSayiExpressionDisplay(){const el=document.getElementById('sayi-expression-display');if(game.sayi.selectedTileId===null){el.textContent='Bir sayı seç...';return;}const t=game.sayi.numbers.find(t=>t.id===game.sayi.selectedTileId);el.textContent=game.sayi.selectedOperator===null?`${t.value} [işlem seç]`:`${t.value} ${game.sayi.selectedOperator} ?`;}
-        function considerSayiBestResult(){game.sayi.numbers.forEach(t=>{if(t.isJoker&&!t.assignedValue)return;const bd=game.sayi.bestResultThisRound===null?Infinity:Math.abs(game.sayi.target-game.sayi.bestResultThisRound);const d=Math.abs(game.sayi.target-t.value);if(d<bd)game.sayi.bestResultThisRound=t.value;});document.getElementById('sayi-best-result').textContent=game.sayi.bestResultThisRound;}
-        function resetSayiNumbers(){game.sayi.numbers=game.sayi.numbers.filter(t=>!t.id.startsWith('r_'));game.sayi.numbers.forEach(t=>{t.used=false;if(t.id==='sayi_joker'){t.isJoker=true;t.assignedValue=null;t.value='★';}});game.sayi.history=[];game.sayi.selectedTileId=null;game.sayi.selectedOperator=null;resetSayiOperatorButtonStyles();updateSayiExpressionDisplay();renderSayiNumbersRack();showToast('Sayılar sıfırlandı!','success');}
-        function undoSayiOperation(){if(!game.sayi.isPlaying)return;if(game.sayi.history.length===0){showToast('Geri alınacak işlem yok');return;}const last=game.sayi.history.pop();const f=game.sayi.numbers.find(t=>t.id===last.firstId);const s=game.sayi.numbers.find(t=>t.id===last.secondId);if(f)f.used=false;if(s)s.used=false;game.sayi.numbers=game.sayi.numbers.filter(t=>t.id!==last.resultId);game.sayi.selectedTileId=null;game.sayi.selectedOperator=null;resetSayiOperatorButtonStyles();sounds.playClick();updateSayiExpressionDisplay();renderSayiNumbersRack();}
-        function calculateSayiPoints(target,best){if(best===null)return 0;const d=Math.abs(target-best);if(d===0)return 10;if(d<=5)return 7;if(d<=10)return 5;return 0;}
+        if (bestDiff === 0) return;
 
-        // --- BİLGİSAYAR ÇÖZÜMÜ (BRUTE-FORCE) ---
-        function findBestSolution(numbers, target) {
-            let bestResult = null, bestDiff = Infinity, bestSteps = null;
-            const initialTiles = numbers.map((val, i) => ({ value: val, id: `s_${i}` }));
-            function solve(tiles, steps) {
-                tiles.forEach(tile => {
-                    const diff = Math.abs(target - tile.value);
-                    if (diff < bestDiff) { bestDiff = diff; bestResult = tile.value; bestSteps = [...steps]; }
+        for (let i = 0; i < tiles.length; i++) {
+            for (let j = i + 1; j < tiles.length; j++) {
+                const a = tiles[i];
+                const b = tiles[j];
+                const remaining = tiles.filter((_, idx) => idx !== i && idx !== j);
+
+                const operations = [
+                    { result: a.value + b.value, desc: `${a.value} + ${b.value} = ${a.value + b.value}` },
+                    { result: a.value - b.value, desc: `${a.value} − ${b.value} = ${a.value - b.value}`, skip: a.value < b.value },
+                    { result: b.value - a.value, desc: `${b.value} − ${a.value} = ${b.value - a.value}`, skip: b.value < a.value },
+                    { result: a.value * b.value, desc: `${a.value} × ${b.value} = ${a.value * b.value}` },
+                    { result: b.value !== 0 && a.value % b.value === 0 ? a.value / b.value : null, desc: `${a.value} ÷ ${b.value} = ${a.value / b.value}`, skip: b.value === 0 || a.value % b.value !== 0 },
+                    { result: a.value !== 0 && b.value % a.value === 0 ? b.value / a.value : null, desc: `${b.value} ÷ ${a.value} = ${b.value / a.value}`, skip: a.value === 0 || b.value % a.value !== 0 }
+                ];
+
+                operations.forEach(op => {
+                    if (op.skip || op.result === null || op.result < 0 || !Number.isInteger(op.result)) return;
+                    const newId = `c_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
+                    solve([...remaining, { value: op.result, id: newId }], [...steps, op.desc]);
                 });
+
                 if (bestDiff === 0) return;
-                for (let i = 0; i < tiles.length; i++) {
-                    for (let j = i + 1; j < tiles.length; j++) {
-                        const a = tiles[i], b = tiles[j];
-                        const remaining = tiles.filter((_, idx) => idx !== i && idx !== j);
-                        const ops = [
-                            { result: a.value + b.value, desc: `${a.value} + ${b.value} = ${a.value + b.value}` },
-                            { result: a.value - b.value, desc: `${a.value} − ${b.value} = ${a.value - b.value}`, skip: a.value < b.value },
-                            { result: b.value - a.value, desc: `${b.value} − ${a.value} = ${b.value - a.value}`, skip: b.value < a.value },
-                            { result: a.value * b.value, desc: `${a.value} × ${b.value} = ${a.value * b.value}` },
-                            { result: b.value !== 0 && a.value % b.value === 0 ? a.value / b.value : null, desc: `${a.value} ÷ ${b.value} = ${a.value / b.value}`, skip: b.value === 0 || a.value % b.value !== 0 },
-                            { result: a.value !== 0 && b.value % a.value === 0 ? b.value / a.value : null, desc: `${b.value} ÷ ${a.value} = ${b.value / a.value}`, skip: a.value === 0 || b.value % a.value !== 0 }
-                        ];
-                        ops.forEach(op => {
-                            if (op.skip || op.result === null || op.result < 0 || !Number.isInteger(op.result)) return;
-                            solve([...remaining, { value: op.result, id: `c_${Date.now()}_${Math.random().toString(36).substr(2,5)}` }], [...steps, op.desc]);
-                        });
-                        if (bestDiff === 0) return;
-                    }
-                }
             }
-            solve(initialTiles, []);
-            return { result: bestResult, diff: bestDiff, steps: bestSteps };
+            if (bestDiff === 0) return;
         }
+    }
 
-        function showComputerSolutionInModal(target, numbers) {
-            const solution = findBestSolution(numbers, target);
-            let solutionDiv = document.getElementById('sayi-computer-solution');
-            if (!solutionDiv) {
-                const targetRow = document.querySelector('#sayi-round-over-modal .text-gray-500.mb-2');
-                solutionDiv = document.createElement('div');
-                solutionDiv.id = 'sayi-computer-solution';
-                solutionDiv.className = 'bg-blue-50 rounded-xl p-3 mb-3 text-left';
-                solutionDiv.innerHTML = `<p class="text-xs font-bold text-summer-sea uppercase tracking-wider mb-2">💡 Bilgisayarın Çözümü</p><div id="sayi-solution-steps" class="text-sm text-gray-700 space-y-1"></div><p id="sayi-solution-final" class="text-sm font-bold text-summer-sea mt-2"></p>`;
-                targetRow.after(solutionDiv);
-            }
-            const stepsDiv = document.getElementById('sayi-solution-steps');
-            const finalP = document.getElementById('sayi-solution-final');
-            stepsDiv.innerHTML = ''; finalP.textContent = '';
-            if (!solution || !solution.steps || solution.steps.length === 0) { finalP.textContent = 'Çözüm bulunamadı 🤷'; return; }
+    solve(initialTiles, []);
+    return { result: bestResult, diff: bestDiff, steps: bestSteps };
+}
+
+function showComputerSolutionInModal(target, numbers) {
+    const solution = findBestSolution(numbers, target);
+
+    // Önce eski çözüm div'ini temizle
+    const oldDiv = document.getElementById('sayi-computer-solution');
+    if (oldDiv) oldDiv.remove();
+
+    // Yeni çözüm div'ini oluştur
+    const solutionDiv = document.createElement('div');
+    solutionDiv.id = 'sayi-computer-solution';
+    solutionDiv.className = 'bg-blue-50 rounded-xl p-3 mb-3 text-left';
+    solutionDiv.innerHTML = `
+        <p class="text-xs font-bold text-summer-sea uppercase tracking-wider mb-2">💡 Bilgisayarın Çözümü</p>
+        <div id="sayi-solution-steps" class="text-sm text-gray-700 space-y-1"></div>
+        <p id="sayi-solution-final" class="text-sm font-bold text-summer-sea mt-2"></p>
+    `;
+
+    // "Senin Sonucun" satırından sonra ekle
+    const targetRow = document.querySelector('#sayi-round-over-modal .text-gray-500.mb-2');
+    if (targetRow && targetRow.nextSibling) {
+        targetRow.parentNode.insertBefore(solutionDiv, targetRow.nextSibling);
+    } else if (targetRow) {
+        targetRow.after(solutionDiv);
+    }
+
+    const stepsDiv = document.getElementById('sayi-solution-steps');
+    const finalP = document.getElementById('sayi-solution-final');
+
+    if (!solution || !solution.steps || solution.steps.length === 0) {
+        finalP.textContent = 'Çözüm bulunamadı 🤷';
+        return;
+    }
+
+    clearInterval(computerSolutionAnimationInterval);
+    let stepIndex = 0;
+
+    computerSolutionAnimationInterval = setInterval(() => {
+        if (stepIndex < solution.steps.length) {
+            const stepEl = document.createElement('div');
+            stepEl.className = 'bg-white px-2 py-1 rounded text-sm font-mono';
+            stepEl.textContent = solution.steps[stepIndex];
+            stepsDiv.appendChild(stepEl);
+            sounds.playClick();
+            stepIndex++;
+        } else {
             clearInterval(computerSolutionAnimationInterval);
-            let stepIndex = 0;
-            computerSolutionAnimationInterval = setInterval(() => {
-                if (stepIndex < solution.steps.length) {
-                    const stepEl = document.createElement('div');
-                    stepEl.className = 'bg-white px-2 py-1 rounded text-sm font-mono';
-                    stepEl.textContent = solution.steps[stepIndex];
-                    stepsDiv.appendChild(stepEl); sounds.playClick(); stepIndex++;
-                } else {
-                    clearInterval(computerSolutionAnimationInterval);
-                    if (solution.diff === 0) { finalP.className = 'text-sm font-bold text-green-500 mt-2'; finalP.textContent = `🎯 Tam Sonuç: ${solution.result}`; }
-                    else { finalP.textContent = `Sonuç: ${solution.result} (Hedeften ${solution.diff} uzak)`; }
-                }
-            }, 600);
+            if (solution.diff === 0) {
+                finalP.className = 'text-sm font-bold text-green-500 mt-2';
+                finalP.textContent = `🎯 Tam Sonuç: ${solution.result}`;
+            } else {
+                finalP.className = 'text-sm font-bold text-summer-sea mt-2';
+                finalP.textContent = `Sonuç: ${solution.result} (Hedeften ${solution.diff} uzak)`;
+            }
         }
+    }, 600);
+}
 
-        function endSayiRound() {
-            clearInterval(sayiTimerInterval); game.sayi.isPlaying = false;
-            const points = calculateSayiPoints(game.sayi.target, game.sayi.bestResultThisRound);
-            if (game.karma.active) { clearInterval(computerSolutionAnimationInterval); karmaHandleRoundEnd(points); return; }
-            game.sayi.score += points; updateSayiUI();
-            document.getElementById('sayi-round-over-title').textContent = `${game.sayi.currentRound}. Tur Bitti!`;
-            document.getElementById('sayi-round-over-target').textContent = game.sayi.target;
-            document.getElementById('sayi-round-over-result').textContent = game.sayi.bestResultThisRound !== null ? game.sayi.bestResultThisRound : '-';
-            document.getElementById('sayi-round-over-points').textContent = `+${points}`;
-            document.getElementById('sayi-round-over-total').textContent = game.sayi.score;
-            // Bilgisayar çözümü
-            const originalNumbers = game.sayi.numbers.filter(t => !t.id.startsWith('r_') && !t.id.startsWith('joker_assigned') && t.id !== 'sayi_joker').map(t => t.value);
-            // Joker atanmışsa onu da ekle
-            const jokerTile = game.sayi.numbers.find(t => t.id.startsWith('joker_assigned'));
-            const allNumbers = jokerTile ? [...originalNumbers, jokerTile.value] : originalNumbers;
-            showComputerSolutionInModal(game.sayi.target, allNumbers);
-            document.getElementById('sayi-round-over-modal').classList.remove('hidden');
-        }
+function endSayiRound() {
+    clearInterval(sayiTimerInterval);
+    game.sayi.isPlaying = false;
+    const points = calculateSayiPoints(game.sayi.target, game.sayi.bestResultThisRound);
 
-        function sayiGoToNextRound() { clearInterval(computerSolutionAnimationInterval); document.getElementById('sayi-round-over-modal').classList.add('hidden'); if (game.sayi.currentRound >= game.sayi.maxRounds) endSayiGame(); else { game.sayi.currentRound++; startSayiRound(); } }
-        function updateSayiUI() { document.getElementById('sayi-current-round').textContent = game.sayi.currentRound; document.getElementById('sayi-score').textContent = game.sayi.score; }
+    if (game.karma.active) {
+        clearInterval(computerSolutionAnimationInterval);
+        karmaHandleRoundEnd(points);
+        return;
+    }
 
-        async function endSayiGame() {
-            document.getElementById('sayi-game-screen').classList.add('hidden'); document.getElementById('sayi-game-over-screen').classList.remove('hidden');
-            document.getElementById('sayi-final-score').textContent = game.sayi.score; sounds.playSuccess();
-            try { await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ mode: 'sayi', playerName: game.playerName, score: game.sayi.score, category: game.sayi.maxRounds }) }); } catch (err) {}
-        }
+    game.sayi.score += points;
+    updateSayiUI();
+
+    document.getElementById('sayi-round-over-title').textContent = `${game.sayi.currentRound}. Tur Bitti!`;
+    document.getElementById('sayi-round-over-target').textContent = game.sayi.target;
+    document.getElementById('sayi-round-over-result').textContent = game.sayi.bestResultThisRound !== null ? game.sayi.bestResultThisRound : '-';
+    document.getElementById('sayi-round-over-points').textContent = `+${points}`;
+    document.getElementById('sayi-round-over-total').textContent = game.sayi.score;
+
+    // Bilgisayar çözümünü göster - Orijinal 6 sayıyı kullan
+    const originalNumbers = game.sayi.numbers
+        .filter(t => !t.id.startsWith('r_'))
+        .map(t => t.value);
+    showComputerSolutionInModal(game.sayi.target, originalNumbers);
+
+    document.getElementById('sayi-round-over-modal').classList.remove('hidden');
+}
+
+function sayiGoToNextRound() {
+    clearInterval(computerSolutionAnimationInterval);
+    document.getElementById('sayi-round-over-modal').classList.add('hidden');
+    if (game.sayi.currentRound >= game.sayi.maxRounds) {
+        endSayiGame();
+    } else {
+        game.sayi.currentRound++;
+        startSayiRound();
+    }
+}
+
+function updateSayiUI() {
+    document.getElementById('sayi-current-round').textContent = game.sayi.currentRound;
+    document.getElementById('sayi-score').textContent = game.sayi.score;
+}
+
+async function endSayiGame() {
+    document.getElementById('sayi-game-screen').classList.add('hidden');
+    document.getElementById('sayi-game-over-screen').classList.remove('hidden');
+    document.getElementById('sayi-final-score').textContent = game.sayi.score;
+    sounds.playSuccess();
+
+    try {
+        await fetch(WEB_APP_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                mode: 'sayi',
+                playerName: game.playerName,
+                score: game.sayi.score,
+                category: game.sayi.maxRounds
+            })
+        });
+    } catch (err) {
+        console.error('Sayı Avı skoru kaydedilemedi:', err);
+    }
+}
 
         // --- KARMA MOD ---
         function showKarmaRoundSelectScreen(){document.getElementById('name-screen').classList.add('hidden');document.getElementById('game-mode-select-screen').classList.add('hidden');document.getElementById('karma-round-select-screen').classList.remove('hidden');game.selectedRoundCount=null;document.querySelectorAll('.karma-round-btn').forEach(b=>{b.classList.remove('bg-summer-sea','text-white');b.classList.add('bg-blue-50','text-summer-sea');});updateKarmaStartButtonState();}
