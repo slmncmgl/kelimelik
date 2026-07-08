@@ -250,7 +250,7 @@
     <!-- SAYI AVI: ROUND SEÇİM EKRANI -->
     <div id="sayi-round-select-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
         <h2 class="text-3xl font-extrabold text-summer-sea mb-2">🔢 Sayı Avı</h2>
-        <p class="text-gray-500 mb-6">Kaç tur oynayalım? (Her tur 1 dakika)</p>
+        <p class="text-gray-500 mb-6">Kaç tur oynayalım? (Her tur 90 saniye)</p>
 
         <div class="grid grid-cols-3 gap-2 mb-6">
             <button onclick="selectSayiRoundCount(3)" data-sayi-round="3" class="sayi-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">3</button>
@@ -303,9 +303,14 @@
             <button onclick="selectSayiOperator('÷')" data-sayi-op="÷" class="sayi-op-btn py-3 bg-white text-summer-sea font-black text-2xl rounded-xl shadow border-2 border-blue-200 hover:bg-blue-50">÷</button>
         </div>
 
-        <button onclick="resetSayiNumbers()" class="w-full py-2 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors text-sm">
-            🔄 Sayıları Sıfırla (baştan kombinle)
-        </button>
+        <div class="grid grid-cols-2 gap-2">
+            <button onclick="undoSayiOperation()" class="py-2 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors text-sm">
+                ↩️ Geri Al
+            </button>
+            <button onclick="resetSayiNumbers()" class="py-2 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors text-sm">
+                🔄 Baştan Kombinle
+            </button>
+        </div>
     </div>
 
     <!-- SAYI AVI: TUR SONU MODALI -->
@@ -917,6 +922,7 @@
             document.getElementById('karma-game-over-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('round-over-modal').classList.add('hidden');
+            document.getElementById('mp-countdown-overlay').classList.add('hidden');
             clearInterval(sayiTimerInterval);
             clearInterval(timerInterval);
             game.karma.active = false;
@@ -1660,7 +1666,8 @@
                 selectedTileId: null,
                 selectedOperator: null,
                 timeRemaining: 60,
-                isPlaying: false
+                isPlaying: false,
+                history: []
             };
             document.getElementById('sayi-round-select-screen').classList.add('hidden');
             document.getElementById('sayi-game-screen').classList.remove('hidden');
@@ -1677,8 +1684,9 @@
             game.sayi.bestResultThisRound = null;
             game.sayi.selectedTileId = null;
             game.sayi.selectedOperator = null;
-            game.sayi.timeRemaining = 60;
+            game.sayi.timeRemaining = 90;
             game.sayi.isPlaying = false;
+            game.sayi.history = [];
 
             document.getElementById('sayi-target').textContent = target;
             document.getElementById('sayi-best-result').textContent = '-';
@@ -1689,14 +1697,18 @@
 
             const timeDisplay = document.getElementById('sayi-time-left');
             clearInterval(sayiTimerInterval);
-            timeDisplay.textContent = 'Dağıtılıyor...';
-            timeDisplay.classList.add('text-sm', 'animate-pulse');
+            timeDisplay.textContent = 'Hazırlanıyor...';
+            document.getElementById('sayi-numbers-rack').innerHTML = ''; // Geri sayım bitene kadar sayı gösterilmesin
 
-            sounds.playStart();
-            renderSayiNumbersRack(true, () => {
-                game.sayi.isPlaying = true;
-                timeDisplay.classList.remove('text-sm', 'animate-pulse');
-                startSayiTimer();
+            runLocalCountdown(5, () => {
+                timeDisplay.textContent = 'Dağıtılıyor...';
+                timeDisplay.classList.add('text-sm', 'animate-pulse');
+                sounds.playStart();
+                renderSayiNumbersRack(true, () => {
+                    game.sayi.isPlaying = true;
+                    timeDisplay.classList.remove('text-sm', 'animate-pulse');
+                    startSayiTimer();
+                });
             });
         }
 
@@ -1743,7 +1755,7 @@
         function renderSayiNumbersRack(animate = false, onAnimationComplete = null) {
             const rackEl = document.getElementById('sayi-numbers-rack');
             rackEl.innerHTML = '';
-            const visibleTiles = game.sayi.numbers.filter(t => !t.used);
+            const visibleTiles = game.sayi.numbers.filter(t => !t.used).sort((a, b) => a.value - b.value);
 
             visibleTiles.forEach((tile, index) => {
                 const el = document.createElement('div');
@@ -1831,7 +1843,9 @@
 
             firstTile.used = true;
             tile.used = true;
-            game.sayi.numbers.push({ id: `r_${Date.now()}_${Math.floor(Math.random() * 1000)}`, value: result, used: false });
+            const resultId = `r_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+            game.sayi.numbers.push({ id: resultId, value: result, used: false });
+            game.sayi.history.push({ firstId: firstTile.id, secondId: tile.id, resultId: resultId });
 
             game.sayi.selectedTileId = null;
             game.sayi.selectedOperator = null;
@@ -1887,12 +1901,35 @@
         function resetSayiNumbers() {
             game.sayi.numbers = game.sayi.numbers.filter(t => !t.id.startsWith('r_'));
             game.sayi.numbers.forEach(t => t.used = false);
+            game.sayi.history = [];
             game.sayi.selectedTileId = null;
             game.sayi.selectedOperator = null;
             resetSayiOperatorButtonStyles();
             updateSayiExpressionDisplay();
             renderSayiNumbersRack();
             showToast('Sayılar sıfırlandı, tekrar dene!', 'success');
+        }
+
+        // Sadece SON işlemi geri alır: kombinlenen iki sayıyı tekrar müsait hale getirir, sonucu siler
+        function undoSayiOperation() {
+            if (!game.sayi.isPlaying) return;
+            if (game.sayi.history.length === 0) {
+                showToast('Geri alınacak işlem yok');
+                return;
+            }
+            const last = game.sayi.history.pop();
+            const firstTile = game.sayi.numbers.find(t => t.id === last.firstId);
+            const secondTile = game.sayi.numbers.find(t => t.id === last.secondId);
+            if (firstTile) firstTile.used = false;
+            if (secondTile) secondTile.used = false;
+            game.sayi.numbers = game.sayi.numbers.filter(t => t.id !== last.resultId);
+
+            game.sayi.selectedTileId = null;
+            game.sayi.selectedOperator = null;
+            resetSayiOperatorButtonStyles();
+            sounds.playClick();
+            updateSayiExpressionDisplay();
+            renderSayiNumbersRack();
         }
 
         function calculateSayiPoints(target, bestResult) {
@@ -2421,6 +2458,27 @@
         }
 
         // Round başlarken 5'ten geri sayım gösterir (countdownEndsAt yoksa veya geçmişse direkt devam eder)
+        // Sunucu senkronu gerektirmeyen, tamamen yerel 5-4-3-2-1 geri sayım (Sayı Avı tur geçişleri için)
+        function runLocalCountdown(seconds, onComplete) {
+            const overlay = document.getElementById('mp-countdown-overlay');
+            const numberEl = document.getElementById('mp-countdown-number');
+            let remaining = seconds;
+            numberEl.textContent = remaining;
+            overlay.classList.remove('hidden');
+
+            const interval = setInterval(() => {
+                remaining--;
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    overlay.classList.add('hidden');
+                    onComplete();
+                } else {
+                    numberEl.textContent = remaining;
+                    sounds.playClick();
+                }
+            }, 1000);
+        }
+
         function runMultiplayerCountdown(countdownEndsAt, onComplete) {
             if (!countdownEndsAt || countdownEndsAt - window.fb.serverNow() <= 0) {
                 onComplete();
