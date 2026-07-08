@@ -257,10 +257,83 @@ function karmaGoToNextRound(){document.getElementById('karma-round-over-modal').
 async function endKarmaGame(){game.karma.active=false;hideAllScreens();document.getElementById('karma-game-over-screen').classList.remove('hidden');document.getElementById('karma-final-score').textContent=game.karma.score;document.getElementById('btn-karma-finish').classList.add('hidden');sounds.playSuccess();try{await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({mode:'karma',playerName:game.playerName,score:game.karma.score,category:game.karma.maxRounds})});}catch(e){}}
 
 // ==================== MULTIPLAYER ====================
-let mpActiveListenerPath=null,mpWaitingListenerPath=null;
-function detachMpListeners(){if(mpActiveListenerPath){window.fb.off(window.fb.ref(window.fb.db,mpActiveListenerPath));mpActiveListenerPath=null;}if(mpWaitingListenerPath){window.fb.off(window.fb.ref(window.fb.db,mpWaitingListenerPath));mpWaitingListenerPath=null;}}
-function generateGameId(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let id='';for(let i=0;i<5;i++)id+=c[Math.floor(Math.random()*c.length)];return id;}
-function showMpLobbyScreen(gameType){game.mp.gameType=gameType;switchToScreen('mp-lobby-screen');const listEl=document.getElementById('mp-active-list');listEl.innerHTML='<p class="text-gray-400 text-sm">Yükleniyor...</p>';detachMpListeners();mpActiveListenerPath='lobbies-index';window.fb.onValue(window.fb.ref(window.fb.db,'lobbies-index'),(snap)=>{const data=snap.val()||{};const now=Date.now();const waiting=[];Object.entries(data).forEach(([id,l])=>{if(l.status!=='waiting'||l.gameType!==gameType)return;const isStale=!l.createdAt||(now-l.createdAt)>3*60*1000;if(isStale){window.fb.remove(window.fb.ref(window.fb.db,`lobbies-index/${id}`)).catch(()=>{});window.fb.remove(window.fb.ref(window.fb.db,`lobbies/${id}`)).catch(()=>{});return;}waiting.push([id,l]);});if(waiting.length===0){listEl.innerHTML='<p class="text-gray-400 text-sm">Şu an aktif oyun yok. İlk oyunu sen kur!</p>';return;}listEl.innerHTML=waiting.map(([id,l])=>`<div class="flex justify-between items-center bg-blue-50 border border-blue-100 rounded-xl px-4 py-3"><div class="text-left"><p class="font-bold text-summer-sea">${l.host}'in Oyunu</p><p class="text-xs text-gray-500">${l.playerCount||1} oyuncu · ${l.gameType==='sayi'?'🔢 Sayı':'📖 Kelime'} · Kod: ${id}</p></div><button onclick="joinMpGame('${id}')" class="px-4 py-2 bg-summer-sea text-white font-bold rounded-lg text-sm hover:bg-blue-700">Katıl</button></div>`).join('');});}
+// MULTIPLAYER bölümündeki showMpLobbyScreen ve ilgili fonksiyonları şunlarla değiştir:
+
+let mpActiveListenerPath = null, mpWaitingListenerPath = null;
+function detachMpListeners() {
+    if (mpActiveListenerPath) {
+        window.fb.off(window.fb.ref(window.fb.db, mpActiveListenerPath));
+        mpActiveListenerPath = null;
+    }
+    if (mpWaitingListenerPath) {
+        window.fb.off(window.fb.ref(window.fb.db, mpWaitingListenerPath));
+        mpWaitingListenerPath = null;
+    }
+}
+
+function generateGameId() {
+    const c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let id = '';
+    for (let i = 0; i < 5; i++) id += c[Math.floor(Math.random() * c.length)];
+    return id;
+}
+
+function showMpLobbyScreen(gameType) {
+    game.mp.gameType = gameType;
+    switchToScreen('mp-lobby-screen');
+    const listEl = document.getElementById('mp-active-list');
+    listEl.innerHTML = '<p class="text-gray-400 text-sm">Yükleniyor...</p>';
+    
+    // Önce eski listener'ı temizle
+    if (mpActiveListenerPath) {
+        window.fb.off(window.fb.ref(window.fb.db, mpActiveListenerPath));
+        mpActiveListenerPath = null;
+    }
+    
+    mpActiveListenerPath = 'lobbies-index';
+    const indexRef = window.fb.ref(window.fb.db, 'lobbies-index');
+    
+    window.fb.onValue(indexRef, (snap) => {
+        const data = snap.val() || {};
+        const now = Date.now();
+        const waiting = [];
+        
+        Object.entries(data).forEach(([id, l]) => {
+            // Sadece waiting durumunda VE aynı oyun tipinde olanları göster
+            if (l.status !== 'waiting') return;
+            if (l.gameType && l.gameType !== gameType) return;
+            
+            // 3 dakikadan eski lobileri temizle
+            const isStale = !l.createdAt || (now - l.createdAt) > 3 * 60 * 1000;
+            if (isStale) {
+                const lobbyRef = window.fb.ref(window.fb.db, `lobbies/${id}`);
+                const indexEntryRef = window.fb.ref(window.fb.db, `lobbies-index/${id}`);
+                window.fb.remove(lobbyRef).catch(() => {});
+                window.fb.remove(indexEntryRef).catch(() => {});
+                return;
+            }
+            waiting.push([id, l]);
+        });
+        
+        if (waiting.length === 0) {
+            listEl.innerHTML = '<p class="text-gray-400 text-sm">Şu an aktif oyun yok. İlk oyunu sen kur!</p>';
+            return;
+        }
+        
+        listEl.innerHTML = waiting.map(([id, l]) => `
+            <div class="flex justify-between items-center bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
+                <div class="text-left">
+                    <p class="font-bold text-summer-sea">${l.host}'in Oyunu</p>
+                    <p class="text-xs text-gray-500">${l.playerCount || 1} oyuncu · ${l.gameType === 'sayi' ? '🔢 Sayı' : '📖 Kelime'} · Kod: ${id}</p>
+                </div>
+                <button onclick="joinMpGame('${id}')" class="px-4 py-2 bg-summer-sea text-white font-bold rounded-lg text-sm hover:bg-blue-700">Katıl</button>
+            </div>
+        `).join('');
+    }, (error) => {
+        console.error('Lobi listesi dinleme hatası:', error);
+        listEl.innerHTML = '<p class="text-red-400 text-sm">Bağlantı hatası. Sayfayı yenileyin.</p>';
+    });
+}
 function leaveMpLobbyScreen(){detachMpListeners();if(game.mp.gameType==='sayi')switchToScreen('sayi-welcome-screen');else switchToScreen('kelime-welcome-screen');}
 async function openMpHost(){await getOrCreatePlayerName();switchToScreen('mp-waiting-screen');document.getElementById('mp-game-code').textContent='';document.getElementById('mp-player-list').innerHTML=`<div class="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg"><span>👑</span><span class="font-bold text-summer-sea">${game.playerName}</span><span class="text-xs text-gray-400">(sen)</span></div>`;document.getElementById('mp-host-controls').classList.remove('hidden');document.getElementById('mp-guest-waiting-text').classList.add('hidden');await createLobby(game.playerName);}
 async function joinMpGame(gameId){await getOrCreatePlayerName();switchToScreen('mp-waiting-screen');document.getElementById('mp-game-code').textContent='';document.getElementById('mp-player-list').innerHTML=`<div class="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg"><span>🙂</span><span class="font-bold text-summer-sea">${game.playerName}</span><span class="text-xs text-gray-400">(sen)</span></div>`;document.getElementById('mp-host-controls').classList.add('hidden');document.getElementById('mp-guest-waiting-text').classList.remove('hidden');await joinLobby(gameId,game.playerName);}
