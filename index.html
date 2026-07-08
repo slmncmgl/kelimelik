@@ -424,25 +424,22 @@
 
         // ==================== OYUNCU ADI ====================
         async function getOrCreatePlayerName() {
-            if (game.playerName && game.playerName.startsWith('Oyuncu#')) return game.playerName;
-            try {
-                const res = await fetch(`${WEB_APP_URL}?mode=oyuncu`);
-                const data = await res.json();
-                const registerRes = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'registerPlayer' }) });
-                const registerData = await registerRes.json();
-                game.playerName = registerData.playerName;
-                return game.playerName;
-            } catch (err) {
-                console.error('Oyuncu kaydı başarısız:', err);
-                game.playerName = 'Oyuncu#' + (Math.floor(Math.random() * 9000) + 1000);
-                return game.playerName;
-            }
-        }
+    // Zaten hazırsa direkt dön
+    if (playerNameReady && game.playerName) {
+        return game.playerName;
+    }
+    // Henüz hazır değilse, başlangıçta başlatılan promise'i bekle
+    if (playerNamePromise) {
+        await playerNamePromise;
+    }
+    // Hâlâ yoksa (bağlantı hatası vs), fallback
+    if (!game.playerName) {
+        game.playerName = 'Oyuncu#' + (Math.floor(Math.random() * 9000) + 1000);
+    }
+    return game.playerName;
+}
 
-        function updatePlayerNameDisplay(elementId) {
-            const el = document.getElementById(elementId);
-            if (el && game.playerName) el.textContent = '🎮 ' + game.playerName;
-        }
+    
 
         // ==================== KURALLAR ====================
         const RULES_LINES = ['Her tur 3 Sesli, 4 Sessiz ve 1 Joker harf düşer.', 'Yeni tur, bir önceki turdan en az 5 harf farklı olur.', 'Süre, harfler dizildikten sonra başlar.', 'Harfleri kullanarak en uzun kelimeleri yaz. Harf başına 1 Puan!', 'Sayı Avı\'nda 6 sayı verilir, hedefe en yakın sonucu bul!'];
@@ -684,6 +681,33 @@
 
         function updateUI() { document.getElementById('score').textContent = game.score; document.getElementById('current-round').textContent = game.currentRound; document.getElementById('max-round-display').textContent = game.maxRounds === Infinity ? '∞' : game.maxRounds; }
 
+
+
+
+// ==================== SAYFA AÇILIR AÇILMAZ OYUNCU ADINI ÇEK ====================
+let playerNameReady = false;
+let playerNamePromise = null;
+
+async function initPlayerName() {
+    try {
+        const res = await fetch(`${WEB_APP_URL}?mode=oyuncu`);
+        const data = await res.json();
+        const registerRes = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'registerPlayer' }) });
+        const registerData = await registerRes.json();
+        game.playerName = registerData.playerName;
+        playerNameReady = true;
+        console.log('Oyuncu adı hazır:', game.playerName);
+    } catch (err) {
+        console.error('Oyuncu kaydı başarısız:', err);
+        game.playerName = 'Oyuncu#' + (Math.floor(Math.random() * 9000) + 1000);
+        playerNameReady = true;
+    }
+}
+
+// Sayfa yüklenir yüklenmez başlat
+playerNamePromise = initPlayerName();
+
+        
         // ==================== JOKER (KELİME) ====================
         function buildJokerKeyboard() { const c = document.getElementById('joker-keyboard'); c.innerHTML = ''; ALPHABET.forEach(l => { const b = document.createElement('button'); b.className = "w-10 h-10 bg-gray-100 rounded-lg font-bold text-gray-700 hover:bg-summer-sun hover:text-white transition-colors border border-gray-200 shadow-sm"; b.textContent = l; b.onclick = () => selectJokerLetter(l); c.appendChild(b); }); }
         function openJokerModal(tile) { game.pendingJokerTile = tile; document.getElementById('joker-modal').classList.remove('hidden'); }
