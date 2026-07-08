@@ -727,29 +727,84 @@
         }
 
         async function loadScoreTabContent(tab) {
-            const listEl = document.getElementById('retro-top10-list');
-            listEl.innerHTML = '<p class="text-slate-500 text-sm">Yükleniyor...</p>';
-            const modeMap = { 'kelime': 'solo', 'sayi': 'sayi', 'karma': 'karma' };
-            try {
-                const res = await fetch(`${WEB_APP_URL}?mode=${modeMap[tab]}`);
-                const players = await res.json();
-                let entries = [];
-                if (players.length > 0 && players[0].pos !== undefined && players[0].score !== undefined) {
-                    entries = players.slice(0, 10);
-                } else {
-                    players.forEach(p => {
-                        if (p.scores) Object.entries(p.scores).forEach(([cat, sc]) => { if (sc !== null && sc !== undefined && sc !== '') entries.push({ name: p.name, score: Number(sc) }); });
-                    });
-                    entries.sort((a, b) => b.score - a.score);
-                    entries = entries.slice(0, 10).map((e, i) => ({ pos: i + 1, name: e.name, score: e.score }));
-                }
-                if (entries.length === 0) { listEl.innerHTML = '<p class="text-slate-500 text-sm">Henüz skor yok</p>'; return; }
-                const rowClass = (pos) => pos === 1 ? 'retro-row-1' : pos === 2 ? 'retro-row-2' : pos === 3 ? 'retro-row-3' : 'retro-row-other';
-                const medal = (pos) => pos === 1 ? '👑' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : '';
-                listEl.innerHTML = entries.map(e => `<div class="grid grid-cols-12 items-center font-retro text-sm ${rowClass(e.pos)} py-1"><span class="col-span-2 text-left">${medal} ${e.pos}</span><span class="col-span-5 text-left truncate">${e.name}</span><span class="col-span-5 text-left">${e.score}</span></div>`).join('');
-            } catch (err) { listEl.innerHTML = '<p class="text-slate-500 text-sm">Yüklenemedi</p>'; }
+    const listEl = document.getElementById('retro-top10-list');
+    listEl.innerHTML = '<p class="text-slate-500 text-sm">Yükleniyor...</p>';
+
+    const modeMap = {
+        'kelime': 'solo',
+        'sayi': 'sayi',
+        'karma': 'karma'
+    };
+    const mode = modeMap[tab];
+
+    try {
+        const res = await fetch(`${WEB_APP_URL}?mode=${mode}`);
+        const data = await res.json();
+        
+        console.log('Gelen ham veri:', data);
+
+        let entries = [];
+
+        // Veriyi temizle: başlık satırlarını filtrele
+        if (Array.isArray(data)) {
+            entries = data.filter(item => {
+                const name = String(item.name || '').trim();
+                const score = Number(item.score);
+                // Başlık satırlarını ele: "POS", "NAME", "SCORE" gibi metinler veya NaN skorlar
+                if (name === 'POS' || name === 'NAME' || name === 'SCORE' || name === '') return false;
+                if (isNaN(score) || score <= 0) return false;
+                return true;
+            });
+
+            // Skora göre sırala (garanti olsun)
+            entries.sort((a, b) => b.score - a.score);
+            // POS'ları yeniden numaralandır
+            entries = entries.slice(0, 10).map((item, i) => ({
+                pos: i + 1,
+                name: String(item.name).trim(),
+                score: Number(item.score)
+            }));
         }
 
+        console.log('İşlenmiş entries:', entries);
+
+        if (entries.length === 0) {
+            listEl.innerHTML = '<p class="text-slate-500 text-sm">Henüz skor yok</p>';
+            return;
+        }
+
+        // Madalya ve satır rengi
+        function getMedal(pos) {
+            if (pos === 1) return '👑';
+            if (pos === 2) return '🥈';
+            if (pos === 3) return '🥉';
+            return '';
+        }
+        
+        function getRowClass(pos) {
+            if (pos === 1) return 'retro-row-1';
+            if (pos === 2) return 'retro-row-2';
+            if (pos === 3) return 'retro-row-3';
+            return 'retro-row-other';
+        }
+
+        listEl.innerHTML = entries.map(e => {
+            const medal = getMedal(e.pos);
+            const rowClass = getRowClass(e.pos);
+            return `
+                <div class="grid grid-cols-12 items-center font-retro text-sm ${rowClass} py-1">
+                    <span class="col-span-2 text-left">${medal} ${e.pos}</span>
+                    <span class="col-span-5 text-left truncate">${e.name}</span>
+                    <span class="col-span-5 text-left">${e.score}</span>
+                </div>
+            `;
+        }).join('');
+        
+    } catch (err) {
+        console.error('Skor tablosu yüklenemedi:', err);
+        listEl.innerHTML = '<p class="text-slate-500 text-sm">Yüklenemedi</p>';
+    }
+}
         // --- EKRAN GEÇİŞLERİ ---
         function showGameModeSelectScreen() {
             ['welcome-screen','name-screen','round-select-screen','sayi-round-select-screen','sayi-game-screen','sayi-game-over-screen','sayi-round-over-modal','karma-round-select-screen','karma-round-over-modal','karma-game-over-screen','game-screen','round-over-modal','scoreboard-screen'].forEach(id => document.getElementById(id).classList.add('hidden'));
