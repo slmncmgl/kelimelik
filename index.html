@@ -31,7 +31,7 @@
         <button onclick="switchToScreen('scoreboard-screen')" class="py-3 bg-blue-50 text-summer-sea font-bold text-sm rounded-xl hover:bg-blue-100 transition-all">🏆 Skor Tablosu</button>
     </div>
     <div id="rules-panel"><div class="bg-blue-50 p-4 rounded-xl text-left text-sm mt-3 shadow-inner text-gray-700 min-h-[150px]"><div id="rules-typewriter-content"></div></div></div>
-    <p class="text-xs text-gray-300 mt-6">v1.2</p>
+    <p class="text-xs text-gray-300 mt-6">v1.3</p>
 </div>
 
 <div id="kelime-welcome-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
@@ -148,7 +148,7 @@ const AudioContext=window.AudioContext||window.webkitAudioContext;const audioCtx
 const sounds={playTone(f,t,d,v=0.1){if(audioCtx.state==='suspended')audioCtx.resume();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=t;o.frequency.setValueAtTime(f,audioCtx.currentTime);g.gain.setValueAtTime(v,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+d);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d);},playChord(f,t,d,v=0.07){f.forEach(x=>this.playTone(x,t,d,v));},playClick:()=>sounds.playChord([659.25,987.77],'sine',0.08,0.05),playError:()=>sounds.playChord([233.08,277.18],'sine',0.25,0.06),playSuccess:()=>{sounds.playChord([523.25,659.25],'sine',0.15,0.07);setTimeout(()=>sounds.playChord([523.25,659.25,783.99],'sine',0.45,0.06),120);},playStart:()=>{sounds.playChord([392,493.88],'sine',0.18,0.06);setTimeout(()=>sounds.playChord([523.25,659.25,783.99],'sine',0.4,0.07),160);},playRoll:()=>sounds.playTone(880,'sine',0.04,0.02)};
 function showToast(m,t='error'){const c=document.getElementById('toast-container');const el=document.createElement('div');el.className=`${t==='error'?'bg-red-500':'bg-green-500'} text-white px-6 py-3 rounded-full shadow-lg font-bold text-sm transform transition-all duration-300 translate-y-[-20px] opacity-0`;el.textContent=m;c.appendChild(el);setTimeout(()=>{el.classList.remove('translate-y-[-20px]','opacity-0');el.classList.add('translate-y-0','opacity-100');},10);setTimeout(()=>{el.classList.remove('translate-y-0','opacity-100');el.classList.add('translate-y-[-20px]','opacity-0');setTimeout(()=>el.remove(),300);},2000);}
 
-const WEB_APP_URL='https://script.google.com/macros/s/AKfycbwpf1bdy3UdvVHZouetmXJkxAgWRffiopsQY8IFtDzMMBI0t5G9b9nBPiPHX3hf9oy3/exec';
+const WEB_APP_URL='https://script.google.com/macros/s/AKfycbzQivxeUgVu5MKBJBR_-RjCrrKPiHIk2mIkgPPP2NfJc7ArJ13-XIHE5kmsCOL00KTO/exec';
 const VOWELS=['A','E','I','İ','O','Ö','U','Ü'],CONSONANTS=['B','C','Ç','D','F','G','Ğ','H','J','K','L','M','N','P','R','S','Ş','T','V','Y','Z'];
 const ALPHABET=[...VOWELS,...CONSONANTS].sort((a,b)=>a.localeCompare(b,'tr'));
 const LETTER_SCRAMBLE_STEP_MS=500,SAYI_SMALL=[1,2,3,4,5,6,7,8,9],SAYI_LARGE=[10,25,50,75,100];
@@ -160,9 +160,11 @@ loadDict();
 let game={isPlaying:false,score:0,currentRound:1,maxRounds:10,playerName:'',previousLetters:null,selectedRoundCount:null,selectedDurationMinutes:null,karma:{active:false,currentRound:1,maxRounds:3,score:0},roundLetters:[],activeWord:[],foundWords:[],timeRemaining:180,pendingJokerTile:null,sayi:{numbers:[],target:0,currentRound:1,maxRounds:3,score:0,bestResultThisRound:null,selectedTileId:null,selectedOperator:null,timeRemaining:90,isPlaying:false,history:[]},mp:{gameId:null,isHost:false,gameType:'kelime',selectedRoundCount:null,selectedDurationMinutes:null,previousLetters:null,lastSyncedRound:null,lastBonusAppliedRound:null,currentPlayerCount:1}};
 let timerInterval=null,mpTimerInterval=null,sayiTimerInterval=null,computerSolutionAnimationInterval=null,roundOverUnlockInterval=null;
 let playerNameReady=false,playerNamePromise=null;
-async function initPlayerName(){try{const r=await fetch(`${WEB_APP_URL}?mode=oyuncu`);const d=await r.json();const rr=await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'registerPlayer'})});const rd=await rr.json();game.playerName=rd.playerName;playerNameReady=true;}catch(e){game.playerName='Oyuncu#'+(Math.floor(Math.random()*9000)+1000);playerNameReady=true;}}
+
+// # karakteri Firebase'de geçersiz olduğu için - kullan
+async function initPlayerName(){try{const r=await fetch(`${WEB_APP_URL}?mode=oyuncu`);const d=await r.json();const rr=await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'registerPlayer'})});const rd=await rr.json();game.playerName=rd.playerName.replace(/#/g,'-');playerNameReady=true;}catch(e){game.playerName='Oyuncu-'+(Math.floor(Math.random()*9000)+1000);playerNameReady=true;}}
 playerNamePromise=initPlayerName();
-async function getOrCreatePlayerName(){if(playerNameReady&&game.playerName)return game.playerName;if(playerNamePromise)await playerNamePromise;if(!game.playerName)game.playerName='Oyuncu#'+(Math.floor(Math.random()*9000)+1000);return game.playerName;}
+async function getOrCreatePlayerName(){if(playerNameReady&&game.playerName)return game.playerName;if(playerNamePromise)await playerNamePromise;if(!game.playerName)game.playerName='Oyuncu-'+(Math.floor(Math.random()*9000)+1000);return game.playerName;}
 function updatePlayerNameDisplay(id){const el=document.getElementById(id);if(el&&game.playerName)el.textContent='🎮 '+game.playerName;}
 
 const ALL_SCREENS=['game-mode-select-screen','kelime-welcome-screen','sayi-welcome-screen','scoreboard-screen','round-select-screen','sayi-round-select-screen','karma-round-select-screen','sayi-game-screen','sayi-game-over-screen','karma-game-over-screen','game-screen','game-over-screen','mp-lobby-screen','mp-waiting-screen'];
@@ -257,250 +259,21 @@ function karmaGoToNextRound(){document.getElementById('karma-round-over-modal').
 async function endKarmaGame(){game.karma.active=false;hideAllScreens();document.getElementById('karma-game-over-screen').classList.remove('hidden');document.getElementById('karma-final-score').textContent=game.karma.score;document.getElementById('btn-karma-finish').classList.add('hidden');sounds.playSuccess();try{await fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({mode:'karma',playerName:game.playerName,score:game.karma.score,category:game.karma.maxRounds})});}catch(e){}}
 
 // ==================== MULTIPLAYER ====================
-let mpActiveListenerRef = null;
-let mpWaitingListenerRef = null;
-
-function detachMpListeners() {
-    if (mpActiveListenerRef) {
-        window.fb.off(mpActiveListenerRef);
-        mpActiveListenerRef = null;
-    }
-    if (mpWaitingListenerRef) {
-        window.fb.off(mpWaitingListenerRef);
-        mpWaitingListenerRef = null;
-    }
-}
-
-function generateGameId() {
-    const c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let id = '';
-    for (let i = 0; i < 5; i++) id += c[Math.floor(Math.random() * c.length)];
-    return id;
-}
-
-function showMpLobbyScreen(gameType) {
-    game.mp.gameType = gameType;
-    switchToScreen('mp-lobby-screen');
-    
-    const listEl = document.getElementById('mp-active-list');
-    listEl.innerHTML = '<p class="text-gray-400 text-sm">Yükleniyor...</p>';
-    
-    // Eski listener'ı kesin temizle
-    detachMpListeners();
-    
-    // Yeni listener bağla
-    mpActiveListenerRef = window.fb.ref(window.fb.db, 'lobbies-index');
-    
-    window.fb.onValue(mpActiveListenerRef, (snap) => {
-        const data = snap.val() || {};
-        const now = Date.now();
-        const waiting = [];
-        
-        Object.entries(data).forEach(([id, l]) => {
-            if (!l || l.status !== 'waiting') return;
-            if (l.gameType && l.gameType !== gameType) return;
-            
-            const isStale = !l.createdAt || (now - l.createdAt) > 3 * 60 * 1000;
-            if (isStale) {
-                window.fb.remove(window.fb.ref(window.fb.db, `lobbies/${id}`)).catch(() => {});
-                window.fb.remove(window.fb.ref(window.fb.db, `lobbies-index/${id}`)).catch(() => {});
-                return;
-            }
-            waiting.push([id, l]);
-        });
-        
-        console.log('Aktif lobiler:', waiting.length, waiting.map(w => w[0]));
-        
-        if (waiting.length === 0) {
-            listEl.innerHTML = '<p class="text-gray-400 text-sm">Şu an aktif oyun yok. İlk oyunu sen kur!</p>';
-            return;
-        }
-        
-        listEl.innerHTML = waiting.map(([id, l]) => `
-            <div class="flex justify-between items-center bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
-                <div class="text-left">
-                    <p class="font-bold text-summer-sea">${l.host}'in Oyunu</p>
-                    <p class="text-xs text-gray-500">${l.playerCount || 1} oyuncu · ${l.gameType === 'sayi' ? '🔢 Sayı' : '📖 Kelime'} · Kod: ${id}</p>
-                </div>
-                <button onclick="joinMpGame('${id}')" class="px-4 py-2 bg-summer-sea text-white font-bold rounded-lg text-sm hover:bg-blue-700">Katıl</button>
-            </div>
-        `).join('');
-    });
-}
-
-function leaveMpLobbyScreen() {
-    detachMpListeners();
-    if (game.mp.gameType === 'sayi') switchToScreen('sayi-welcome-screen');
-    else switchToScreen('kelime-welcome-screen');
-}
-
-async function openMpHost() {
-    await getOrCreatePlayerName();
-    switchToScreen('mp-waiting-screen');
-    document.getElementById('mp-game-code').textContent = '';
-    document.getElementById('mp-player-list').innerHTML = `<div class="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg"><span>👑</span><span class="font-bold text-summer-sea">${game.playerName}</span><span class="text-xs text-gray-400">(sen)</span></div>`;
-    document.getElementById('mp-host-controls').classList.remove('hidden');
-    document.getElementById('mp-guest-waiting-text').classList.add('hidden');
-    await createLobby(game.playerName);
-}
-
-async function joinMpGame(gameId) {
-    await getOrCreatePlayerName();
-    switchToScreen('mp-waiting-screen');
-    document.getElementById('mp-game-code').textContent = '';
-    document.getElementById('mp-player-list').innerHTML = `<div class="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg"><span>🙂</span><span class="font-bold text-summer-sea">${game.playerName}</span><span class="text-xs text-gray-400">(sen)</span></div>`;
-    document.getElementById('mp-host-controls').classList.add('hidden');
-    document.getElementById('mp-guest-waiting-text').classList.remove('hidden');
-    await joinLobby(gameId, game.playerName);
-}
-
-async function createLobby(name) {
-    const gid = generateGameId();
-    const now = Date.now();
-    
-    // Önce lobbies-index'e yaz (senkron)
-    await window.fb.set(window.fb.ref(window.fb.db, `lobbies-index/${gid}`), {
-        host: name,
-        status: 'waiting',
-        gameType: game.mp.gameType,
-        playerCount: 1,
-        createdAt: now
-    });
-    
-    // Sonra lobbies detayına yaz
-    await window.fb.set(window.fb.ref(window.fb.db, `lobbies/${gid}`), {
-        host: name,
-        status: 'waiting',
-        gameType: game.mp.gameType,
-        roundCount: null,
-        players: { [name]: true },
-        createdAt: window.fb.serverTimestamp()
-    });
-    
-    game.mp.gameId = gid;
-    game.mp.isHost = true;
-    game.score = 0;
-    game.foundWords = [];
-    game.sayi = { score: 0 };
-    game.mp.lastSyncedRound = null;
-    game.mp.lastBonusAppliedRound = null;
-    
-    subscribeToWaitingRoom(gid);
-}
-
-async function joinLobby(gid, name) {
-    const snap = await window.fb.get(window.fb.ref(window.fb.db, `lobbies/${gid}/players`));
-    const ex = snap.val() || {};
-    let fn = name;
-    if (ex[fn]) {
-        let c = 2;
-        while (ex[`${name} (${c})`]) c++;
-        fn = `${name} (${c})`;
-    }
-    await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${gid}/players`), { [fn]: true });
-    await window.fb.update(window.fb.ref(window.fb.db, `lobbies-index/${gid}`), { playerCount: Object.keys(ex).length + 1 });
-    game.playerName = fn;
-    game.mp.gameId = gid;
-    game.mp.isHost = false;
-    game.score = 0;
-    game.foundWords = [];
-    game.mp.lastSyncedRound = null;
-    subscribeToWaitingRoom(gid);
-}
-
-function subscribeToWaitingRoom(gid) {
-    // Eski waiting listener'ı temizle
-    if (mpWaitingListenerRef) {
-        window.fb.off(mpWaitingListenerRef);
-        mpWaitingListenerRef = null;
-    }
-    
-    document.getElementById('mp-game-code').textContent = gid;
-    mpWaitingListenerRef = window.fb.ref(window.fb.db, `lobbies/${gid}`);
-    
-    window.fb.onValue(mpWaitingListenerRef, (snap) => {
-        const data = snap.val();
-        if (!data) {
-            showToast('Bu oyun artık mevcut değil.');
-            leaveMultiplayerLobby();
-            return;
-        }
-        handleLobbyUpdate(data);
-    });
-}
-
-function handleLobbyUpdate(data) {
-    if (data.status === 'waiting') {
-        document.getElementById('mp-waiting-screen').classList.remove('hidden');
-        document.getElementById('game-screen').classList.add('hidden');
-        document.getElementById('sayi-game-screen').classList.add('hidden');
-        renderWaitingRoom(data);
-    } else if (data.status === 'playing') {
-        hideAllModals();
-        document.getElementById('round-over-modal').classList.add('hidden');
-        document.getElementById('sayi-round-over-modal').classList.add('hidden');
-        if (data.gameType === 'sayi') enterOrSyncMultiplayerSayiRound(data);
-        else enterOrSyncMultiplayerRound(data);
-    } else if (data.status === 'roundover') {
-        if (data.gameType === 'sayi') showMultiplayerSayiRoundOverModal(data);
-        else showMultiplayerRoundOverModal(data);
-    } else if (data.status === 'finished') {
-        clearInterval(mpTimerInterval);
-        showMultiplayerGameOver(data);
-    }
-}
-
-function renderWaitingRoom(data) {
-    const listEl = document.getElementById('mp-player-list');
-    const players = Object.keys(data.players || {});
-    game.mp.currentPlayerCount = players.length;
-    listEl.innerHTML = players.map(p => `
-        <div class="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg">
-            <span>${p === data.host ? '👑' : '🙂'}</span>
-            <span class="font-bold text-summer-sea">${p}</span>
-            ${p === game.playerName ? '<span class="text-xs text-gray-400">(sen)</span>' : ''}
-        </div>
-    `).join('');
-    updateMpStartButtonState();
-}
-
-function selectMpRoundCount(c) {
-    game.mp.selectedRoundCount = c;
-    document.querySelectorAll('.mp-round-btn').forEach(b => {
-        const s = String(b.dataset.round) === String(c);
-        b.classList.toggle('bg-summer-sea', s);
-        b.classList.toggle('text-white', s);
-        b.classList.toggle('bg-blue-50', !s);
-        b.classList.toggle('text-summer-sea', !s);
-    });
-    updateMpStartButtonState();
-}
-
-function selectMpDuration(m) {
-    game.mp.selectedDurationMinutes = m;
-    document.querySelectorAll('.mp-duration-btn').forEach(b => {
-        const s = Number(b.dataset.duration) === Number(m);
-        b.classList.toggle('bg-summer-sea', s);
-        b.classList.toggle('text-white', s);
-        b.classList.toggle('bg-blue-50', !s);
-        b.classList.toggle('text-summer-sea', !s);
-    });
-    updateMpStartButtonState();
-}
-
-function updateMpStartButtonState() {
-    const b = document.getElementById('btn-mp-start');
-    const hep = game.mp.currentPlayerCount >= 2;
-    const ready = game.mp.selectedRoundCount && game.mp.selectedDurationMinutes && hep;
-    b.disabled = !ready;
-    b.classList.toggle('bg-gray-300', !ready);
-    b.classList.toggle('cursor-not-allowed', !ready);
-    b.classList.toggle('bg-gradient-to-r', ready);
-    b.textContent = hep ? 'Oyunu Başlat 🚀' : 'Arkadaşının katılmasını bekle...';
-}
-
-// ... geri kalan multiplayer fonksiyonları (startMultiplayerGame, enterOrSyncMultiplayerRound vs.) aynı kalacak
-// onları da güncellemem gerekiyor mu? Yoksa sadece yukarıdakileri değiştirip dener misin?
+let mpActiveListenerRef=null,mpWaitingListenerRef=null;
+function detachMpListeners(){if(mpActiveListenerRef){window.fb.off(mpActiveListenerRef);mpActiveListenerRef=null;}if(mpWaitingListenerRef){window.fb.off(mpWaitingListenerRef);mpWaitingListenerRef=null;}}
+function generateGameId(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let id='';for(let i=0;i<5;i++)id+=c[Math.floor(Math.random()*c.length)];return id;}
+function showMpLobbyScreen(gameType){game.mp.gameType=gameType;switchToScreen('mp-lobby-screen');const listEl=document.getElementById('mp-active-list');listEl.innerHTML='<p class="text-gray-400 text-sm">Yükleniyor...</p>';detachMpListeners();mpActiveListenerRef=window.fb.ref(window.fb.db,'lobbies-index');window.fb.onValue(mpActiveListenerRef,(snap)=>{const data=snap.val()||{};const now=Date.now();const waiting=[];Object.entries(data).forEach(([id,l])=>{if(!l||l.status!=='waiting')return;if(l.gameType&&l.gameType!==gameType)return;const isStale=!l.createdAt||(now-l.createdAt)>3*60*1000;if(isStale){window.fb.remove(window.fb.ref(window.fb.db,`lobbies/${id}`)).catch(()=>{});window.fb.remove(window.fb.ref(window.fb.db,`lobbies-index/${id}`)).catch(()=>{});return;}waiting.push([id,l]);});console.log('Aktif lobiler:',waiting.length,waiting.map(w=>w[0]));if(waiting.length===0){listEl.innerHTML='<p class="text-gray-400 text-sm">Şu an aktif oyun yok. İlk oyunu sen kur!</p>';return;}listEl.innerHTML=waiting.map(([id,l])=>`<div class="flex justify-between items-center bg-blue-50 border border-blue-100 rounded-xl px-4 py-3"><div class="text-left"><p class="font-bold text-summer-sea">${l.host}'in Oyunu</p><p class="text-xs text-gray-500">${l.playerCount||1} oyuncu · ${l.gameType==='sayi'?'🔢 Sayı':'📖 Kelime'} · Kod: ${id}</p></div><button onclick="joinMpGame('${id}')" class="px-4 py-2 bg-summer-sea text-white font-bold rounded-lg text-sm hover:bg-blue-700">Katıl</button></div>`).join('');});}
+function leaveMpLobbyScreen(){detachMpListeners();if(game.mp.gameType==='sayi')switchToScreen('sayi-welcome-screen');else switchToScreen('kelime-welcome-screen');}
+async function openMpHost(){await getOrCreatePlayerName();switchToScreen('mp-waiting-screen');document.getElementById('mp-game-code').textContent='';document.getElementById('mp-player-list').innerHTML=`<div class="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg"><span>👑</span><span class="font-bold text-summer-sea">${game.playerName}</span><span class="text-xs text-gray-400">(sen)</span></div>`;document.getElementById('mp-host-controls').classList.remove('hidden');document.getElementById('mp-guest-waiting-text').classList.add('hidden');await createLobby(game.playerName);}
+async function joinMpGame(gameId){await getOrCreatePlayerName();switchToScreen('mp-waiting-screen');document.getElementById('mp-game-code').textContent='';document.getElementById('mp-player-list').innerHTML=`<div class="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg"><span>🙂</span><span class="font-bold text-summer-sea">${game.playerName}</span><span class="text-xs text-gray-400">(sen)</span></div>`;document.getElementById('mp-host-controls').classList.add('hidden');document.getElementById('mp-guest-waiting-text').classList.remove('hidden');await joinLobby(gameId,game.playerName);}
+async function createLobby(name){const gid=generateGameId();const now=Date.now();await window.fb.set(window.fb.ref(window.fb.db,`lobbies-index/${gid}`),{host:name,status:'waiting',gameType:game.mp.gameType,playerCount:1,createdAt:now});await window.fb.set(window.fb.ref(window.fb.db,`lobbies/${gid}`),{host:name,status:'waiting',gameType:game.mp.gameType,roundCount:null,players:{[name]:true},createdAt:window.fb.serverTimestamp()});game.mp.gameId=gid;game.mp.isHost=true;game.score=0;game.foundWords=[];game.sayi={score:0};game.mp.lastSyncedRound=null;game.mp.lastBonusAppliedRound=null;subscribeToWaitingRoom(gid);}
+async function joinLobby(gid,name){const snap=await window.fb.get(window.fb.ref(window.fb.db,`lobbies/${gid}/players`));const ex=snap.val()||{};let fn=name;if(ex[fn]){let c=2;while(ex[`${name} (${c})`])c++;fn=`${name} (${c})`;}await window.fb.update(window.fb.ref(window.fb.db,`lobbies/${gid}/players`),{[fn]:true});await window.fb.update(window.fb.ref(window.fb.db,`lobbies-index/${gid}`),{playerCount:Object.keys(ex).length+1});game.playerName=fn;game.mp.gameId=gid;game.mp.isHost=false;game.score=0;game.foundWords=[];game.mp.lastSyncedRound=null;subscribeToWaitingRoom(gid);}
+function subscribeToWaitingRoom(gid){if(mpWaitingListenerRef){window.fb.off(mpWaitingListenerRef);mpWaitingListenerRef=null;}document.getElementById('mp-game-code').textContent=gid;mpWaitingListenerRef=window.fb.ref(window.fb.db,`lobbies/${gid}`);window.fb.onValue(mpWaitingListenerRef,(snap)=>{const data=snap.val();if(!data){showToast('Bu oyun artık mevcut değil.');leaveMultiplayerLobby();return;}handleLobbyUpdate(data);});}
+function handleLobbyUpdate(data){if(data.status==='waiting'){document.getElementById('mp-waiting-screen').classList.remove('hidden');document.getElementById('game-screen').classList.add('hidden');document.getElementById('sayi-game-screen').classList.add('hidden');renderWaitingRoom(data);}else if(data.status==='playing'){hideAllModals();document.getElementById('round-over-modal').classList.add('hidden');document.getElementById('sayi-round-over-modal').classList.add('hidden');if(data.gameType==='sayi')enterOrSyncMultiplayerSayiRound(data);else enterOrSyncMultiplayerRound(data);}else if(data.status==='roundover'){if(data.gameType==='sayi')showMultiplayerSayiRoundOverModal(data);else showMultiplayerRoundOverModal(data);}else if(data.status==='finished'){clearInterval(mpTimerInterval);showMultiplayerGameOver(data);}}
+function renderWaitingRoom(data){const listEl=document.getElementById('mp-player-list');const players=Object.keys(data.players||{});game.mp.currentPlayerCount=players.length;listEl.innerHTML=players.map(p=>`<div class="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg"><span>${p===data.host?'👑':'🙂'}</span><span class="font-bold text-summer-sea">${p}</span>${p===game.playerName?'<span class="text-xs text-gray-400">(sen)</span>':''}</div>`).join('');updateMpStartButtonState();}
+function selectMpRoundCount(c){game.mp.selectedRoundCount=c;document.querySelectorAll('.mp-round-btn').forEach(b=>{const s=String(b.dataset.round)===String(c);b.classList.toggle('bg-summer-sea',s);b.classList.toggle('text-white',s);b.classList.toggle('bg-blue-50',!s);b.classList.toggle('text-summer-sea',!s);});updateMpStartButtonState();}
+function selectMpDuration(m){game.mp.selectedDurationMinutes=m;document.querySelectorAll('.mp-duration-btn').forEach(b=>{const s=Number(b.dataset.duration)===Number(m);b.classList.toggle('bg-summer-sea',s);b.classList.toggle('text-white',s);b.classList.toggle('bg-blue-50',!s);b.classList.toggle('text-summer-sea',!s);});updateMpStartButtonState();}
+function updateMpStartButtonState(){const b=document.getElementById('btn-mp-start');const hep=game.mp.currentPlayerCount>=2;const ready=game.mp.selectedRoundCount&&game.mp.selectedDurationMinutes&&hep;b.disabled=!ready;b.classList.toggle('bg-gray-300',!ready);b.classList.toggle('cursor-not-allowed',!ready);b.classList.toggle('bg-gradient-to-r',ready);b.textContent=hep?'Oyunu Başlat 🚀':'Arkadaşının katılmasını bekle...';}
 async function startMultiplayerGame(){if(!game.mp.selectedRoundCount||!game.mp.selectedDurationMinutes||!game.mp.gameId||game.mp.currentPlayerCount<2)return;if(game.mp.gameType==='sayi'){await startMultiplayerSayiGame();return;}game.mp.previousLetters=null;const letters=generateRoundLetterSet(null);game.mp.previousLetters=letters.filter(t=>!t.isJoker).map(t=>t.letter);const cdEnd=window.fb.serverNow()+5000;const animMs=letters.length*LETTER_SCRAMBLE_STEP_MS;const roundEnd=cdEnd+animMs+(game.mp.selectedDurationMinutes*60000);await window.fb.update(window.fb.ref(window.fb.db,`lobbies/${game.mp.gameId}`),{status:'playing',gameType:'kelime',roundCount:game.mp.selectedRoundCount,roundDurationMinutes:game.mp.selectedDurationMinutes,currentRound:1,letters:letters,countdownEndsAt:cdEnd,roundEndsAt:roundEnd});await window.fb.update(window.fb.ref(window.fb.db,`lobbies-index/${game.mp.gameId}`),{status:'playing',gameType:'kelime'});}
 async function startMultiplayerSayiGame(){const{numbers,target}=generateSayiRound();const cdEnd=window.fb.serverNow()+5000;const animMs=numbers.length*LETTER_SCRAMBLE_STEP_MS;const roundEnd=cdEnd+animMs+90000;await window.fb.update(window.fb.ref(window.fb.db,`lobbies/${game.mp.gameId}`),{status:'playing',gameType:'sayi',roundCount:game.mp.selectedRoundCount,currentRound:1,sayiNumbers:numbers,sayiTarget:target,countdownEndsAt:cdEnd,roundEndsAt:roundEnd});await window.fb.update(window.fb.ref(window.fb.db,`lobbies-index/${game.mp.gameId}`),{status:'playing',gameType:'sayi'});}
 function enterOrSyncMultiplayerRound(data){hideAllScreens();document.getElementById('game-screen').classList.remove('hidden');document.getElementById('btn-mp-finish').classList.toggle('hidden',!game.mp.isHost);document.getElementById('btn-mp-leave').classList.toggle('hidden',game.mp.isHost);updatePlayerNameDisplay('player-name-display');if(game.mp.lastSyncedRound===data.currentRound)return;game.mp.lastSyncedRound=data.currentRound;game.currentRound=data.currentRound;game.maxRounds=data.roundCount;game.roundLetters=data.letters.map(t=>({...t,isUsed:false}));game.activeWord=[];game.foundWords=[];game.isPlaying=false;document.getElementById('found-words-list').innerHTML='';document.getElementById('word-count').textContent='0';document.getElementById('letters-rack').innerHTML='';updateUI();updateActiveWordDisplay();runMultiplayerCountdown(data.countdownEndsAt,()=>{renderLettersRack(true,()=>{game.isPlaying=true;startMultiplayerTimer(data.roundEndsAt);});});}
