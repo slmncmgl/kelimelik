@@ -27,10 +27,10 @@
 <body class="text-gray-800 flex flex-col items-center justify-center p-4">
 
 <div id="game-mode-select-screen" class="max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
-    <div class="text-6xl mb-4">🏝️</div><h1 class="text-3xl font-extrabold text-summer-sea mb-1">Bir Kelime Bir İşlem</h1><p class="text-gray-500 mb-8">Bir mod seç, başlayalım</p>
+    <img src="assets/bkbi.png" alt="Bir Kelime Bir İşlem" class="w-auto max-h-40 mx-auto mb-8 object-contain" />
     <button onclick="switchToScreen('kelime-welcome-screen')" class="w-full py-4 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-xl rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">📖 Kelime Avı</button>
-    <button onclick="switchToScreen('sayi-welcome-screen')" class="w-full py-4 bg-white text-summer-sea font-bold text-xl rounded-2xl shadow border-2 border-blue-200 hover:bg-blue-50 transition-all mb-3">🔢 Sayı Avı</button>
-    <button onclick="startSoloKarma()" class="w-full py-4 bg-white text-summer-sea font-bold text-xl rounded-2xl shadow border-2 border-blue-200 hover:bg-blue-50 transition-all mb-6">🎲 Bir Kelime Bir İşlem</button>
+    <button onclick="switchToScreen('sayi-welcome-screen')" class="w-full py-4 bg-gradient-to-r from-summer-sea to-summer-ocean text-white font-bold text-xl rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">🔢 Sayı Avı</button>
+    <button onclick="startSoloKarma()" class="w-full py-4 bg-gradient-to-r from-summer-ocean to-summer-blue text-white font-bold text-xl rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-6">🎲 Bir Kelime Bir İşlem</button>
     <div class="grid grid-cols-2 gap-2 mb-4">
         <button onclick="toggleRulesPanel()" id="btn-rules-toggle" class="py-3 bg-blue-50 text-summer-sea font-bold text-sm rounded-xl hover:bg-blue-100 transition-all">📜 Kurallar</button>
         <button onclick="switchToScreen('scoreboard-screen')" class="py-3 bg-blue-50 text-summer-sea font-bold text-sm rounded-xl hover:bg-blue-100 transition-all">🏆 Skor Tablosu</button>
