@@ -2,13 +2,19 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Bir Kelime Bir İşlem</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;500;600;700;800&family=Orbitron:wght=600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config={theme:{extend:{colors:{'summer-blue':'#4fc3f7','summer-sand':'#fff9c4','summer-sun':'#ffa726','summer-sea':'#0288d1','summer-coral':'#ff7043','summer-ocean':'#00bcd4'},fontFamily:{sans:['Inter','sans-serif']}}}}</script>
     <style>
         body{font-family:'Inter',sans-serif;background-color:#e0f7fa;background-image:linear-gradient(135deg,#e0f7fa 0%,#b2ebf2 50%,#80deea 100%);min-height:100vh;}
+        
+        /* Çift tıklama zoom'unu ve 300ms gecikmeyi engelle */
+        button, .tile, .wd-cell, .wd-key, .wbtn, a, input {
+            touch-action: manipulation;
+        }
+        
         .tile{transition:all 0.15s ease;}.tile:active:not(.cursor-not-allowed){transform:translateY(3px)scale(0.95);}
         #rules-panel{overflow:hidden;transition:max-height 0.5s ease-in-out;max-height:0;}
         @keyframes tileShineSweep{0%{background-position:-150% 0;}100%{background-position:250% 0;}}
@@ -79,7 +85,7 @@
         <button onclick="switchToScreen('scoreboard-screen')" class="py-3 bg-blue-50 text-summer-sea font-bold text-sm rounded-xl hover:bg-blue-100 transition-all">🏆 Skor Tablosu</button>
     </div>
     <div id="rules-panel"><div class="bg-blue-50 p-4 rounded-xl text-left text-sm mt-3 shadow-inner text-gray-700 min-h-[150px]"><div id="rules-typewriter-content"></div></div></div>
-    <p class="text-xs text-gray-300 mt-6">v1.3</p>
+    <p class="text-xs text-gray-300 mt-6">v1.4</p>
 </div>
 
 <div id="kelime-welcome-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
@@ -106,7 +112,7 @@
     <div id="wd-board" class="flex flex-col gap-1.5 mb-3"></div>
     <p id="wd-status" class="hidden text-center text-sm font-bold mb-2"></p>
     <div id="wd-keyboard" class="flex flex-col gap-1.5 mb-3"></div>
-    <div id="wd-opponents" class="hidden bg-blue-50 rounded-xl p-3 text-left"><p class="text-xs font-bold text-summer-sea uppercase tracking-wider mb-2">Rakipler</p><div id="wd-opponents-list" class="flex flex-col gap-2"></div></div>
+    <div id="wd-opponents" class="hidden bg-blue-50 rounded-xl p-3 text-left"><p class="text-xs font-bold text-summer-sea uppercase tracking-wider mb-2">✅ Bulan Rakipler</p><div id="wd-opponents-list" class="flex flex-col gap-2"></div></div>
     <div class="flex justify-end mt-2 gap-2">
         <button onclick="hostFinishGameNow()" data-finish="mp-finish" class="finish-btn hidden px-4 py-2 bg-red-50 text-red-400 font-semibold text-xs rounded-full shadow-md border border-red-200 hover:bg-red-100 hover:text-red-600 transition-colors">🏁 Oyunu Bitir</button>
         <button onclick="guestLeaveGame()" data-finish="mp-leave" class="finish-btn hidden px-4 py-2 bg-white text-gray-400 font-semibold text-xs rounded-full shadow-md border border-gray-200 hover:bg-gray-100 hover:text-gray-600 transition-colors">🚪 Oyundan Ayrıl</button>
@@ -120,7 +126,6 @@
     <div class="flex justify-center mb-4"><span class="player-name-chip gameover-name-chip">🎮 <span class="gameover-name-text"></span> <button onclick="openRenameModal()" title="Adı değiştir">✏️</button></span></div>
     <p class="hidden gameover-name-hint text-xs text-amber-600 font-semibold mb-4">Devam etmeden önce adını değiştirip kaydet ✏️</p>
     
-    <!-- Son Turun Kelimesi (Bütün Skor Tablosunun Altında Gözükecek Şekilde Taşındı) -->
     <div id="wd-mp-results" class="hidden bg-blue-50 rounded-2xl p-4 mb-6 text-left"><p class="text-sm font-bold text-summer-sea uppercase tracking-widest mb-2 text-center">🏆 Bu Oyunun Sonuçları</p><div id="wd-mp-results-list" class="flex flex-col gap-1"></div></div>
     <div id="wd-mp-secret-word-box" class="hidden bg-blue-50 border-2 border-blue-200 rounded-2xl p-4 mb-4 text-center"><p class="text-xs font-bold text-summer-sea uppercase tracking-widest mb-1">Son Turun Kelimesi</p><p id="wd-mp-secret-word" class="text-2xl font-black text-summer-coral tracking-widest uppercase"></p></div>
     
@@ -228,7 +233,6 @@
 </div>
 
 <div id="mp-waiting-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
-    <!-- Bekleme lobisinde adını değiştirebilme alanı -->
     <div class="relative flex justify-end mb-4"><span class="player-name-chip">🎮 <span id="mp-player-name-display"></span> <button onclick="openRenameModal()" title="Adı değiştir">✏️</button></span></div>
     
     <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">Oyun Kodu</p>
@@ -314,7 +318,6 @@ function tryReturnToMenuFromGameOver(){if(!game.hasCustomName){showToast('Ana me
 function openRenameModal(){const inp=document.getElementById('rename-input');inp.value=game.playerName||'';document.getElementById('rename-modal').classList.remove('hidden');setTimeout(()=>inp.focus(),100);}
 function closeRenameModal(){document.getElementById('rename-modal').classList.add('hidden');}
 
-// Firebase ve lokal isim güncellemesini entegre şekilde yöneten güncellenmiş saveNewName fonksiyonu
 async function saveNewName(){
     const inp=document.getElementById('rename-input');
     const newName=inp.value.trim().replace(/#/g,'-');
@@ -322,7 +325,6 @@ async function saveNewName(){
     if(newName===game.playerName){game.hasCustomName=true;updateNameGateUI();closeRenameModal();return;}
     const oldName = game.playerName;
     
-    // Eğer oyuncu aktif bir çok oyunculu lobideyse Firebase güncellemesini gerçekleştir
     if(game.mp.gameId) {
         try {
             const gid = game.mp.gameId;
@@ -332,11 +334,20 @@ async function saveNewName(){
                 showToast('Bu isim lobide zaten kullanılıyor!');
                 return;
             }
-            // Eski ismin kaydını silip yeni ismi lobiye ekle
             await window.fb.remove(window.fb.ref(window.fb.db, `lobbies/${gid}/players/${oldName}`));
             await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${gid}/players`), {[newName]: true});
             
-            // Eğer host ise ana veritabanındaki host değerlerini de güncelle
+            const scoreSnap = await window.fb.get(window.fb.ref(window.fb.db, `lobbies/${gid}/scores/${oldName}`));
+            if(scoreSnap.exists()) {
+                await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${gid}/scores`), {[newName]: scoreSnap.val()});
+                await window.fb.remove(window.fb.ref(window.fb.db, `lobbies/${gid}/scores/${oldName}`));
+            }
+            const wdSnap = await window.fb.get(window.fb.ref(window.fb.db, `lobbies/${gid}/wordleData/${oldName}`));
+            if(wdSnap.exists()) {
+                await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${gid}/wordleData`), {[newName]: wdSnap.val()});
+                await window.fb.remove(window.fb.ref(window.fb.db, `lobbies/${gid}/wordleData/${oldName}`));
+            }
+            
             if(game.mp.isHost) {
                 await window.fb.update(window.fb.ref(window.fb.db, `lobbies/${gid}`), {host: newName});
                 await window.fb.update(window.fb.ref(window.fb.db, `lobbies-index/${gid}`), {host: newName});
@@ -531,7 +542,6 @@ if(game.mp.gameId){const upd={guesses:g.guesses};if(solved){upd.solved=true;upd.
 function showWordleStatus(txt,cls){const el=document.getElementById('wd-status');el.className=`text-center text-sm font-bold mb-2 ${cls||''}`;el.textContent=txt;el.classList.remove('hidden');}
 function wordleSolversRanked(data){const wd=data.wordleData||{};return Object.entries(wd).filter(([n,v])=>v&&v.solved).map(([n,v])=>({name:n,solvedAt:v.solvedAt||0})).sort((a,b)=>a.solvedAt-b.solvedAt);}
 
-// Wordle rakipler kısmını sadece kelimeyi bulduklarında gösterecek şekilde filtreledik
 function renderWordleOpponents(data){
     const box=document.getElementById('wd-opponents');
     const list=document.getElementById('wd-opponents-list');
@@ -549,7 +559,6 @@ function renderWordleOpponents(data){
     }).join('');
 }
 
-// Wordle'da tahminlerini bitiren veya çözen herkes için erken tur bitiş kontrolü güncellendi
 function enterOrSyncMultiplayerWordleRound(data){
     hideAllScreens();
     document.getElementById('wordle-game-screen').classList.remove('hidden');
@@ -583,7 +592,6 @@ function enterOrSyncMultiplayerWordleRound(data){
         if(r>0)showWordleStatus(`🎉 ${r}. buldun! (+${wordleRankPoints(r)} puan) Diğerleri bekleniyor...`,'text-green-500');
     }
     
-    // Host için: herkes oynama hakkını bitirdiyse (doğru bildi veya tahmin hakkı tükendi) anında turu erken bitir
     if(game.mp.isHost&&!game.wordle._roundEndRequested){
         const wd=data.wordleData||{};
         const total=data.players?Object.keys(data.players).length:game.mp.currentPlayerCount;
@@ -673,7 +681,6 @@ function computeLongestWordBonus(sc){let ml=0,ca=[];Object.entries(sc||{}).forEa
 function processLongestWordBonus(data){const bd=data.longestWordBonus;if(!bd||bd.round!==data.currentRound)return null;const aw=bd.winners.some(w=>w.name===game.playerName);if(aw&&game.mp.lastBonusAppliedRound!==data.currentRound){game.mp.lastBonusAppliedRound=data.currentRound;game.score+=5;updateUI();window.fb.update(window.fb.ref(window.fb.db,`lobbies/${game.mp.gameId}/scores/${game.playerName}`),{total:game.score,foundWords:game.foundWords}).catch(()=>{});}return bd;}
 function renderBonusBanner(bd,elId){const b=document.getElementById(elId);if(!bd){b.classList.add('hidden');b.innerHTML='';return;}b.classList.remove('hidden');b.innerHTML=`🏆 Turun En Uzun Kelimesi: ${bd.winners.map(w=>`${w.name} ("${w.word}")`).join(' ve ')} — <strong>+5 puan</strong>`;}
 
-// hostEndRound her zaman lobiyi 'roundover' durumuna alır, 'finished' durumuna ana bitiş tetiği karar verir.
 async function hostEndRound(){
     const snap=await window.fb.get(window.fb.ref(window.fb.db,`lobbies/${game.mp.gameId}`));
     const data=snap.val();
@@ -688,7 +695,6 @@ function searchWordsInSet(set,base,jokerCount,maxLen){if(!set||set.size===0)retu
 function findTopWordsFromLetters(){const letters=game.roundLetters.filter(t=>!t.isJoker).map(t=>t.letter);const jokerCount=game.roundLetters.filter(t=>t.isJoker).length;if(letters.length===0)return[];const base={};letters.forEach(l=>base[l]=(base[l]||0)+1);const maxLen=letters.length+jokerCount;const coreResults=searchWordsInSet(turkishWordSetCore,base,jokerCount,maxLen).slice(0,10);if(coreResults.length>=10)return coreResults;const already=new Set(coreResults);const extra=searchWordsInSet(turkishWordSet,base,jokerCount,maxLen).filter(w=>!already.has(w));return[...coreResults,...extra].slice(0,10);}
 function renderTopWords(){const sec=document.getElementById('round-over-top-words');const list=document.getElementById('round-over-top-words-list');const words=findTopWordsFromLetters();if(words.length===0){sec.classList.add('hidden');list.innerHTML='';return;}const mine=new Set(game.foundWords);sec.classList.remove('hidden');list.innerHTML=words.map(w=>mine.has(w)?`<span class="bg-green-50 text-green-600 border border-green-200 px-2 py-1 rounded-lg text-sm font-bold">✓ ${w}</span>`:`<span class="bg-blue-50 text-summer-sea border border-blue-200 px-2 py-1 rounded-lg text-sm font-bold">${w}</span>`).join('');}
 
-// lockNextRoundButton artık değişebilir son buton metni desteğine sahiptir
 function lockNextRoundButton(btn,sec,targetText='Sonraki Tur ➜'){
     clearInterval(roundOverUnlockInterval);
     let rem=sec;
@@ -790,7 +796,6 @@ async function hostStartNextRound(){const snap=await window.fb.get(window.fb.ref
 async function hostFinishGameNow(){const snap=await window.fb.get(window.fb.ref(window.fb.db,`lobbies/${game.mp.gameId}`));const data=snap.val();const bonus=(data&&data.gameType!=='sayi'&&data.gameType!=='wordle')?computeLongestWordBonus(data.scores):null;const bu={longestWordBonus:bonus?{round:data.currentRound,...bonus}:null};await window.fb.update(window.fb.ref(window.fb.db,`lobbies/${game.mp.gameId}`),{status:'finished',...bu});await window.fb.update(window.fb.ref(window.fb.db,`lobbies-index/${game.mp.gameId}`),{status:'finished'});}
 async function guestLeaveGame(){if(!game.mp.gameId||game.mp.isHost)return;const gid=game.mp.gameId;resetMpState();try{await window.fb.remove(window.fb.ref(window.fb.db,`lobbies/${gid}/players/${game.playerName}`));}catch(e){}switchToScreen('game-mode-select-screen');showToast('Oyundan ayrıldın','success');}
 
-// Skorların doğru hesaplanması, kelime tespiti ve hedef kelimenin gösterimi için güncellenmiş showMultiplayerGameOver fonksiyonu
 async function showMultiplayerGameOver(data){
     hideAllScreens();
     ['wordle-round-over-modal','sayi-round-over-modal','karma-round-over-modal','round-over-modal','mp-countdown-overlay'].forEach(id=>{const e=document.getElementById(id);if(e)e.classList.add('hidden');});
@@ -802,7 +807,6 @@ async function showMultiplayerGameOver(data){
         const finalWordleScore=data.scores&&data.scores[game.playerName]?data.scores[game.playerName].total:(game.wordle.score||0);
         document.getElementById('wd-final-score').textContent=finalWordleScore;
         
-        // Son turun hedef kelimesini skor tablosunun altında göster
         if(data.secretWord){
             document.getElementById('wd-mp-secret-word-box').classList.remove('hidden');
             document.getElementById('wd-mp-secret-word').textContent=data.secretWord;
