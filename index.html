@@ -81,9 +81,9 @@
 </head>
 <body class="text-gray-800 flex flex-col items-center justify-center p-4">
 
-<div id="game-mode-select-screen" class="max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
+<div id="game-mode-select-screen" class="relative max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white" style="min-height:520px">
     <img src="assets/bkbi.png" alt="Bir Kelime Bir İşlem" class="w-auto max-h-56 mx-auto mb-2 object-contain" />
-    <div class="flex justify-center mb-3"><span class="player-name-chip">🎮 <span id="main-menu-name"></span> <button onclick="openRenameModal()" title="Adı değiştir">✏️</button></span></div>
+    <div class="absolute top-3 right-3"><span class="text-xs text-gray-400 font-semibold"><span id="main-menu-name"></span> <button onclick="openRenameModal()" title="Adı değiştir" class="hover:text-gray-600">✏️</button></span></div>
     <button onclick="switchToScreen('bkbi-menu-screen')" class="w-full py-3 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Bir Kelime Bir İşlem</button>
     <button onclick="switchToScreen('wordle-welcome-screen')" class="w-full py-3 bg-gradient-to-r from-green-400 to-emerald-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-6">Wordle</button>
     <div class="grid grid-cols-2 gap-2 mb-4">
@@ -91,10 +91,10 @@
         <button onclick="switchToScreen('scoreboard-screen')" class="py-3 bg-blue-50 text-summer-sea font-bold text-sm rounded-xl hover:bg-blue-100 transition-all">Skor Tablosu</button>
     </div>
     <div id="rules-panel"><div class="bg-blue-50 p-4 rounded-xl text-left text-sm mt-3 shadow-inner text-gray-700 min-h-[150px]"><div id="rules-typewriter-content"></div></div></div>
-    <div class="flex items-center justify-center gap-3 mt-6"><p class="text-xs text-gray-300">v6.0</p><div class="flex items-center gap-1.5 text-xs text-gray-300"><span class="presence-dot"></span><span class="presence-count">0</span> çevrimiçi</div></div>
+    <div class="flex items-center justify-center gap-3 mt-6"><p class="text-xs text-gray-300">v6.1</p><div class="flex items-center gap-1.5 text-xs text-gray-300"><span class="presence-dot"></span><span class="presence-count">0</span> çevrimiçi</div></div>
 </div>
 
-<div id="bkbi-menu-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
+<div id="bkbi-menu-screen" class="hidden relative max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white" style="min-height:520px">
     <img src="assets/bkbi.png" alt="Bir Kelime Bir İşlem" class="w-auto max-h-56 mx-auto mb-6 object-contain" />
     <button onclick="switchToScreen('kelime-welcome-screen')" class="w-full py-3 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Kelime</button>
     <button onclick="switchToScreen('sayi-welcome-screen')" class="w-full py-3 bg-gradient-to-r from-summer-sea to-summer-ocean text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">İşlem</button>
@@ -104,10 +104,10 @@
         <button onclick="toggleRulesPanel()" class="py-3 bg-blue-50 text-summer-sea font-bold text-sm rounded-xl hover:bg-blue-100 transition-all">Kurallar</button>
         <button onclick="switchToScreen('scoreboard-screen')" class="py-3 bg-blue-50 text-summer-sea font-bold text-sm rounded-xl hover:bg-blue-100 transition-all">Skor Tablosu</button>
     </div>
-    <div class="flex items-center justify-center gap-3 mt-4"><p class="text-xs text-gray-300">v6.0</p><div class="flex items-center gap-1.5 text-xs text-gray-300"><span class="presence-dot"></span><span class="presence-count">0</span> çevrimiçi</div></div>
+    <div class="flex items-center justify-center gap-3 mt-4"><p class="text-xs text-gray-300">v6.1</p><div class="flex items-center gap-1.5 text-xs text-gray-300"><span class="presence-dot"></span><span class="presence-count">0</span> çevrimiçi</div></div>
 </div>
 
-<div id="wordle-welcome-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
+<div id="wordle-welcome-screen" class="hidden relative max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white" style="min-height:520px">
     <img src="assets/bkbi.png" alt="Bir Kelime Bir İşlem" class="w-auto max-h-56 mx-auto mb-6 object-contain" />
     <button onclick="startSoloWordle(this)" class="w-full py-3 bg-gradient-to-r from-green-400 to-emerald-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Tek Kişilik Oyun</button>
     <button onclick="openWordleLobby()" class="w-full py-3 bg-white text-emerald-600 font-bold text-lg rounded-2xl shadow border-2 border-emerald-200 hover:bg-emerald-50 transition-all">Arkadaşlarınla Oyna</button>
@@ -116,12 +116,12 @@
         <button onclick="toggleRulesPanel()" class="py-3 bg-blue-50 text-summer-sea font-bold text-sm rounded-xl hover:bg-blue-100 transition-all">Kurallar</button>
         <button onclick="switchToScreen('scoreboard-screen')" class="py-3 bg-blue-50 text-summer-sea font-bold text-sm rounded-xl hover:bg-blue-100 transition-all">Skor Tablosu</button>
     </div>
-    <div class="flex items-center justify-center gap-3 mt-4"><p class="text-xs text-gray-300">v6.0</p><div class="flex items-center gap-1.5 text-xs text-gray-300"><span class="presence-dot"></span><span class="presence-count">0</span> çevrimiçi</div></div>
+    <div class="flex items-center justify-center gap-3 mt-4"><p class="text-xs text-gray-300">v6.1</p><div class="flex items-center gap-1.5 text-xs text-gray-300"><span class="presence-dot"></span><span class="presence-count">0</span> çevrimiçi</div></div>
 </div>
 
-<div id="kelime-welcome-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
+<div id="kelime-welcome-screen" class="hidden relative max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white" style="min-height:520px">
     <img src="assets/bkbi.png" alt="Bir Kelime Bir İşlem" class="w-auto max-h-56 mx-auto mb-6 object-contain" />
-    <button onclick="startSoloKelime(this)" class="w-full py-4 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-2xl rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Tek Kişilik Oyun</button>
+    <button onclick="startSoloKelime(this)" class="w-full py-3 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Tek Kişilik Oyun</button>
     <button onclick="showMpLobbyScreen('kelime')" class="w-full py-3 bg-white text-summer-sea font-bold text-lg rounded-2xl shadow border-2 border-blue-200 hover:bg-blue-50 transition-all mb-3">Arkadaşlarınla Oyna</button>
     <button onclick="openAdventureMap()" class="w-full py-3 bg-gradient-to-r from-purple-400 to-purple-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">Macera</button>
     <button onclick="switchToScreen('bkbi-menu-screen')" class="w-full mt-4 py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
@@ -129,19 +129,19 @@
         <button onclick="toggleRulesPanel()" class="py-3 bg-blue-50 text-summer-sea font-bold text-sm rounded-xl hover:bg-blue-100 transition-all">Kurallar</button>
         <button onclick="switchToScreen('scoreboard-screen')" class="py-3 bg-blue-50 text-summer-sea font-bold text-sm rounded-xl hover:bg-blue-100 transition-all">Skor Tablosu</button>
     </div>
-    <div class="flex items-center justify-center gap-3 mt-4"><p class="text-xs text-gray-300">v6.0</p><div class="flex items-center gap-1.5 text-xs text-gray-300"><span class="presence-dot"></span><span class="presence-count">0</span> çevrimiçi</div></div>
+    <div class="flex items-center justify-center gap-3 mt-4"><p class="text-xs text-gray-300">v6.1</p><div class="flex items-center gap-1.5 text-xs text-gray-300"><span class="presence-dot"></span><span class="presence-count">0</span> çevrimiçi</div></div>
 </div>
 
-<div id="sayi-welcome-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
+<div id="sayi-welcome-screen" class="hidden relative max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white" style="min-height:520px">
     <img src="assets/bkbi.png" alt="Bir Kelime Bir İşlem" class="w-auto max-h-56 mx-auto mb-6 object-contain" />
-    <button onclick="startSoloSayi(this)" class="w-full py-4 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-2xl rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Tek Kişilik Oyun</button>
+    <button onclick="startSoloSayi(this)" class="w-full py-3 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Tek Kişilik Oyun</button>
     <button onclick="showMpLobbyScreen('sayi')" class="w-full py-3 bg-white text-summer-sea font-bold text-lg rounded-2xl shadow border-2 border-blue-200 hover:bg-blue-50 transition-all">Arkadaşlarınla Oyna</button>
     <button onclick="switchToScreen('bkbi-menu-screen')" class="w-full mt-4 py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
     <div class="grid grid-cols-2 gap-3 mt-4">
         <button onclick="toggleRulesPanel()" class="py-3 bg-blue-50 text-summer-sea font-bold text-sm rounded-xl hover:bg-blue-100 transition-all">Kurallar</button>
         <button onclick="switchToScreen('scoreboard-screen')" class="py-3 bg-blue-50 text-summer-sea font-bold text-sm rounded-xl hover:bg-blue-100 transition-all">Skor Tablosu</button>
     </div>
-    <div class="flex items-center justify-center gap-3 mt-4"><p class="text-xs text-gray-300">v6.0</p><div class="flex items-center gap-1.5 text-xs text-gray-300"><span class="presence-dot"></span><span class="presence-count">0</span> çevrimiçi</div></div>
+    <div class="flex items-center justify-center gap-3 mt-4"><p class="text-xs text-gray-300">v6.1</p><div class="flex items-center gap-1.5 text-xs text-gray-300"><span class="presence-dot"></span><span class="presence-count">0</span> çevrimiçi</div></div>
 </div>
 
 <div id="wordle-game-screen" class="hidden max-w-md w-full overflow-x-hidden bg-white/90 backdrop-blur-sm p-4 rounded-3xl shadow-2xl border-4 border-white">
@@ -217,23 +217,23 @@
 
 <div id="round-select-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
     <h2 class="text-3xl font-extrabold text-summer-sea mb-2">Kaç Tur Oynayalım?</h2><p class="text-gray-500 mb-4">Tur sayısı ve süresini seç</p>
-    <div class="grid grid-cols-3 gap-2 mb-4"><button onclick="selectSoloRoundCount(3)" data-solo-round="3" class="solo-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">3</button><button onclick="selectSoloRoundCount(5)" data-solo-round="5" class="solo-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">5</button><button onclick="selectSoloRoundCount(7)" data-solo-round="7" class="solo-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">7</button></div>
+    <div class="grid grid-cols-3 gap-2 mb-4"><button onclick="selectSoloRoundCount(3)" data-solo-round="3" class="solo-round-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">3</button><button onclick="selectSoloRoundCount(5)" data-solo-round="5" class="solo-round-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">5</button><button onclick="selectSoloRoundCount(7)" data-solo-round="7" class="solo-round-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">7</button></div>
     <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Tur Süresi (dk)</p>
-    <div class="grid grid-cols-3 gap-2 mb-6"><button onclick="selectSoloDuration(1)" data-solo-duration="1" class="solo-duration-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">1</button><button onclick="selectSoloDuration(2)" data-solo-duration="2" class="solo-duration-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">2</button><button onclick="selectSoloDuration(3)" data-solo-duration="3" class="solo-duration-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">3</button></div>
+    <div class="grid grid-cols-3 gap-2 mb-6"><button onclick="selectSoloDuration(1)" data-solo-duration="1" class="solo-duration-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">1</button><button onclick="selectSoloDuration(2)" data-solo-duration="2" class="solo-duration-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">2</button><button onclick="selectSoloDuration(3)" data-solo-duration="3" class="solo-duration-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">3</button></div>
     <button onclick="startGame()" id="btn-solo-start" disabled class="wbtn t-orange mb-3"><span>OYUNU BAŞLAT</span></button>
     <button onclick="switchToScreen('kelime-welcome-screen')" class="w-full py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
 </div>
 
 <div id="sayi-round-select-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
     <h2 class="text-3xl font-extrabold text-summer-sea mb-2">İşlem</h2><p class="text-gray-500 mb-6">Kaç tur oynayalım?</p>
-    <div class="grid grid-cols-3 gap-2 mb-6"><button onclick="selectSayiRoundCount(3)" data-sayi-round="3" class="sayi-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">3</button><button onclick="selectSayiRoundCount(5)" data-sayi-round="5" class="sayi-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">5</button><button onclick="selectSayiRoundCount(7)" data-sayi-round="7" class="sayi-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">7</button></div>
+    <div class="grid grid-cols-3 gap-2 mb-6"><button onclick="selectSayiRoundCount(3)" data-sayi-round="3" class="sayi-round-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">3</button><button onclick="selectSayiRoundCount(5)" data-sayi-round="5" class="sayi-round-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">5</button><button onclick="selectSayiRoundCount(7)" data-sayi-round="7" class="sayi-round-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">7</button></div>
     <button onclick="startSayiGame()" id="btn-sayi-start" disabled class="w-full py-3 bg-gray-300 text-white font-bold text-lg rounded-2xl shadow-lg transition-all mb-3 cursor-not-allowed">Oyunu Başlat 🚀</button>
     <button onclick="switchToScreen('sayi-welcome-screen')" class="w-full py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
 </div>
 
 <div id="karma-round-select-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
     <h2 class="text-3xl font-extrabold text-summer-sea mb-2">🎲 Bir Kelime Bir İşlem</h2><p class="text-gray-500 mb-6">Toplam kaç tur?</p>
-    <div class="grid grid-cols-3 gap-2 mb-6"><button onclick="selectKarmaRoundCount(3)" data-karma-round="3" class="karma-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">3</button><button onclick="selectKarmaRoundCount(5)" data-karma-round="5" class="karma-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">5</button><button onclick="selectKarmaRoundCount(7)" data-karma-round="7" class="karma-round-btn py-4 bg-blue-50 text-summer-sea font-black text-xl rounded-2xl border-2 border-blue-200 transition-colors">7</button></div>
+    <div class="grid grid-cols-3 gap-2 mb-6"><button onclick="selectKarmaRoundCount(3)" data-karma-round="3" class="karma-round-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">3</button><button onclick="selectKarmaRoundCount(5)" data-karma-round="5" class="karma-round-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">5</button><button onclick="selectKarmaRoundCount(7)" data-karma-round="7" class="karma-round-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">7</button></div>
     <button onclick="startKarmaGame()" id="btn-karma-start" disabled class="w-full py-3 bg-gray-300 text-white font-bold text-lg rounded-2xl shadow-lg transition-all mb-3 cursor-not-allowed">Oyunu Başlat 🚀</button>
     <button onclick="switchToScreen('game-mode-select-screen')" class="w-full py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
 </div>
@@ -584,7 +584,7 @@ function updateMpStartButtonState() {
     b.disabled = !ready;
     
     if (!ready) {
-        b.className = 'w-full py-4 bg-gray-200 text-gray-700 font-bold text-xl rounded-2xl shadow-lg transition-all mb-3 cursor-not-allowed';
+        b.className = 'w-full py-3 bg-gray-200 text-gray-700 font-bold text-lg rounded-2xl shadow-lg transition-all mb-3 cursor-not-allowed';
     } else {
         b.className = 'w-full py-3 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all';
     }
