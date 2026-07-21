@@ -97,7 +97,7 @@
                 <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Skor Tablosu</span>
             </button>
         </div>
-        <div class="flex items-center justify-center gap-3"><p class="text-xs text-gray-300">v7.5</p><div class="flex items-center gap-1.5 text-xs text-gray-300"><span class="presence-dot"></span><span class="presence-count">0</span> çevrimiçi</div></div>
+        <div class="flex items-center justify-center gap-3"><p class="text-xs text-gray-300">v7.6</p><div class="flex items-center gap-1.5 text-xs text-gray-300"><span class="presence-dot"></span><span class="presence-count">0</span> çevrimiçi</div></div>
     </div>
     <div id="rules-panel" class="hidden fixed inset-0 bg-black/55 flex items-center justify-center z-50 p-4" style="backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)" onclick="if(event.target===this)toggleRulesPanel()"><div class="bg-white rounded-3xl shadow-2xl max-w-sm w-[90%] max-h-[80vh] overflow-y-auto p-7" style="border:3px solid #0ea5e9">
         <button onclick="toggleRulesPanel()" class="float-right w-9 h-9 flex items-center justify-center bg-gray-100 rounded-full text-gray-400 hover:bg-gray-200 hover:text-gray-600 text-lg font-bold -mt-2 -mr-2">✕</button>
@@ -141,7 +141,7 @@
 </div>
 
 <div id="bkbi-menu-screen" class="hidden relative max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white" style="min-height:600px">
-    <img src="assets/bkbi.png" alt="Bir Kelime Bir İşlem" class="w-auto max-h-56 mx-auto mb-6 object-contain" />
+    <img src="assets/bkbi.png" alt="Bir Kelime Bir İşlem" class="w-auto max-h-64 mx-auto mb-6 object-contain" />
     <button onclick="switchToScreen('kelime-welcome-screen')" class="w-full py-3 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Kelime</button>
     <button onclick="switchToScreen('sayi-welcome-screen')" class="w-full py-3 bg-gradient-to-r from-summer-sea to-summer-ocean text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">İşlem</button>
     <button onclick="startSoloKarma(this)" class="w-full py-3 bg-gradient-to-r from-summer-ocean to-summer-blue text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">Karma</button>
@@ -150,7 +150,7 @@
 </div>
 
 <div id="wordle-welcome-screen" class="hidden relative max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white" style="min-height:600px">
-    <img src="assets/bkbi.png" alt="Bir Kelime Bir İşlem" class="w-auto max-h-56 mx-auto mb-6 object-contain" />
+    <img src="assets/bkbi.png" alt="Bir Kelime Bir İşlem" class="w-auto max-h-64 mx-auto mb-6 object-contain" />
     <button onclick="switchToScreen('wordle-difficulty-screen')" class="w-full py-3 bg-gradient-to-r from-green-400 to-emerald-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Tek Kişilik Oyun</button>
     <button onclick="openWordleLobby()" class="w-full py-3 bg-white text-emerald-600 font-bold text-lg rounded-2xl shadow border-2 border-emerald-200 hover:bg-emerald-50 transition-all">Arkadaşlarınla Oyna</button>
     <button onclick="switchToScreen('game-mode-select-screen')" class="w-full mt-4 py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
@@ -159,7 +159,7 @@
 
 <div id="wordle-difficulty-screen" class="hidden relative max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white" style="min-height:600px">
     <div class="absolute top-3 right-3"><span class="text-xs text-gray-400 font-semibold"><span class="presence-count-name"></span></span></div>
-    <img src="assets/bkbi.png" alt="Bir Kelime Bir İşlem" class="w-auto max-h-56 mx-auto mb-6 object-contain" />
+    <img src="assets/bkbi.png" alt="Bir Kelime Bir İşlem" class="w-auto max-h-64 mx-auto mb-6 object-contain" />
     <p class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Zorluk Seç</p>
     <button onclick="startSoloWordle(this,4)" class="w-full py-3 bg-gradient-to-r from-green-300 to-green-500 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-2">Kolay (4 Harf)</button>
     <button onclick="startSoloWordle(this,5)" class="w-full py-3 bg-gradient-to-r from-green-400 to-emerald-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-2">Normal (5 Harf)</button>
@@ -169,7 +169,7 @@
 </div>
 
 <div id="kelime-welcome-screen" class="hidden relative max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white" style="min-height:600px">
-    <img src="assets/bkbi.png" alt="Bir Kelime Bir İşlem" class="w-auto max-h-56 mx-auto mb-6 object-contain" />
+    <img src="assets/bkbi.png" alt="Bir Kelime Bir İşlem" class="w-auto max-h-64 mx-auto mb-6 object-contain" />
     <button onclick="startSoloKelime(this)" class="w-full py-3 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Tek Kişilik Oyun</button>
     <button onclick="showMpLobbyScreen('kelime')" class="w-full py-3 bg-white text-summer-sea font-bold text-lg rounded-2xl shadow border-2 border-blue-200 hover:bg-blue-50 transition-all mb-3">Arkadaşlarınla Oyna</button>
     <button onclick="openAdventureMap()" class="w-full py-3 bg-gradient-to-r from-purple-400 to-purple-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">Macera</button>
@@ -178,7 +178,7 @@
 </div>
 
 <div id="sayi-welcome-screen" class="hidden relative max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white" style="min-height:600px">
-    <img src="assets/bkbi.png" alt="Bir Kelime Bir İşlem" class="w-auto max-h-56 mx-auto mb-6 object-contain" />
+    <img src="assets/bkbi.png" alt="Bir Kelime Bir İşlem" class="w-auto max-h-64 mx-auto mb-6 object-contain" />
     <button onclick="startSoloSayi(this)" class="w-full py-3 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Tek Kişilik Oyun</button>
     <button onclick="showMpLobbyScreen('sayi')" class="w-full py-3 bg-white text-summer-sea font-bold text-lg rounded-2xl shadow border-2 border-blue-200 hover:bg-blue-50 transition-all">Arkadaşlarınla Oyna</button>
     <button onclick="switchToScreen('bkbi-menu-screen')" class="w-full mt-4 py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
