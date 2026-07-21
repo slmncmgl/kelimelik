@@ -12,7 +12,7 @@
         html,body{touch-action:manipulation;-ms-touch-action:manipulation;}
         body{font-family:'Inter',sans-serif;background-color:#e0f7fa;background-image:linear-gradient(135deg,#e0f7fa 0%,#b2ebf2 50%,#80deea 100%);min-height:100vh;}
         .tile{transition:all 0.15s ease;}.tile:active:not(.cursor-not-allowed){transform:translateY(3px)scale(0.95);}
-        #rules-panel{overflow:hidden;transition:max-height 0.5s ease-in-out;max-height:0;}
+        
         @keyframes tileShineSweep{0%{background-position:-150% 0;}100%{background-position:250% 0;}}
         .tile-shine{background-image:linear-gradient(120deg,transparent 40%,rgba(255,255,255,0.85)50%,transparent 60%);background-size:200% 100%;animation:tileShineSweep 0.5s ease-out;}
         @keyframes helpBubbleFade{0%{opacity:0;transform:translateY(4px);}15%{opacity:1;transform:translateY(0);}85%{opacity:1;transform:translateY(0);}100%{opacity:0;transform:translateY(-4px);}}
@@ -99,7 +99,7 @@
                 <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Skor Tablosu</span>
             </button>
         </div>
-        <div class="flex items-center justify-center gap-3"><p class="text-xs text-gray-300">v7.1</p><div class="flex items-center gap-1.5 text-xs text-gray-300"><span class="presence-dot"></span><span class="presence-count">0</span> çevrimiçi</div></div>
+        <div class="flex items-center justify-center gap-3"><p class="text-xs text-gray-300">v7.2</p><div class="flex items-center gap-1.5 text-xs text-gray-300"><span class="presence-dot"></span><span class="presence-count">0</span> çevrimiçi</div></div>
     </div>
     <div id="rules-panel" class="hidden fixed inset-0 bg-black/55 flex items-center justify-center z-50 p-4" style="backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)" onclick="if(event.target===this)toggleRulesPanel()"><div class="bg-white rounded-3xl shadow-2xl max-w-sm w-[90%] max-h-[80vh] overflow-y-auto p-7" style="border:3px solid #0ea5e9">
         <button onclick="toggleRulesPanel()" class="float-right w-9 h-9 flex items-center justify-center bg-gray-100 rounded-full text-gray-400 hover:bg-gray-200 hover:text-gray-600 text-lg font-bold -mt-2 -mr-2">✕</button>
