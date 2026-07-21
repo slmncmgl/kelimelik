@@ -99,9 +99,46 @@
                 <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Skor Tablosu</span>
             </button>
         </div>
-        <div class="flex items-center justify-center gap-3"><p class="text-xs text-gray-300">v6.8</p><div class="flex items-center gap-1.5 text-xs text-gray-300"><span class="presence-dot"></span><span class="presence-count">0</span> çevrimiçi</div></div>
+        <div class="flex items-center justify-center gap-3"><p class="text-xs text-gray-300">v6.9</p><div class="flex items-center gap-1.5 text-xs text-gray-300"><span class="presence-dot"></span><span class="presence-count">0</span> çevrimiçi</div></div>
     </div>
-    <div id="rules-panel" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onclick="if(event.target===this)toggleRulesPanel()"><div class="bg-white p-6 rounded-3xl shadow-2xl max-w-md w-full max-h-[80vh] overflow-y-auto border-4 border-summer-sun"><div class="flex justify-between items-center mb-3"><h3 class="text-xl font-black text-summer-sea">📖 Nasıl Oynanır</h3><button onclick="toggleRulesPanel()" class="text-gray-400 hover:text-gray-600 text-2xl">✕</button></div><div class="bg-blue-50 p-4 rounded-xl text-left text-sm shadow-inner text-gray-700 min-h-[150px]"><div id="rules-typewriter-content"></div></div></div></div>
+    <div id="rules-panel" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onclick="if(event.target===this)toggleRulesPanel()"><div class="bg-white p-6 rounded-3xl shadow-2xl max-w-sm w-full max-h-[85vh] overflow-y-auto border-4 border-summer-sun relative">
+        <button onclick="toggleRulesPanel()" class="absolute top-3 right-3 w-10 h-10 flex items-center justify-center bg-gray-100 rounded-full text-gray-500 hover:bg-gray-200 text-xl font-bold">✕</button>
+        <h3 class="text-xl font-black text-gray-800 text-center mb-4 mt-1">Nasıl Oynanır?</h3>
+        <div class="text-sm text-gray-600 leading-relaxed space-y-4">
+            <div>
+                <p class="font-bold text-gray-700 mb-2">🔤 Wordle</p>
+                <p>Gizli kelimeyi en az tahminde bul. Her tahminden sonra harfler renklenir:</p>
+                <div class="flex justify-center gap-2 my-3">
+                    <div class="w-11 h-11 flex items-center justify-center rounded-lg font-black text-white text-lg bg-[#22c55e]">K</div>
+                    <div class="w-11 h-11 flex items-center justify-center rounded-lg font-black text-white text-lg bg-[#eab308]">A</div>
+                    <div class="w-11 h-11 flex items-center justify-center rounded-lg font-black text-white text-lg bg-[#94a3b8]">L</div>
+                    <div class="w-11 h-11 flex items-center justify-center rounded-lg font-black text-white text-lg bg-[#94a3b8]">E</div>
+                    <div class="w-11 h-11 flex items-center justify-center rounded-lg font-black text-white text-lg bg-[#22c55e]">M</div>
+                </div>
+                <div class="flex justify-center gap-4 text-xs font-bold mb-3">
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-[#22c55e] inline-block"></span> Doğru yerde</span>
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-[#eab308] inline-block"></span> Yanlış yerde</span>
+                    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-[#94a3b8] inline-block"></span> Kelimede yok</span>
+                </div>
+            </div>
+            <div>
+                <p class="font-bold text-gray-700 mb-1">📖 Kelime</p>
+                <p>Verilen harflerle en uzun kelimeleri yaz. Her harf 1 puan.</p>
+            </div>
+            <div>
+                <p class="font-bold text-gray-700 mb-1">🔢 İşlem</p>
+                <p>6 sayıyla hedefe en yakın sonucu bul. Tam isabet 10 puan!</p>
+            </div>
+            <div>
+                <p class="font-bold text-gray-700 mb-1">🎲 Karma</p>
+                <p>Kelime + İşlem turları art arda. Toplam skor yarışı!</p>
+            </div>
+            <div>
+                <p class="font-bold text-gray-700 mb-1">🤝 Çok Oyunculu</p>
+                <p>Arkadaşlarınla aynı anda yarış! Wordle'da ilk bulan en çok puanı alır.</p>
+            </div>
+        </div>
+    </div></div>
 </div>
 
 <div id="bkbi-menu-screen" class="hidden relative max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white" style="min-height:600px">
@@ -437,7 +474,7 @@ function switchToScreen(screenId){hideAllScreens();hideAllModals();hideAllFinish
 
 const RULES_LINES=['📖 KELİME: Her tur 3 Sesli, 4 Sessiz ve 1 Joker harf düşer. Harfleri kullanarak en uzun kelimeleri yaz. Harf başına 1 puan!','🔢 İŞLEM: 6 sayı verilir, hedefe en yakın sonucu dört işlemle bul! Tam isabet 10 puan, fark kadar puan düşer.','🎲 KARMA: Kelime + İşlem turları art arda oynanır. Her ikisinde de skorun toplanır!','🔤 WORDLE: 5 harfli gizli kelimeyi tahmin et! 🟩 Yeşil = doğru yerde, 🟨 Sarı = var ama yanlış yerde, ⬜ Gri = yok. 5 tahmin hakkın var.','🔤 WORDLE İPUCU: Bir harf kelimede 2+ kez geçiyorsa üst simge ile gösterilir (ör. İ²). Yeşil harfler sonraki satıra taşınır.','🤝 ÇOKOYUNCULU: Arkadaşlarınla aynı anda yarış! Wordle\'de 1. bulan 30, 2. bulan 20, 3. bulan 10 puan alır. Beraberlikte hızlı çözen önde!'];
 let rulesPanelOpen=false,rulesAnimationStarted=false;
-function toggleRulesPanel(){const p=document.getElementById('rules-panel');const b=document.getElementById('btn-rules-toggle');rulesPanelOpen=!rulesPanelOpen;p.classList.toggle('hidden',!rulesPanelOpen);b.textContent=rulesPanelOpen?'✕ Gizle':'📖 Nasıl Oynanır';if(rulesPanelOpen&&!rulesAnimationStarted){rulesAnimationStarted=true;typeRulesLines();}}
+function toggleRulesPanel(){const p=document.getElementById('rules-panel');rulesPanelOpen=!rulesPanelOpen;p.classList.toggle('hidden',!rulesPanelOpen);}
 async function typeRulesLines(){const c=document.getElementById('rules-typewriter-content');c.innerHTML='';for(const line of RULES_LINES){const le=document.createElement('p');le.className='mb-2';const ts=document.createElement('span');const cs=document.createElement('span');cs.className='rules-cursor';cs.textContent='|';le.appendChild(document.createTextNode('• '));le.appendChild(ts);le.appendChild(cs);c.appendChild(le);for(let i=0;i<line.length;i++){ts.textContent+=line[i];await new Promise(r=>setTimeout(r,18));}await new Promise(r=>setTimeout(r,1000));cs.remove();}}
 
 let currentScoreTab='kelime';
