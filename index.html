@@ -98,7 +98,7 @@
                 <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Skor Tablosu</span>
             </button>
         </div>
-        <div class="flex items-center justify-center gap-3"><p class="text-xs text-gray-300">v9.6</p><div class="flex items-center gap-1.5 text-xs text-gray-300 cursor-pointer hover:text-gray-500 transition-colors" onclick="showOnlinePlayersPopup()"><span class="presence-dot"></span><span class="presence-count">0</span> çevrimiçi</div></div>
+        <div class="flex items-center justify-center gap-3"><p class="text-xs text-gray-300">v9.7</p><div class="flex items-center gap-1.5 text-xs text-gray-300 cursor-pointer hover:text-gray-500 transition-colors" onclick="showOnlinePlayersPopup()"><span class="presence-dot"></span><span class="presence-count">0</span> çevrimiçi</div></div>
     </div>
     <div id="rules-panel" class="hidden fixed inset-0 bg-black/55 flex items-center justify-center z-50 p-4" style="backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)" onclick="if(event.target===this)toggleRulesPanel()"><div class="bg-white rounded-3xl shadow-2xl max-w-sm w-[90%] max-h-[80vh] overflow-y-auto p-7" style="border:3px solid #0ea5e9">
         <button onclick="toggleRulesPanel()" class="float-right w-9 h-9 flex items-center justify-center bg-gray-100 rounded-full text-gray-400 hover:bg-gray-200 hover:text-gray-600 text-lg font-bold -mt-2 -mr-2">✕</button>
@@ -193,9 +193,9 @@
         <span class="font-black text-lg" id="wd-time-left">2:00</span>
         <span class="font-bold text-summer-coral">Puan: <span id="wd-score">0</span></span>
     </div>
-    <div id="wd-board" class="flex flex-col gap-1 mb-2 items-center"></div>
+    <div id="wd-board" class="flex flex-col gap-1 mb-2"></div>
     <p id="wd-status" class="hidden text-center text-sm font-bold mb-2"></p>
-    <div id="wd-keyboard" class="flex flex-col gap-1 mb-2 items-center"></div>
+    <div id="wd-keyboard" class="flex flex-col gap-1 mb-2"></div>
     <div id="wd-opponents" class="hidden bg-blue-50 rounded-xl p-3 text-left"><p class="text-xs font-bold text-summer-sea uppercase tracking-wider mb-2">Rakipler</p><div id="wd-opponents-list" class="flex flex-col gap-2"></div></div>
     <div class="flex justify-between items-center mt-1">
         <button onclick="useWordleJoker()" id="wd-joker-btn" title="Bir harf aç" class="relative w-11 h-11 flex items-center justify-center bg-gradient-to-br from-purple-400 to-purple-600 text-white rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all text-xl">🔍<span id="wd-joker-count" class="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center bg-white text-purple-600 text-xs font-black rounded-full shadow border border-purple-200">3</span></button>
