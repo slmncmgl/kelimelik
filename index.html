@@ -39,8 +39,8 @@
         .wbtn.t-purple span{color:#8b3fb8;}
         .wbtn.t-red span{color:#c0392b;}
         /* WORDLE */
-        .wd-row{display:grid;gap:8px;}
-        .wd-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:clamp(15px,5vw,26px);border-radius:7px;border:2px solid #e2e8f0;background:#fff;color:#334155;text-transform:uppercase;transition:transform .12s ease;min-width:0;max-height:50px;}
+        .wd-row{display:grid;gap:8px;width:100%;max-width:360px;margin:0 auto;}
+        .wd-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:clamp(15px,5vw,26px);border-radius:7px;border:2px solid #e2e8f0;background:#fff;color:#334155;text-transform:uppercase;transition:transform .12s ease;min-width:0;}
         .wd-cell.filled{border-color:#94a3b8;transform:scale(1.04);}
         .wd-cell.dead{color:#cbd5e1;border-color:#e2e8f0;background:#f8fafc;}
         .wd-cell.ghost{color:#86efac;border-color:#e2e8f0;background:#fff;transform:none;}
@@ -98,7 +98,7 @@
                 <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Skor Tablosu</span>
             </button>
         </div>
-        <div class="flex items-center justify-center gap-3"><p class="text-xs text-gray-300">v9.7</p><div class="flex items-center gap-1.5 text-xs text-gray-300 cursor-pointer hover:text-gray-500 transition-colors" onclick="showOnlinePlayersPopup()"><span class="presence-dot"></span><span class="presence-count">0</span> çevrimiçi</div></div>
+        <div class="flex items-center justify-center gap-3"><p class="text-xs text-gray-300">v9.8</p><div class="flex items-center gap-1.5 text-xs text-gray-300 cursor-pointer hover:text-gray-500 transition-colors" onclick="showOnlinePlayersPopup()"><span class="presence-dot"></span><span class="presence-count">0</span> çevrimiçi</div></div>
     </div>
     <div id="rules-panel" class="hidden fixed inset-0 bg-black/55 flex items-center justify-center z-50 p-4" style="backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)" onclick="if(event.target===this)toggleRulesPanel()"><div class="bg-white rounded-3xl shadow-2xl max-w-sm w-[90%] max-h-[80vh] overflow-y-auto p-7" style="border:3px solid #0ea5e9">
         <button onclick="toggleRulesPanel()" class="float-right w-9 h-9 flex items-center justify-center bg-gray-100 rounded-full text-gray-400 hover:bg-gray-200 hover:text-gray-600 text-lg font-bold -mt-2 -mr-2">✕</button>
