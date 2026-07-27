@@ -91,17 +91,17 @@
     <div class="absolute bottom-6 left-8 right-8">
         <div class="flex justify-center items-center gap-5 mb-2">
             <button onclick="toggleRulesPanel()" id="btn-rules-toggle" title="Nasıl Oynanır" class="flex items-center justify-center group">
-                <span class="w-8 h-8 flex items-center justify-center group-hover:scale-110 transition-all"><img src="assets/ui/guidebook.png" alt="Nasıl Oynanır" class="w-full h-full object-contain"/></span>
+                <span class="w-11 h-11 flex items-center justify-center group-hover:scale-110 transition-all"><img src="assets/ui/guidebook.png" alt="Nasıl Oynanır" class="w-full h-full object-contain"/></span>
             </button>
             <button onclick="switchToScreen('scoreboard-screen')" title="Skor Tablosu" class="flex items-center justify-center group">
-                <span class="w-8 h-8 flex items-center justify-center group-hover:scale-110 transition-all"><img src="assets/ui/trophy_wordle.png" alt="Skor Tablosu" class="w-full h-full object-contain"/></span>
+                <span class="w-11 h-11 flex items-center justify-center group-hover:scale-110 transition-all"><img src="assets/ui/trophy_wordle.png" alt="Skor Tablosu" class="w-full h-full object-contain"/></span>
             </button>
             <button onclick="showOnlinePlayersPopup()" title="Çevrimiçi Oyuncular" class="flex items-center gap-1 group">
-                <span class="w-8 h-8 flex items-center justify-center group-hover:scale-110 transition-all relative"><img src="assets/ui/online.png" alt="Çevrimiçi" class="w-full h-full object-contain"/></span>
+                <span class="w-11 h-11 flex items-center justify-center group-hover:scale-110 transition-all relative"><img src="assets/ui/online.png" alt="Çevrimiçi" class="w-full h-full object-contain"/></span>
                 <span class="text-xs font-bold text-gray-400"><span class="presence-count">0</span></span>
             </button>
         </div>
-        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v11.8</p></div>
+        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v12.3</p></div>
     </div>
     <div id="rules-panel" class="hidden fixed inset-0 bg-black/55 flex items-center justify-center z-50 p-4" style="backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)" onclick="if(event.target===this)toggleRulesPanel()"><div class="bg-white rounded-3xl shadow-2xl max-w-sm w-[90%] max-h-[80vh] overflow-y-auto p-7" style="border:3px solid #0ea5e9">
         <button onclick="toggleRulesPanel()" class="float-right w-9 h-9 flex items-center justify-center bg-gray-100 rounded-full text-gray-400 hover:bg-gray-200 hover:text-gray-600 text-lg font-bold -mt-2 -mr-2">✕</button>
@@ -148,57 +148,57 @@
     <div class="absolute top-4 left-4 text-xs text-gray-400 font-semibold z-10"><span class="menu-name-display"></span> <button onclick="openRenameModal()" title="Adı değiştir" class="hover:text-gray-600">✏️</button></div>
     <button onclick="showModeSwitchPopup()" title="Oyun Modu" class="absolute top-4 right-4 w-11 h-11 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full text-xl transition-all hover:rotate-45 duration-300 z-10">⚙️</button>
     <img src="assets/bkbi.png" alt="Bir Kelime Bir İşlem" class="w-auto max-h-[294px] mx-auto mb-6 object-contain" />
-    <button onclick="switchToScreen('kelime-welcome-screen')" class="w-full py-3 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Kelime</button>
-    <button onclick="switchToScreen('sayi-welcome-screen')" class="w-full py-3 bg-gradient-to-r from-summer-sea to-summer-ocean text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">İşlem</button>
+    <button onclick="switchToScreen('kelime-welcome-screen')" class="w-[90%] mx-auto block py-3 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Kelime</button>
+    <button onclick="switchToScreen('sayi-welcome-screen')" class="w-[90%] mx-auto block py-3 bg-gradient-to-r from-summer-sea to-summer-ocean text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">İşlem</button>
     <!-- KARMA MODU GİZLENDİ (geri açmak için bu yorumu kaldır)
-    <button onclick="startSoloKarma(this)" class="w-full py-3 bg-gradient-to-r from-summer-ocean to-summer-blue text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Karma</button>
+    <button onclick="startSoloKarma(this)" class="w-[90%] mx-auto block py-3 bg-gradient-to-r from-summer-ocean to-summer-blue text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Karma</button>
     -->
-    <button onclick="switchToScreen('adventure-map-screen')" class="w-full py-3 bg-gradient-to-r from-amber-400 to-orange-500 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">🗺️ Macera</button>
+    <button onclick="switchToScreen('adventure-map-screen')" class="w-[90%] mx-auto block py-3 bg-gradient-to-r from-amber-400 to-orange-500 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">🗺️ Macera</button>
     <div class="absolute bottom-6 left-8 right-8">
         <div class="flex justify-center items-center gap-5 mb-2">
             <button onclick="toggleRulesPanel()" title="Nasıl Oynanır" class="flex items-center justify-center group">
-                <span class="w-8 h-8 flex items-center justify-center group-hover:scale-110 transition-all"><img src="assets/ui/guidebook.png" alt="Nasıl Oynanır" class="w-full h-full object-contain"/></span>
+                <span class="w-11 h-11 flex items-center justify-center group-hover:scale-110 transition-all"><img src="assets/ui/guidebook.png" alt="Nasıl Oynanır" class="w-full h-full object-contain"/></span>
             </button>
             <button onclick="switchToScreen('scoreboard-screen')" title="Skor Tablosu" class="flex items-center justify-center group">
-                <span class="w-8 h-8 flex items-center justify-center group-hover:scale-110 transition-all"><img src="assets/ui/trophy_wordle.png" alt="Skor Tablosu" class="w-full h-full object-contain"/></span>
+                <span class="w-11 h-11 flex items-center justify-center group-hover:scale-110 transition-all"><img src="assets/ui/trophy_wordle.png" alt="Skor Tablosu" class="w-full h-full object-contain"/></span>
             </button>
             <button onclick="showOnlinePlayersPopup()" title="Çevrimiçi Oyuncular" class="flex items-center gap-1 group">
-                <span class="w-8 h-8 flex items-center justify-center group-hover:scale-110 transition-all"><img src="assets/ui/online.png" alt="Çevrimiçi" class="w-full h-full object-contain"/></span>
+                <span class="w-11 h-11 flex items-center justify-center group-hover:scale-110 transition-all"><img src="assets/ui/online.png" alt="Çevrimiçi" class="w-full h-full object-contain"/></span>
                 <span class="text-xs font-bold text-gray-400"><span class="presence-count">0</span></span>
             </button>
         </div>
-        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v11.8</p></div>
+        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v12.3</p></div>
     </div>
 </div>
 
 <div id="wordle-welcome-screen" class="relative max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white" style="min-height:600px">
     <div class="absolute top-4 left-4 text-xs text-gray-400 font-semibold z-10"><span class="menu-name-display"></span> <button onclick="openRenameModal()" title="Adı değiştir" class="hover:text-gray-600">✏️</button></div>
     <button onclick="showModeSwitchPopup()" title="Oyun Modu" class="absolute top-4 right-4 w-11 h-11 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full text-xl transition-all hover:rotate-45 duration-300 z-10">⚙️</button>
-    <img src="assets/bkbi.png" alt="Bir Kelime Bir İşlem" class="w-auto max-h-[294px] mx-auto mb-6 object-contain" />
-    <button onclick="startDailyWordle(this)" class="w-full py-3 bg-gradient-to-r from-indigo-400 to-indigo-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">📅 Günün Kelimesi</button>
-    <button onclick="openWordleLobby()" class="w-full py-3 bg-gradient-to-r from-cyan-400 to-teal-500 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Arkadaşlarınla Oyna</button>
-    <button onclick="openWordleVsLobby()" class="w-full py-3 bg-gradient-to-r from-rose-400 to-red-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">⚔️ Birebir Kapışma</button>
-    <button onclick="switchToScreen('wordle-difficulty-screen')" class="w-full py-3 bg-gradient-to-r from-green-400 to-emerald-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">Egzersiz</button>
+    <img src="assets/wordle.png" alt="Wordle" class="w-auto max-h-[294px] mx-auto mb-6 object-contain" />
+    <button onclick="startDailyWordle(this)" class="w-[90%] mx-auto block py-3 bg-gradient-to-r from-indigo-400 to-indigo-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">📅 Günün Kelimesi</button>
+    <button onclick="openWordleLobby()" class="w-[90%] mx-auto block py-3 bg-gradient-to-r from-cyan-400 to-teal-500 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Arkadaşlarınla Oyna</button>
+    <button onclick="openWordleVsLobby()" class="w-[90%] mx-auto block py-3 bg-gradient-to-r from-rose-400 to-red-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">⚔️ Birebir Kapışma</button>
+    <button onclick="switchToScreen('wordle-difficulty-screen')" class="w-[90%] mx-auto block py-3 bg-gradient-to-r from-green-400 to-emerald-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">Egzersiz</button>
     <div class="absolute bottom-6 left-8 right-8">
         <div class="flex justify-center items-center gap-5 mb-2">
             <button onclick="toggleRulesPanel()" title="Nasıl Oynanır" class="flex items-center justify-center group">
-                <span class="w-8 h-8 flex items-center justify-center group-hover:scale-110 transition-all"><img src="assets/ui/guidebook.png" alt="Nasıl Oynanır" class="w-full h-full object-contain"/></span>
+                <span class="w-11 h-11 flex items-center justify-center group-hover:scale-110 transition-all"><img src="assets/ui/guidebook.png" alt="Nasıl Oynanır" class="w-full h-full object-contain"/></span>
             </button>
             <button onclick="switchToScreen('scoreboard-screen')" title="Skor Tablosu" class="flex items-center justify-center group">
-                <span class="w-8 h-8 flex items-center justify-center group-hover:scale-110 transition-all"><img src="assets/ui/trophy_wordle.png" alt="Skor Tablosu" class="w-full h-full object-contain"/></span>
+                <span class="w-11 h-11 flex items-center justify-center group-hover:scale-110 transition-all"><img src="assets/ui/trophy_wordle.png" alt="Skor Tablosu" class="w-full h-full object-contain"/></span>
             </button>
             <button onclick="showOnlinePlayersPopup()" title="Çevrimiçi Oyuncular" class="flex items-center gap-1 group">
-                <span class="w-8 h-8 flex items-center justify-center group-hover:scale-110 transition-all"><img src="assets/ui/online.png" alt="Çevrimiçi" class="w-full h-full object-contain"/></span>
+                <span class="w-11 h-11 flex items-center justify-center group-hover:scale-110 transition-all"><img src="assets/ui/online.png" alt="Çevrimiçi" class="w-full h-full object-contain"/></span>
                 <span class="text-xs font-bold text-gray-400"><span class="presence-count">0</span></span>
             </button>
         </div>
-        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v11.8</p></div>
+        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v12.3</p></div>
     </div>
 </div>
 
 <div id="wordle-difficulty-screen" class="hidden relative max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white" style="min-height:600px">
     <div class="absolute top-3 right-3"><span class="text-xs text-gray-400 font-semibold"><span class="presence-count-name"></span></span></div>
-    <img src="assets/bkbi.png" alt="Bir Kelime Bir İşlem" class="w-auto max-h-[294px] mx-auto mb-6 object-contain" />
+    <img src="assets/wordle.png" alt="Wordle" class="w-auto max-h-[294px] mx-auto mb-6 object-contain" />
     
     <button onclick="startSoloWordle(this,4)" class="w-full py-3 bg-gradient-to-r from-green-300 to-green-500 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-2">Kolay (4 Harf)</button>
     <button onclick="startSoloWordle(this,5)" class="w-full py-3 bg-gradient-to-r from-green-400 to-emerald-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-2">Normal (5 Harf)</button>
@@ -264,7 +264,7 @@
     <p class="text-gray-500 mb-3 text-sm">Bölümleri sırayla geç, yıldızları topla!</p>
     <div class="bg-blue-50 rounded-xl p-3 mb-4 text-left text-xs text-gray-600 leading-relaxed"><span class="font-bold text-summer-sea">Nasıl puan alınır?</span> Her harf 1 puan (5 harfli kelime = 5 puan). Uzun kelimeler daha çok puan! Her bölümün bir hedefi var — hedefi geçince ⭐, fazlasıyla aşınca ⭐⭐ veya ⭐⭐⭐ kazanırsın.</div>
     <div id="adventure-level-grid" class="grid grid-cols-4 gap-3 mb-4"></div>
-    <button onclick="switchToScreen('kelime-welcome-screen')" class="w-full py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
+    <button onclick="switchToScreen('kelime-welcome-screen')" class="w-[90%] mx-auto block py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
 </div>
 
 <div id="adventure-level-intro-screen" class="hidden max-w-md w-full bg-white/95 backdrop-blur-md p-8 rounded-3xl shadow-2xl text-center border-4 border-summer-ocean relative overflow-hidden">
@@ -273,7 +273,7 @@
     <div class="bg-blue-50 rounded-2xl p-5 my-5"><p class="text-xs font-bold text-summer-sea uppercase tracking-widest mb-2">🎯 Hedef</p><p id="adv-intro-goal" class="text-xl font-bold text-gray-700">-</p></div>
     <div class="flex items-center justify-center gap-4 text-sm text-gray-500 mb-6"><span>⏱️ <span id="adv-intro-time">120</span> sn</span><span id="adv-intro-nojoker" class="hidden">🚫 Joker yok</span></div>
     <button onclick="startAdventureLevel()" class="w-full py-3 bg-gradient-to-r from-summer-ocean to-summer-blue text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-2">Başla 🚀</button>
-    <button onclick="switchToScreen('adventure-map-screen')" class="w-full py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Haritaya Dön</button>
+    <button onclick="switchToScreen('adventure-map-screen')" class="w-[90%] mx-auto block py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Haritaya Dön</button>
 </div>
 
 <div id="adventure-level-complete-screen" class="hidden max-w-md w-full bg-white/95 backdrop-blur-md p-8 rounded-3xl shadow-2xl text-center border-4 border-summer-sun relative overflow-hidden">
@@ -284,7 +284,7 @@
     <div class="bg-orange-50 rounded-2xl p-5 mb-6"><p class="text-xs font-bold text-orange-400 uppercase tracking-widest mb-1">Skorun</p><p id="adv-complete-score" class="text-5xl font-black text-summer-coral">0</p></div>
     <button id="adv-next-btn" onclick="adventureNextLevel()" class="w-full py-3 bg-gradient-to-r from-summer-ocean to-summer-blue text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-2">Sonraki Bölüm ➜</button>
     <button onclick="adventureRetryLevel()" class="w-full py-3 mb-2 bg-white text-summer-sea font-bold rounded-xl border-2 border-blue-200 hover:bg-blue-50 transition-colors">🔄 Tekrar Dene</button>
-    <button onclick="switchToScreen('adventure-map-screen')" class="w-full py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">🗺️ Haritaya Dön</button>
+    <button onclick="switchToScreen('adventure-map-screen')" class="w-[90%] mx-auto block py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">🗺️ Haritaya Dön</button>
 </div>
 
 <div id="scoreboard-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-6 rounded-3xl shadow-2xl text-center border-4 border-white">
@@ -304,14 +304,14 @@
     <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Tur Süresi (dk)</p>
     <div class="grid grid-cols-3 gap-2 mb-6"><button onclick="selectSoloDuration(1)" data-solo-duration="1" class="solo-duration-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">1</button><button onclick="selectSoloDuration(2)" data-solo-duration="2" class="solo-duration-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">2</button><button onclick="selectSoloDuration(3)" data-solo-duration="3" class="solo-duration-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">3</button></div>
     <button onclick="startGame()" id="btn-solo-start" disabled class="wbtn t-orange mb-3"><span>OYUNU BAŞLAT</span></button>
-    <button onclick="switchToScreen('kelime-welcome-screen')" class="w-full py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
+    <button onclick="switchToScreen('kelime-welcome-screen')" class="w-[90%] mx-auto block py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
 </div>
 
 <div id="sayi-round-select-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
     <h2 class="text-3xl font-extrabold text-summer-sea mb-2">İşlem</h2><p class="text-gray-500 mb-6">Kaç tur oynayalım?</p>
     <div class="grid grid-cols-3 gap-2 mb-6"><button onclick="selectSayiRoundCount(3)" data-sayi-round="3" class="sayi-round-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">3</button><button onclick="selectSayiRoundCount(5)" data-sayi-round="5" class="sayi-round-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">5</button><button onclick="selectSayiRoundCount(7)" data-sayi-round="7" class="sayi-round-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">7</button></div>
     <button onclick="startSayiGame()" id="btn-sayi-start" disabled class="w-full py-3 bg-gray-300 text-white font-bold text-lg rounded-2xl shadow-lg transition-all mb-3 cursor-not-allowed">Oyunu Başlat 🚀</button>
-    <button onclick="switchToScreen('sayi-welcome-screen')" class="w-full py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
+    <button onclick="switchToScreen('sayi-welcome-screen')" class="w-[90%] mx-auto block py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
 </div>
 
 <div id="karma-round-select-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
@@ -536,7 +536,7 @@ let rulesPanelOpen=false,rulesAnimationStarted=false;
 function showModeSwitchHintOnce(){try{if(localStorage.getItem('bkbi_modehint_v1'))return;}catch(e){return;}const ov=document.createElement('div');ov.className='fixed inset-0 bg-black/55 flex items-center justify-center z-50 p-4';ov.style.backdropFilter='blur(6px)';ov.style.webkitBackdropFilter='blur(6px)';const close=()=>{try{localStorage.setItem('bkbi_modehint_v1','1');}catch(e){}ov.remove();};ov.onclick=(e)=>{if(e.target===ov)close();};ov.innerHTML=`<div class="bg-white rounded-3xl shadow-2xl max-w-sm w-[90%] p-7 text-center" style="border:3px solid #0ea5e9"><div class="text-5xl mb-3">⚙️</div><h3 class="text-xl font-black mb-3" style="color:#0ea5e9">Oyun Modu Değişti!</h3><p class="text-sm text-gray-600 leading-relaxed mb-5">Artık sağ üstteki <span class="inline-flex items-center justify-center w-7 h-7 bg-gray-100 rounded-full">⚙️</span> butonundan <b>Wordle</b> ve <b>Bir Kelime Bir İşlem</b> modları arasında geçiş yapabilirsin.</p><button id="modehint-ok" class="w-full py-3 bg-gradient-to-r from-summer-sea to-summer-ocean text-white font-bold rounded-2xl shadow hover:shadow-lg transition-all">Anladım!</button></div>`;document.body.appendChild(ov);ov.querySelector('#modehint-ok').onclick=close;}
 // ==== BİREBİR KAPIŞMA DAVET FONKSİYONLARI ====
 let __sentInvites={};
-async function sendVsInvite(targetSid,targetName,btn){if(!targetSid||!window.fb)return;try{await getOrCreatePlayerName();}catch(e){}const myName=game.playerName||'Oyuncu';try{if(btn){btn.textContent='Kuruluyor...';btn.disabled=true;}resetMpState();game.mp.isVs=true;game.mp.gameType='wordle-vs';if(!wordleSecretPool)try{buildWordlePools();}catch(e){}await createLobby(myName);const gid=game.mp.gameId;const inviteData={from:myName,fromSession:window.__mySessionId,status:'pending',lobbyId:gid,ts:Date.now()};await window.fb.set(window.fb.ref(window.fb.db,`invites/${targetSid}`),inviteData);__sentInvites[targetSid]={name:targetName,ts:Date.now(),lobbyId:gid};const pop=document.querySelector('.fixed.inset-0');if(pop&&pop.querySelector('h3')&&pop.querySelector('h3').textContent.includes('Çevrimiçi'))pop.remove();showMpWaitingScreenAsHost();showToast(`⚔️ ${targetName}'e davet gönderildi! Bekleniyor...`,'success');setTimeout(()=>{if(__sentInvites[targetSid]&&Date.now()-__sentInvites[targetSid].ts>=60000){window.fb.remove(window.fb.ref(window.fb.db,`invites/${targetSid}`)).catch(()=>{});delete __sentInvites[targetSid];}},60000);}catch(e){showToast('Davet gönderilemedi');if(btn){btn.textContent='⚔️ Davet';btn.disabled=false;}}}
+async function sendVsInvite(targetSid,targetName,btn){if(!targetSid||!window.fb)return;if(targetSid===window.__mySessionId){showToast('Kendine davet gönderemezsin! 😄');return;}try{await getOrCreatePlayerName();}catch(e){}const myName=game.playerName||'Oyuncu';try{if(btn){btn.textContent='Kuruluyor...';btn.disabled=true;}resetMpState();game.mp.isVs=true;game.mp.gameType='wordle-vs';if(!wordleSecretPool)try{buildWordlePools();}catch(e){}await createLobby(myName);const gid=game.mp.gameId;const inviteData={from:myName,fromSession:window.__mySessionId,status:'pending',lobbyId:gid,ts:Date.now()};await window.fb.set(window.fb.ref(window.fb.db,`invites/${targetSid}`),inviteData);__sentInvites[targetSid]={name:targetName,ts:Date.now(),lobbyId:gid};const pop=document.querySelector('.fixed.inset-0');if(pop&&pop.querySelector('h3')&&pop.querySelector('h3').textContent.includes('Çevrimiçi'))pop.remove();showMpWaitingScreenAsHost();showToast(`⚔️ ${targetName}'e davet gönderildi! Bekleniyor...`,'success');setTimeout(()=>{if(__sentInvites[targetSid]&&Date.now()-__sentInvites[targetSid].ts>=60000){window.fb.remove(window.fb.ref(window.fb.db,`invites/${targetSid}`)).catch(()=>{});delete __sentInvites[targetSid];}},60000);}catch(e){showToast('Davet gönderilemedi');if(btn){btn.textContent='⚔️ Davet';btn.disabled=false;}}}
 window.__handleIncomingInvite=function(inv){if(document.getElementById('vs-invite-popup'))return;const inMenu=!document.getElementById('wordle-welcome-screen').classList.contains('hidden')||!document.getElementById('bkbi-menu-screen').classList.contains('hidden')||!document.getElementById('game-mode-select-screen').classList.contains('hidden');const ov=document.createElement('div');ov.id='vs-invite-popup';ov.className='fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4';ov.style.backdropFilter='blur(6px)';ov.style.webkitBackdropFilter='blur(6px)';ov.innerHTML=`<div class="bg-white rounded-3xl shadow-2xl max-w-sm w-[90%] p-7 text-center relative" style="border:3px solid #ef4444"><button onclick="dismissVsInvite()" class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full text-gray-400 hover:bg-gray-200 hover:text-gray-600 text-base font-bold">✕</button><div class="text-5xl mb-3 animate-bounce">⚔️</div><h3 class="text-xl font-black mb-2 text-red-600">Kapışma Daveti!</h3><p class="text-sm text-gray-600 mb-5"><b>${inv.from}</b> seni birebir kapışmaya davet ediyor!</p><div class="grid grid-cols-2 gap-3"><button onclick="rejectVsInvite('${inv.fromSession}','${inv.from.replace(/'/g,"")}')" class="py-3 bg-gray-100 text-gray-600 font-bold rounded-xl hover:bg-gray-200 transition-all">Reddet</button><button onclick="acceptVsInvite('${inv.fromSession}','${inv.from.replace(/'/g,"")}','${inv.lobbyId||''}')" class="py-3 bg-gradient-to-r from-rose-400 to-red-600 text-white font-bold rounded-xl shadow hover:shadow-lg transition-all">Kabul Et</button></div></div>`;document.body.appendChild(ov);sounds.playSuccess&&sounds.playSuccess();};
 async function acceptVsInvite(fromSession,fromName,lobbyId){const pop=document.getElementById('vs-invite-popup');if(pop)pop.remove();if(!lobbyId){showToast('Lobi bulunamadı');return;}try{await window.fb.remove(window.fb.ref(window.fb.db,`invites/${window.__mySessionId}`));}catch(e){}await joinVsFromInvite(lobbyId);}
 function dismissVsInvite(){const pop=document.getElementById('vs-invite-popup');if(pop)pop.remove();try{window.fb.remove(window.fb.ref(window.fb.db,`invites/${window.__mySessionId}`));}catch(e){}}
@@ -563,7 +563,9 @@ function renderScoreEntries(entries){const listEl=document.getElementById('retro
 async function prefetchScoreboard(){try{const [bkbi,wordle]=await Promise.all([fetchScoreEntries('bkbi'),fetchScoreEntries('wordle')]);_scoreCache.bkbi=bkbi;_scoreCache.wordle=wordle;}catch(e){}}
 async function loadScoreTabContent(tab){const listEl=document.getElementById('retro-top10-list');if(_scoreCache[tab]){renderScoreEntries(_scoreCache[tab]);return;}listEl.innerHTML='<p class="text-slate-500 text-sm">Yükleniyor...</p>';try{const entries=await fetchScoreEntries(tab);_scoreCache[tab]=entries;renderScoreEntries(entries);}catch(err){listEl.innerHTML='<p class="text-slate-500 text-sm">Yüklenemedi</p>';}}
 
-async function startSoloKelime(btn){setBtnLoading(btn,true);resetMpState();await getOrCreatePlayerName();setBtnLoading(btn,false);game.selectedRoundCount=7;game.selectedDurationMinutes=1.5;startGame();}
+async function startSoloKelime(btn){showSoloKelimeDurationPopup();}
+function showSoloKelimeDurationPopup(){const ov=document.createElement('div');ov.className='fixed inset-0 bg-black/55 flex items-center justify-center z-50 p-4';ov.style.backdropFilter='blur(6px)';ov.style.webkitBackdropFilter='blur(6px)';ov.onclick=(e)=>{if(e.target===ov)ov.remove();};ov.innerHTML=`<div class="bg-white rounded-3xl shadow-2xl max-w-sm w-[90%] p-7 text-center" style="border:3px solid #f97316"><button onclick="this.closest('.fixed').remove()" class="float-right w-9 h-9 flex items-center justify-center bg-gray-100 rounded-full text-gray-400 hover:bg-gray-200 hover:text-gray-600 text-lg font-bold -mt-2 -mr-2">✕</button><div class="text-4xl mb-2">⏱️</div><h3 class="text-xl font-black mb-1 text-summer-coral">Süre Seç</h3><p class="text-sm text-gray-500 mb-5">Her tur için ne kadar süre istersin?</p><div class="grid grid-cols-3 gap-3"><button onclick="beginSoloKelime(1)" class="py-4 bg-gradient-to-br from-green-300 to-green-500 text-white font-black text-lg rounded-2xl shadow hover:shadow-lg transform hover:-translate-y-1 transition-all">1<span class="block text-xs font-bold opacity-90">dakika</span></button><button onclick="beginSoloKelime(2)" class="py-4 bg-gradient-to-br from-summer-sun to-summer-coral text-white font-black text-lg rounded-2xl shadow hover:shadow-lg transform hover:-translate-y-1 transition-all">2<span class="block text-xs font-bold opacity-90">dakika</span></button><button onclick="beginSoloKelime(3)" class="py-4 bg-gradient-to-br from-rose-400 to-red-600 text-white font-black text-lg rounded-2xl shadow hover:shadow-lg transform hover:-translate-y-1 transition-all">3<span class="block text-xs font-bold opacity-90">dakika</span></button></div></div>`;document.body.appendChild(ov);}
+async function beginSoloKelime(minutes){document.querySelectorAll('.fixed.inset-0').forEach(el=>{if(el.querySelector('button[onclick^="beginSoloKelime"]'))el.remove();});resetMpState();await getOrCreatePlayerName();game.selectedRoundCount=7;game.selectedDurationMinutes=minutes;startGame();}
 async function startSoloSayi(btn){setBtnLoading(btn,true);resetMpState();await getOrCreatePlayerName();setBtnLoading(btn,false);game.selectedRoundCount=7;startSayiGame();}
 async function startSoloKarma(btn){setBtnLoading(btn,true);resetMpState();await getOrCreatePlayerName();setBtnLoading(btn,false);game.selectedRoundCount=7;startKarmaGame();}
 
@@ -786,9 +788,10 @@ const app=initializeApp(fc);const db=getDatabase(app);let sto=0;
 onValue(ref(db,'.info/serverTimeOffset'),(s)=>{sto=s.val()||0;});
 window.fb={db,ref,set,get,update,onValue,off,remove,serverTimestamp,onDisconnect,serverNow:()=>Date.now()+sto};
 // === PRESENCE ===
-const presenceSessionId='s_'+Math.random().toString(36).slice(2,10)+'_'+Date.now().toString(36);
+let presenceSessionId;try{presenceSessionId=sessionStorage.getItem('bkbi_sid');}catch(e){}if(!presenceSessionId){presenceSessionId='s_'+Math.random().toString(36).slice(2,10)+'_'+Date.now().toString(36);try{sessionStorage.setItem('bkbi_sid',presenceSessionId);}catch(e){}}
 const myPresRef=ref(db,'presence/'+presenceSessionId);
 function updatePresenceName(){const nm=(game&&game.playerName)||'Oyuncu';set(myPresRef,{t:serverTimestamp(),n:nm}).catch(()=>{});}
+setInterval(()=>{try{updatePresenceName();}catch(e){}},30000);
 onValue(ref(db,'.info/connected'),(snap)=>{if(snap.val()===true){onDisconnect(myPresRef).remove();updatePresenceName();}});
 window.__updatePresenceName=updatePresenceName;
 // ---- BİREBİR KAPIŞMA DAVET SİSTEMİ ----
@@ -797,7 +800,7 @@ onDisconnect(myInviteRef).remove();
 onValue(myInviteRef,(snap)=>{const inv=snap.val();if(!inv||!inv.from)return;if(inv.status==='pending'){window.__handleIncomingInvite&&window.__handleIncomingInvite(inv);}else if(inv.status==='accepted'){window.__handleInviteAccepted&&window.__handleInviteAccepted(inv);}else if(inv.status==='rejected'){window.__handleInviteRejected&&window.__handleInviteRejected(inv);}});
 window.__mySessionId=presenceSessionId;
 window.__presenceNames=[];
-onValue(ref(db,'presence'),(snap)=>{const v=snap.val()||{};const entries=Object.entries(v);window.__presenceNames=entries.map(([sid,e])=>(e&&e.n)?e.n:'Oyuncu');window.__presenceList=entries.map(([sid,e])=>({sid,name:(e&&e.n)?e.n:'Oyuncu'})).filter(p=>p.sid!==presenceSessionId);const count=entries.length;document.querySelectorAll('.presence-count').forEach(el=>{el.textContent=count;});});
+onValue(ref(db,'presence'),(snap)=>{const v=snap.val()||{};const now=(typeof serverNow==='function')?serverNow():Date.now();const STALE=90000;const entries=Object.entries(v).filter(([sid,e])=>{if(!e)return false;if(sid===presenceSessionId)return true;if(typeof e.t!=='number')return true;const fresh=(now-e.t)<STALE;if(!fresh){try{remove(ref(db,'presence/'+sid));}catch(er){}}return fresh;});window.__presenceNames=entries.map(([sid,e])=>(e&&e.n)?e.n:'Oyuncu');window.__presenceList=entries.map(([sid,e])=>({sid,name:(e&&e.n)?e.n:'Oyuncu'})).filter(p=>{if(p.sid===presenceSessionId)return false;const myName=(game&&game.playerName)?game.playerName:null;if(myName&&p.name===myName)return false;return true;});const count=entries.length;document.querySelectorAll('.presence-count').forEach(el=>{el.textContent=count;});});
 </script>
 </body>
 </html>
