@@ -52,6 +52,8 @@
         .wd-cell.reveal{animation:wd-flip .4s ease forwards;}
         @keyframes cocuk-rainbow{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
 .cocuk-btn{background:linear-gradient(90deg,#f472b6,#fb923c,#fbbf24,#34d399,#38bdf8,#a78bfa,#f472b6);background-size:300% 300%;animation:cocuk-rainbow 4s ease infinite;}
+@keyframes menu-shimmer{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+.menu-btn-anim{background-size:180% 180%!important;animation:menu-shimmer 6s ease-in-out infinite;}
 @keyframes wd-flip{0%{transform:scaleY(1);}50%{transform:scaleY(0);}100%{transform:scaleY(1);}}
         .wd-cell.g.glow{border-color:#fbbf24;box-shadow:0 0 12px 3px rgba(251,191,36,.7);transition:box-shadow 1s ease-out,border-color 1s ease-out;}
         .wd-cell.preview{background:#f0fdf4;border-color:#bbf7d0;color:#86efac;}
@@ -104,7 +106,7 @@
                 <span class="text-xs font-bold text-gray-400"><span class="presence-count">0</span></span>
             </button>
         </div>
-        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v13.8</p></div>
+        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v13.9</p></div>
     </div>
     
 </div>
@@ -113,12 +115,12 @@
     <div class="absolute top-4 left-4 text-xs text-gray-400 font-semibold z-10"><span class="menu-name-display"></span> <button onclick="openRenameModal()" title="Adı değiştir" class="hover:text-gray-600">✏️</button></div>
     <button onclick="showModeSwitchPopup()" title="Oyun Modu" class="absolute top-4 right-4 w-11 h-11 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full text-xl transition-all hover:rotate-45 duration-300 z-10">⚙️</button>
     <img src="assets/bkbi.png" alt="Bir Kelime Bir İşlem" class="w-auto max-h-[294px] mx-auto mb-6 object-contain" />
-    <button onclick="switchToScreen('kelime-welcome-screen')" class="w-[90%] mx-auto block py-3 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Kelime</button>
-    <button onclick="switchToScreen('sayi-welcome-screen')" class="w-[90%] mx-auto block py-3 bg-gradient-to-r from-summer-sea to-summer-ocean text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">İşlem</button>
+    <button onclick="switchToScreen('kelime-welcome-screen')" class="w-[90%] mx-auto block py-3 menu-btn-anim bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Kelime</button>
+    <button onclick="switchToScreen('sayi-welcome-screen')" class="w-[90%] mx-auto block py-3 menu-btn-anim bg-gradient-to-r from-summer-sea to-summer-ocean text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">İşlem</button>
     <!-- KARMA MODU GİZLENDİ (geri açmak için bu yorumu kaldır)
-    <button onclick="startSoloKarma(this)" class="w-[90%] mx-auto block py-3 bg-gradient-to-r from-summer-ocean to-summer-blue text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Karma</button>
+    <button onclick="startSoloKarma(this)" class="w-[90%] mx-auto block py-3 menu-btn-anim bg-gradient-to-r from-summer-ocean to-summer-blue text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Karma</button>
     -->
-    <button onclick="switchToScreen('adventure-map-screen')" class="w-[90%] mx-auto block py-3 bg-gradient-to-r from-amber-400 to-orange-500 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">🗺️ Macera</button>
+    <button onclick="switchToScreen('adventure-map-screen')" class="w-[90%] mx-auto block py-3 menu-btn-anim bg-gradient-to-r from-amber-400 to-orange-500 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">🗺️ Macera</button>
     <div class="absolute bottom-6 left-8 right-8">
         <div class="flex justify-center items-center gap-5 mb-2">
             <button onclick="toggleRulesPanel()" title="Nasıl Oynanır" class="flex items-center justify-center group">
@@ -132,7 +134,7 @@
                 <span class="text-xs font-bold text-gray-400"><span class="presence-count">0</span></span>
             </button>
         </div>
-        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v13.8</p></div>
+        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v13.9</p></div>
     </div>
 </div>
 
@@ -140,10 +142,10 @@
     <div class="absolute top-4 left-4 text-xs text-gray-400 font-semibold z-10"><span class="menu-name-display"></span> <button onclick="openRenameModal()" title="Adı değiştir" class="hover:text-gray-600">✏️</button></div>
     <button onclick="showModeSwitchPopup()" title="Oyun Modu" class="absolute top-4 right-4 w-11 h-11 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full text-xl transition-all hover:rotate-45 duration-300 z-10">⚙️</button>
     <img src="assets/wordle.png" alt="Wordle" class="w-auto max-h-[294px] mx-auto mb-6 object-contain" />
-    <button onclick="startDailyWordle(this)" class="w-[90%] mx-auto block py-3 bg-gradient-to-r from-indigo-400 to-indigo-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">📅 Günün Kelimesi</button>
-    <button onclick="openWordleLobby()" class="w-[90%] mx-auto block py-3 bg-gradient-to-r from-cyan-400 to-teal-500 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Arkadaşlarınla Oyna</button>
-    <button onclick="openWordleVsLobby()" class="w-[90%] mx-auto block py-3 bg-gradient-to-r from-rose-400 to-red-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">⚔️ Birebir Kapışma</button>
-    <button onclick="switchToScreen('wordle-difficulty-screen')" class="w-[90%] mx-auto block py-3 bg-gradient-to-r from-green-400 to-emerald-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">Egzersiz</button>
+    <button onclick="startDailyWordle(this)" class="w-[90%] mx-auto block py-3 menu-btn-anim bg-gradient-to-r from-indigo-400 to-indigo-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">📅 Günün Kelimesi</button>
+    <button onclick="openWordleLobby()" class="w-[90%] mx-auto block py-3 menu-btn-anim bg-gradient-to-r from-cyan-400 to-teal-500 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Arkadaşlarınla Oyna</button>
+    <button onclick="openWordleVsLobby()" class="w-[90%] mx-auto block py-3 menu-btn-anim bg-gradient-to-r from-rose-400 to-red-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">⚔️ Birebir Kapışma</button>
+    <button onclick="switchToScreen('wordle-difficulty-screen')" class="w-[90%] mx-auto block py-3 menu-btn-anim bg-gradient-to-r from-green-400 to-emerald-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">Egzersiz</button>
     <div class="absolute bottom-6 left-8 right-8">
         <div class="flex justify-center items-center gap-5 mb-2">
             <button onclick="toggleRulesPanel()" title="Nasıl Oynanır" class="flex items-center justify-center group">
@@ -157,7 +159,7 @@
                 <span class="text-xs font-bold text-gray-400"><span class="presence-count">0</span></span>
             </button>
         </div>
-        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v13.8</p></div>
+        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v13.9</p></div>
     </div>
 </div>
 
