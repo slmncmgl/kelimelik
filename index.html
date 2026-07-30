@@ -53,7 +53,7 @@
         @keyframes cocuk-rainbow{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
 .cocuk-btn{background:linear-gradient(90deg,#f472b6,#fb923c,#fbbf24,#34d399,#38bdf8,#a78bfa,#f472b6);background-size:300% 300%;animation:cocuk-rainbow 4s ease infinite;}
 @keyframes menu-shimmer{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
-.menu-btn-anim{background-size:180% 180%!important;animation:menu-shimmer 6s ease-in-out infinite;}
+.menu-btn-anim{background-size:180% 180%!important;animation:menu-shimmer 3s ease-in-out infinite;}
 @keyframes wd-flip{0%{transform:scaleY(1);}50%{transform:scaleY(0);}100%{transform:scaleY(1);}}
         .wd-cell.g.glow{border-color:#fbbf24;box-shadow:0 0 12px 3px rgba(251,191,36,.7);transition:box-shadow 1s ease-out,border-color 1s ease-out;}
         .wd-cell.preview{background:#f0fdf4;border-color:#bbf7d0;color:#86efac;}
@@ -106,7 +106,7 @@
                 <span class="text-xs font-bold text-gray-400"><span class="presence-count">0</span></span>
             </button>
         </div>
-        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v13.9</p></div>
+        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v14.0</p></div>
     </div>
     
 </div>
@@ -134,7 +134,7 @@
                 <span class="text-xs font-bold text-gray-400"><span class="presence-count">0</span></span>
             </button>
         </div>
-        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v13.9</p></div>
+        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v14.0</p></div>
     </div>
 </div>
 
@@ -159,7 +159,7 @@
                 <span class="text-xs font-bold text-gray-400"><span class="presence-count">0</span></span>
             </button>
         </div>
-        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v13.9</p></div>
+        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v14.0</p></div>
     </div>
 </div>
 
@@ -438,7 +438,8 @@ const WORDLE_7_NADIR=[];
 const WORDLE_7=[...WORDLE_7_EASY,...WORDLE_7_ORTA];
 let wordleSecretPool=null,wordleGuessPool=null;
 function getWordlePool(len){return{4:typeof WORDLE_4!=='undefined'?WORDLE_4:[],5:WORDLE_COMMON,6:typeof WORDLE_6!=='undefined'?WORDLE_6:[],7:typeof WORDLE_7!=='undefined'?WORDLE_7:[]}[len]||WORDLE_COMMON;}
-function buildWordlePools(len){const wl=len||WORDLE_LEN;const okChars=w=>w.length===wl&&[...w].every(c=>ALPHABET.includes(c));wordleSecretPool=getWordlePool(wl).slice();const gp=new Set(getWordlePool(wl));if(turkishWordSet)[...turkishWordSet].filter(okChars).forEach(w=>gp.add(w));else if(turkishWordSetCore)[...turkishWordSetCore].filter(okChars).forEach(w=>gp.add(w));wordleGuessPool=gp;}
+const WORDLE_EXTRA=['İSLAM'];
+function buildWordlePools(len){const wl=len||WORDLE_LEN;const okChars=w=>w.length===wl&&[...w].every(c=>ALPHABET.includes(c));wordleSecretPool=getWordlePool(wl).slice();const gp=new Set(getWordlePool(wl));if(turkishWordSet)[...turkishWordSet].filter(okChars).forEach(w=>gp.add(w));else if(turkishWordSetCore)[...turkishWordSetCore].filter(okChars).forEach(w=>gp.add(w));WORDLE_EXTRA.filter(okChars).forEach(w=>gp.add(w));wordleGuessPool=gp;}
 function getTieredPool(){const g=game.wordle;const wl=getWL();if(!g.soloMode||(wl!==6&&wl!==7))return wordleSecretPool;const round=g.soloRound||1;let tier;if(round<=3)tier='EASY';else tier='ORTA';const pools={6:{EASY:typeof WORDLE_6_EASY!=='undefined'?WORDLE_6_EASY:[],ORTA:typeof WORDLE_6_ORTA!=='undefined'?WORDLE_6_ORTA:[],NADIR:typeof WORDLE_6_NADIR!=='undefined'?WORDLE_6_NADIR:[]},7:{EASY:typeof WORDLE_7_EASY!=='undefined'?WORDLE_7_EASY:[],ORTA:typeof WORDLE_7_ORTA!=='undefined'?WORDLE_7_ORTA:[],NADIR:typeof WORDLE_7_NADIR!=='undefined'?WORDLE_7_NADIR:[]}};const tierPool=pools[wl][tier];return(tierPool&&tierPool.length)?tierPool:wordleSecretPool;}
 function pickWordleSecret(exclude){const pool=getTieredPool();if(!pool||!pool.length)return null;const used=game.wordle._usedWords||(game.wordle._usedWords=new Set());if(exclude)used.add(exclude);for(let i=0;i<100;i++){const w=pool[Math.floor(Math.random()*pool.length)];if(!used.has(w)){used.add(w);return w;}}used.clear();return wordleSecretPool[Math.floor(Math.random()*wordleSecretPool.length)];}
 function isValidWordleGuess(w){if(w.length!==getWL())return false;if(wordleGuessPool&&wordleGuessPool.has(w))return true;if(wordleSecretPool&&wordleSecretPool.includes(w))return true;return false;}
