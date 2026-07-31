@@ -106,7 +106,7 @@
                 <span class="text-xs font-bold text-gray-400"><span class="presence-count">0</span></span>
             </button>
         </div>
-        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v14.7</p></div>
+        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v14.8</p></div>
     </div>
     
 </div>
@@ -134,7 +134,7 @@
                 <span class="text-xs font-bold text-gray-400"><span class="presence-count">0</span></span>
             </button>
         </div>
-        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v14.7</p></div>
+        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v14.8</p></div>
     </div>
 </div>
 
@@ -160,7 +160,7 @@
                 <span class="text-xs font-bold text-gray-400"><span class="presence-count">0</span></span>
             </button>
         </div>
-        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v14.7</p></div>
+        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v14.8</p></div>
     </div>
 </div>
 
@@ -432,7 +432,7 @@ async function saveNewName(){const inp=document.getElementById('rename-input');c
 let helpBubbleShown=false;
 function showRenameHelpBubbleOnce(bubbleId){if(helpBubbleShown)return;helpBubbleShown=true;const b=document.getElementById(bubbleId);if(!b)return;b.classList.remove('hidden');b.classList.add('help-bubble-anim');setTimeout(()=>{b.classList.add('hidden');b.classList.remove('help-bubble-anim');},5000);}
 
-const ALL_SCREENS=['game-mode-select-screen','bkbi-menu-screen','wordle-welcome-screen','wordle-difficulty-screen','kelime-welcome-screen','sayi-welcome-screen','scoreboard-screen','sayi-game-screen','sayi-game-over-screen','karma-game-over-screen','game-screen','game-over-screen','wordle-game-screen','wordle-game-over-screen','mp-lobby-screen','mp-waiting-screen','adventure-map-screen','adventure-level-intro-screen','adventure-level-complete-screen'];
+const ALL_SCREENS=['game-mode-select-screen','bkbi-menu-screen','wordle-welcome-screen','wordle-difficulty-screen','kelime-welcome-screen','sayi-welcome-screen','scoreboard-screen','sayi-game-screen','sayi-game-over-screen','karma-game-over-screen','game-screen','game-over-screen','wordle-game-screen','wordle-adv-select-screen','wordle-adv-map-screen','wordle-game-over-screen','mp-lobby-screen','mp-waiting-screen','adventure-map-screen','adventure-level-intro-screen','adventure-level-complete-screen'];
 
 // ===== WORDLE MODU =====
 const WORDLE_LEN=5,WORDLE_MAX_GUESSES=6,WORDLE_ROUND_MS=120000,WORDLE_VS_ROUND_MS=90000;
