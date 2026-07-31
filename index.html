@@ -106,7 +106,7 @@
                 <span class="text-xs font-bold text-gray-400"><span class="presence-count">0</span></span>
             </button>
         </div>
-        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v14.9</p></div>
+        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v15.1</p></div>
     </div>
     
 </div>
@@ -134,7 +134,7 @@
                 <span class="text-xs font-bold text-gray-400"><span class="presence-count">0</span></span>
             </button>
         </div>
-        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v14.9</p></div>
+        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v15.1</p></div>
     </div>
 </div>
 
@@ -160,7 +160,7 @@
                 <span class="text-xs font-bold text-gray-400"><span class="presence-count">0</span></span>
             </button>
         </div>
-        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v14.9</p></div>
+        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v15.1</p></div>
     </div>
 </div>
 
@@ -203,7 +203,7 @@
     <h2 id="adv-map-title" class="text-2xl font-black text-gray-800 mb-1">🐾 Hayvanlar</h2>
     <p id="adv-map-sub" class="text-sm text-gray-500 mb-4"></p>
     <div id="adv-map-nodes" class="grid grid-cols-4 gap-3 justify-items-center"></div>
-    <button onclick="switchToScreen('wordle-adv-select-screen')" class="w-full mt-6 py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Dünyalar</button>
+    <div class="flex gap-2 mt-6"><button onclick="switchToScreen('wordle-adv-select-screen')" class="flex-1 py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Dünyalar</button><button onclick="switchToScreen('wordle-welcome-screen')" class="flex-1 py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">🏠 Ana Menü</button></div>
 </div>
 
 <div id="wordle-game-screen" class="hidden max-w-md w-full overflow-x-hidden bg-white/90 backdrop-blur-sm p-3 rounded-3xl shadow-2xl border-4 border-white">
@@ -480,7 +480,7 @@ function advPickWord(cat,lvl){const c=WORDLE_ADV[cat];const len=advLevelLen(lvl)
 function buildWordlePools(len){const wl=len||WORDLE_LEN;const okChars=w=>w.length===wl&&[...w].every(c=>ALPHABET.includes(c));wordleSecretPool=getWordlePool(wl).slice();const gp=new Set(getWordlePool(wl));if(turkishWordSet)[...turkishWordSet].filter(okChars).forEach(w=>gp.add(w));else if(turkishWordSetCore)[...turkishWordSetCore].filter(okChars).forEach(w=>gp.add(w));WORDLE_EXTRA.filter(okChars).forEach(w=>gp.add(w));wordleGuessPool=gp;}
 function getTieredPool(){const g=game.wordle;const wl=getWL();if(!g.soloMode||(wl!==6&&wl!==7))return wordleSecretPool;const round=g.soloRound||1;let tier;if(round<=3)tier='EASY';else tier='ORTA';const pools={6:{EASY:typeof WORDLE_6_EASY!=='undefined'?WORDLE_6_EASY:[],ORTA:typeof WORDLE_6_ORTA!=='undefined'?WORDLE_6_ORTA:[],NADIR:typeof WORDLE_6_NADIR!=='undefined'?WORDLE_6_NADIR:[]},7:{EASY:typeof WORDLE_7_EASY!=='undefined'?WORDLE_7_EASY:[],ORTA:typeof WORDLE_7_ORTA!=='undefined'?WORDLE_7_ORTA:[],NADIR:typeof WORDLE_7_NADIR!=='undefined'?WORDLE_7_NADIR:[]}};const tierPool=pools[wl][tier];return(tierPool&&tierPool.length)?tierPool:wordleSecretPool;}
 function pickWordleSecret(exclude){const pool=getTieredPool();if(!pool||!pool.length)return null;const used=game.wordle._usedWords||(game.wordle._usedWords=new Set());if(exclude)used.add(exclude);for(let i=0;i<100;i++){const w=pool[Math.floor(Math.random()*pool.length)];if(!used.has(w)){used.add(w);return w;}}used.clear();return wordleSecretPool[Math.floor(Math.random()*wordleSecretPool.length)];}
-function isValidWordleGuess(w){if(w.length!==getWL())return false;if(wordleGuessPool&&wordleGuessPool.has(w))return true;if(wordleSecretPool&&wordleSecretPool.includes(w))return true;return false;}
+function isValidWordleGuess(w){if(w.length!==getWL())return false;if(wordleGuessPool&&wordleGuessPool.has(w))return true;if(wordleSecretPool&&wordleSecretPool.includes(w))return true;if(turkishWordSet&&turkishWordSet.has(w))return true;if(turkishWordSetCore&&turkishWordSetCore.has(w))return true;if(w===(game.wordle&&game.wordle.secret))return true;return false;}
 // 'g'=yeşil (doğru yerde), 'y'=sarı (var, yanlış yerde), 'x'=gri (yok)
 function evaluateWordleGuess(secret,guess){const n=secret.length,res=new Array(n).fill('x');const s=[...secret],g=[...guess],used=new Array(n).fill(false);for(let i=0;i<n;i++)if(g[i]===s[i]){res[i]='g';used[i]=true;}for(let i=0;i<n;i++){if(res[i]==='g')continue;for(let j=0;j<n;j++){if(used[j])continue;if(g[i]===s[j]){res[i]='y';used[j]=true;break;}}}return res.join('');}
 function wordleRankPoints(rank){const t=[0,30,20,15,10,5];return t[rank]||0;}
@@ -731,7 +731,7 @@ function wordleSolversRanked(data){const wd=data.wordleData||{};return Object.en
 function wordlePlayerDone(v){return !!v&&(v.solved||((v.guesses||[]).length>=WORDLE_MAX_GUESSES));}
 function renderWordleOpponents(data){const box=document.getElementById('wd-opponents');const list=document.getElementById('wd-opponents-list');const wd=data.wordleData||{};const ranked=wordleSolversRanked(data);const others=Object.entries(wd).filter(([n])=>n!==game.playerName);if(ranked.length===0||others.length===0){box.classList.add('hidden');return;}box.classList.remove('hidden');list.innerHTML=others.map(([n,v])=>{const gs=v.guesses||[];const pat=gs.map(gu=>[...evaluateWordleGuess(data.secretWord,gu)].map(m=>WORDLE_MARK[m]).join('')).slice(-3).join('<br>');const r=ranked.findIndex(x=>x.name===n)+1;const badge=v&&v.solved?`<span class="text-green-500 font-bold text-xs">✓ ${r}. buldu</span>`:wordlePlayerDone(v)?`<span class="text-gray-400 text-xs">✗ bilemedi</span>`:`<span class="text-gray-400 text-xs">${gs.length} tahmin</span>`;return `<div class="bg-white rounded-lg px-2 py-1.5"><div class="flex justify-between items-center"><span class="font-bold text-summer-sea text-sm">${n}</span>${badge}</div><div class="wd-mini text-gray-600">${pat||'—'}</div></div>`;}).join('');}
 function enterOrSyncMultiplayerWordleRound(data){hideAllScreens();document.getElementById('wordle-game-screen').classList.remove('hidden');if(game.mp.isHost){showFinishBtn('mp-finish');hideFinishBtn('mp-leave');}else{hideFinishBtn('mp-finish');showFinishBtn('mp-leave');}
-if(game.mp.lastSyncedRound!==data.currentRound){game.mp.lastSyncedRound=data.currentRound;const g=game.wordle;g.secret=data.secretWord;g.guesses=[];g.solved=false;g.isPlaying=false;g._roundEndRequested=false;g._jokerPositions=new Set();g._jokerRevealed={};g.score=g.score||0;if(!g._usedWords)g._usedWords=new Set();g._usedWords.add(data.secretWord);document.getElementById('wd-status').classList.add('hidden');document.getElementById('wd-round').textContent=data.currentRound;document.getElementById('wd-max-round').textContent=data.roundCount;document.getElementById('wd-score').textContent=g.score;resetWordleCurrent();renderWordleBoard();renderWordleKeyboard();runMultiplayerCountdown(data.countdownEndsAt,()=>{game.wordle.isPlaying=true;renderWordleBoard();updateJokerButton();startMultiplayerTimer(data.roundEndsAt,'wd-time-left');});}
+if(game.mp.lastSyncedRound!==data.currentRound){game.mp.lastSyncedRound=data.currentRound;const g=game.wordle;g.secret=data.secretWord;g.wordLen=data.secretWord.length;if(!wordleGuessPool||!wordleSecretPool||wordleSecretPool.length===0||wordleSecretPool[0].length!==g.wordLen){try{buildWordlePools(g.wordLen);}catch(e){}}g.guesses=[];g.solved=false;g.isPlaying=false;g._roundEndRequested=false;g._jokerPositions=new Set();g._jokerRevealed={};g.score=g.score||0;if(!g._usedWords)g._usedWords=new Set();g._usedWords.add(data.secretWord);document.getElementById('wd-status').classList.add('hidden');document.getElementById('wd-round').textContent=data.currentRound;document.getElementById('wd-max-round').textContent=data.roundCount;document.getElementById('wd-score').textContent=g.score;resetWordleCurrent();renderWordleBoard();renderWordleKeyboard();runMultiplayerCountdown(data.countdownEndsAt,()=>{game.wordle.isPlaying=true;renderWordleBoard();updateJokerButton();startMultiplayerTimer(data.roundEndsAt,'wd-time-left');});}
 renderWordleOpponents(data);
 const g=game.wordle;if(g.solved){const r=wordleSolversRanked(data).findIndex(x=>x.name===game.playerName)+1;if(r>0)showWordleStatus(`🎉 ${r}. buldun! (+${wordleRankPoints(r)} puan) Diğerleri bekleniyor...`,'text-green-500');}
 // Host: 3 kişi bulunca VEYA herkes bulunca turu bitir
