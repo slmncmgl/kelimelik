@@ -93,22 +93,22 @@
     <div class="absolute top-3 right-3"><span class="text-xs text-gray-400 font-semibold"><span class="menu-name-display"></span> <button onclick="openRenameModal()" title="Adı değiştir" class="hover:text-gray-600">✏️</button></span></div>
     <button onclick="switchToScreen('bkbi-menu-screen')" class="w-full py-3 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Bir Kelime Bir İşlem</button>
     <button onclick="switchToScreen('wordle-welcome-screen')" class="w-full py-3 bg-gradient-to-r from-green-400 to-emerald-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-6">Wordle</button>
-    <div class="absolute bottom-6 left-8 right-8">
-        <div class="flex justify-center items-center gap-5 mb-2">
-            <button onclick="toggleRulesPanel()" id="btn-rules-toggle" title="Nasıl Oynanır" class="flex items-center justify-center group">
-                <span class="w-11 h-11 flex items-center justify-center group-hover:scale-110 transition-all"><img src="assets/ui/guidebook.png" alt="Nasıl Oynanır" class="w-full h-full object-contain"/></span>
-            </button>
-            <button onclick="switchToScreen('scoreboard-screen')" title="Skor Tablosu" class="flex items-center justify-center group">
-                <span class="w-11 h-11 flex items-center justify-center group-hover:scale-110 transition-all"><img src="assets/ui/trophy_wordle.png" alt="Skor Tablosu" class="w-full h-full object-contain"/></span>
-            </button>
-            <button onclick="showOnlinePlayersPopup()" title="Çevrimiçi Oyuncular" class="flex items-center gap-1 group">
-                <span class="w-11 h-11 flex items-center justify-center group-hover:scale-110 transition-all relative"><img src="assets/ui/online.png" alt="Çevrimiçi" class="w-full h-full object-contain"/></span>
-                <span class="text-xs font-bold text-gray-400"><span class="presence-count">0</span></span>
-            </button>
-        </div>
-        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v15.5</p></div>
-    </div>
     
+</div>
+
+<div id="global-footer" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 hidden">
+    <div class="flex justify-center items-center gap-5 mb-1 bg-white/70 backdrop-blur-md rounded-2xl px-5 py-2 shadow-lg">
+        <button onclick="toggleRulesPanel()" id="btn-rules-toggle" title="Nasıl Oynanır" class="flex items-center justify-center group">
+            <span class="w-11 h-11 flex items-center justify-center group-hover:scale-110 transition-all"><img src="assets/ui/guidebook.png" alt="Nasıl Oynanır" class="w-full h-full object-contain"/></span>
+        </button>
+        <button onclick="switchToScreen('scoreboard-screen')" title="Skor Tablosu" class="flex items-center justify-center group">
+            <span class="w-11 h-11 flex items-center justify-center group-hover:scale-110 transition-all"><img src="assets/ui/trophy_wordle.png" alt="Skor Tablosu" class="w-full h-full object-contain"/></span>
+        </button>
+        <button onclick="showOnlinePlayersPopup()" title="Çevrimiçi Oyuncular" class="flex items-center gap-1 group">
+            <span class="w-11 h-11 flex items-center justify-center group-hover:scale-110 transition-all relative"><img src="assets/ui/online.png" alt="Çevrimiçi" class="w-full h-full object-contain"/></span>
+            <span class="text-xs font-bold text-gray-400"><span class="presence-count">0</span></span>
+        </button>
+    </div>
 </div>
 
 <div id="bkbi-menu-screen" class="hidden relative max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white" style="min-height:600px">
@@ -134,7 +134,7 @@
                 <span class="text-xs font-bold text-gray-400"><span class="presence-count">0</span></span>
             </button>
         </div>
-        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v15.5</p></div>
+        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v15.7</p></div>
     </div>
 </div>
 
@@ -143,8 +143,7 @@
     <button onclick="showModeSwitchPopup()" title="Oyun Modu" class="absolute top-4 right-4 w-11 h-11 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full text-xl transition-all hover:rotate-45 duration-300 z-10">⚙️</button>
     <img src="assets/wordle.png" alt="Wordle" class="w-auto max-h-[294px] mx-auto mb-6 object-contain" />
     <button onclick="startDailyWordle(this)" class="w-[90%] mx-auto block py-3 menu-btn-anim bg-gradient-to-r from-indigo-400 to-indigo-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">📅 Günün Kelimesi</button>
-    <button onclick="openWordleLobby()" class="w-[90%] mx-auto block py-3 menu-btn-anim bg-gradient-to-r from-cyan-400 to-teal-500 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Arkadaşlarınla Oyna</button>
-    <button onclick="openWordleVsLobby()" class="w-[90%] mx-auto block py-3 menu-btn-anim bg-gradient-to-r from-rose-400 to-red-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">⚔️ Birebir Kapışma</button>
+    <button onclick="switchToScreen('wordle-mp-select-screen')" class="w-[90%] mx-auto block py-3 menu-btn-anim bg-gradient-to-r from-cyan-400 to-teal-500 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">👥 Çoklu Oyuncu</button>
     <button onclick="switchToScreen('wordle-difficulty-screen')" class="w-[90%] mx-auto block py-3 menu-btn-anim bg-gradient-to-r from-green-400 to-emerald-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">Egzersiz</button>
                     <button onclick="openWordleAdventure()" class="w-[90%] mx-auto block py-3 menu-btn-anim bg-gradient-to-r from-amber-400 to-orange-500 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mt-3">🗺️ Macera</button>
     <div class="absolute bottom-6 left-8 right-8">
@@ -160,7 +159,7 @@
                 <span class="text-xs font-bold text-gray-400"><span class="presence-count">0</span></span>
             </button>
         </div>
-        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v15.5</p></div>
+        <div class="flex items-center justify-center"><p class="text-xs text-gray-300">v15.7</p></div>
     </div>
 </div>
 
@@ -190,6 +189,14 @@
     <button onclick="showMpLobbyScreen('sayi')" class="w-full py-3 bg-gradient-to-r from-cyan-400 to-teal-500 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">Arkadaşlarınla Oyna</button>
     <button onclick="switchToScreen('bkbi-menu-screen')" class="w-full mt-4 py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
 
+</div>
+
+<div id="wordle-mp-select-screen" class="hidden relative max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white" style="min-height:600px">
+    <h2 class="text-2xl font-black text-gray-800 mb-1">👥 Çoklu Oyuncu</h2>
+    <p class="text-sm text-gray-500 mb-6">Nasıl oynamak istersin?</p>
+    <button onclick="openWordleLobby()" class="w-[90%] mx-auto block py-4 mb-4 bg-gradient-to-r from-cyan-400 to-teal-500 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">🤝 Arkadaşlarınla Oyna<span class="block text-xs font-normal opacity-90 mt-1">Lobi kur, herkes aynı kelimeyi çözsün</span></button>
+    <button onclick="openWordleVsLobby()" class="w-[90%] mx-auto block py-4 bg-gradient-to-r from-rose-400 to-red-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">⚔️ Birebir Kapışma<span class="block text-xs font-normal opacity-90 mt-1">İlk bulan kazanır, 1v1 düello</span></button>
+    <button onclick="switchToScreen('wordle-welcome-screen')" class="w-full mt-6 py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
 </div>
 
 <div id="wordle-adv-select-screen" class="hidden relative max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white" style="min-height:600px">
@@ -419,6 +426,7 @@ async function loadDict(){try{const r=await fetch('assets/kelimeler.txt');const 
 loadDict().then(()=>{try{buildWordlePools();}catch(e){}});
 setTimeout(()=>{try{vocabLoad();}catch(e){}},1500);
 setTimeout(()=>{try{prefetchScoreboard();}catch(e){}},800);
+setTimeout(()=>{const _ft=document.getElementById('global-footer');const _ws=document.getElementById('wordle-welcome-screen');if(_ft&&_ws&&!_ws.classList.contains('hidden'))_ft.classList.remove('hidden');},100);
 setTimeout(()=>{try{showModeSwitchHintOnce();}catch(e){}},1500);
 
 let game={isPlaying:false,score:0,currentRound:1,maxRounds:10,playerName:'',hasCustomName:false,previousLetters:null,selectedRoundCount:null,selectedDurationMinutes:null,karma:{active:false,currentRound:1,maxRounds:3,score:0},roundLetters:[],activeWord:[],foundWords:[],timeRemaining:180,pendingJokerTile:null,adventure:{active:false,level:null,jokerUsed:false},wordle:{secret:'',guesses:[],current:[],cursor:0,_animRow:-1,solved:false,score:0,timeRemaining:120,isPlaying:false,_lastScoredRound:null,_reported:false},sayi:{numbers:[],target:0,currentRound:1,maxRounds:3,score:0,bestResultThisRound:null,selectedTileId:null,selectedOperator:null,timeRemaining:90,isPlaying:false,history:[]},mp:{gameId:null,isHost:false,gameType:'kelime',selectedRoundCount:null,selectedDurationMinutes:null,previousLetters:null,lastSyncedRound:null,lastBonusAppliedRound:null,currentPlayerCount:1}};
@@ -444,7 +452,7 @@ async function saveNewName(){const inp=document.getElementById('rename-input');c
 let helpBubbleShown=false;
 function showRenameHelpBubbleOnce(bubbleId){if(helpBubbleShown)return;helpBubbleShown=true;const b=document.getElementById(bubbleId);if(!b)return;b.classList.remove('hidden');b.classList.add('help-bubble-anim');setTimeout(()=>{b.classList.add('hidden');b.classList.remove('help-bubble-anim');},5000);}
 
-const ALL_SCREENS=['game-mode-select-screen','bkbi-menu-screen','wordle-welcome-screen','wordle-difficulty-screen','kelime-welcome-screen','sayi-welcome-screen','scoreboard-screen','sayi-game-screen','sayi-game-over-screen','karma-game-over-screen','game-screen','game-over-screen','wordle-game-screen','wordle-adv-select-screen','wordle-adv-map-screen','vocab-screen','wordle-game-over-screen','mp-lobby-screen','mp-waiting-screen','adventure-map-screen','adventure-level-intro-screen','adventure-level-complete-screen'];
+const ALL_SCREENS=['game-mode-select-screen','bkbi-menu-screen','wordle-welcome-screen','wordle-difficulty-screen','kelime-welcome-screen','sayi-welcome-screen','scoreboard-screen','sayi-game-screen','sayi-game-over-screen','karma-game-over-screen','game-screen','game-over-screen','wordle-game-screen','wordle-adv-select-screen','wordle-mp-select-screen','wordle-adv-map-screen','vocab-screen','wordle-game-over-screen','mp-lobby-screen','mp-waiting-screen','adventure-map-screen','adventure-level-intro-screen','adventure-level-complete-screen'];
 
 // ===== WORDLE MODU =====
 const WORDLE_LEN=5,WORDLE_MAX_GUESSES=6,WORDLE_ROUND_MS=120000,WORDLE_VS_ROUND_MS=90000;
@@ -506,11 +514,11 @@ const WORDLE_MARK={g:'🟩',y:'🟨',x:'⬜'};
 // ---- WORDLE JOKER (büyüteç) ----
 const WORDLE_JOKER_DAILY=3,WORDLE_JOKER_PENALTY=15;
 function wordleTodayStr(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
-function jokerRemaining(mode){const g=game.wordle;if(!g)return WORDLE_JOKER_DAILY;if(g.advMode)return 1-(g.jokerUsedCount||0);return WORDLE_JOKER_DAILY-(g.jokerUsedCount||0);}
+function jokerRemaining(mode){const g=game.wordle;if(!g)return WORDLE_JOKER_DAILY;if(g.advMode)return 1-(g.jokerUsedCount||0);if(g.dailyMode)return 1-(g.jokerUsedCount||0);return WORDLE_JOKER_DAILY-(g.jokerUsedCount||0);}
 function consumeJoker(mode){const g=game.wordle;g.jokerUsedCount=(g.jokerUsedCount||0)+1;}
 function wordleJokerKey(){return game.mp.gameId?'mp':String(getWL());}
 function updateJokerButton(){const btn=document.getElementById('wd-joker-btn');const badge=document.getElementById('wd-joker-count');if(!btn)return;const rem=jokerRemaining(wordleJokerKey());if(badge)badge.textContent=rem;const g=game.wordle;const canUse=rem>0&&g&&g.isPlaying&&!g.solved;btn.disabled=!canUse;btn.style.opacity=canUse?'1':'.4';btn.style.cursor=canUse?'pointer':'default';}
-function useWordleJoker(){const g=game.wordle;if(!g||!g.isPlaying||g.solved)return;const key=wordleJokerKey();if(jokerRemaining(key)<=0){showToast('Bugünlük joker hakkın bitti!');return;}const wl=getWL();const revealed=new Set();g.guesses.forEach(gu=>{const ev=evaluateWordleGuess(g.secret,gu);for(let i=0;i<wl;i++)if(ev[i]==='g')revealed.add(i);});[...g.current].forEach((c,i)=>{if(c===g.secret[i])revealed.add(i);});if(g._jokerPositions)g._jokerPositions.forEach(p=>revealed.add(p));const hidden=[];for(let i=0;i<wl;i++)if(!revealed.has(i))hidden.push(i);if(hidden.length===0){showToast('Açılacak harf kalmadı!');return;}const pos=hidden[Math.floor(Math.random()*hidden.length)];g.current[pos]=g.secret[pos];if(!g._jokerPositions)g._jokerPositions=new Set();g._jokerRevealed={};g._jokerPositions.add(pos);if(!g._jokerRevealed)g._jokerRevealed={};g._jokerRevealed[pos]=g.secret[pos];consumeJoker(key);g.jokerUsed=(g.jokerUsed||0)+1;sounds.playSuccess();renderWordleBoard();updateJokerButton();showToast(`🔍 ${pos+1}. harf açıldı! (-${WORDLE_JOKER_PENALTY} puan)`,'success');}
+function useWordleJoker(){const g=game.wordle;if(!g||!g.isPlaying||g.solved)return;const key=wordleJokerKey();if(jokerRemaining(key)<=0){showToast('Bugünlük joker hakkın bitti!');return;}const wl=getWL();const revealed=new Set();g.guesses.forEach(gu=>{const ev=evaluateWordleGuess(g.secret,gu);for(let i=0;i<wl;i++)if(ev[i]==='g')revealed.add(i);});[...g.current].forEach((c,i)=>{if(c===g.secret[i])revealed.add(i);});if(g._jokerPositions)g._jokerPositions.forEach(p=>revealed.add(p));const hidden=[];for(let i=0;i<wl;i++)if(!revealed.has(i))hidden.push(i);if(hidden.length===0){showToast('Açılacak harf kalmadı!');return;}const known=wordleLetterStates();const fresh=hidden.filter(i=>{const ch=g.secret[i];return known[ch]!=='y'&&known[ch]!=='g';});const pickFrom=fresh.length>0?fresh:hidden;const pos=pickFrom[Math.floor(Math.random()*pickFrom.length)];g.current[pos]=g.secret[pos];if(!g._jokerPositions)g._jokerPositions=new Set();g._jokerRevealed={};g._jokerPositions.add(pos);if(!g._jokerRevealed)g._jokerRevealed={};g._jokerRevealed[pos]=g.secret[pos];consumeJoker(key);g.jokerUsed=(g.jokerUsed||0)+1;sounds.playSuccess();renderWordleBoard();updateJokerButton();showToast(g.dailyMode?`🔍 ${pos+1}. harf açıldı!`:`🔍 ${pos+1}. harf açıldı! (-${WORDLE_JOKER_PENALTY} puan)`,'success');}
 
 // ===== ADVENTURE MODU =====
 const ADVENTURE_LEVELS=[
@@ -556,7 +564,7 @@ function hideAllFinishBtns(){document.querySelectorAll('.finish-btn').forEach(b=
 function setBtnLoading(btn,on){if(!btn)return;if(on){btn.dataset.orig=btn.innerHTML;btn.innerHTML='<span class="btn-spinner"></span>';btn.disabled=true;}else{if(btn.dataset.orig)btn.innerHTML=btn.dataset.orig;btn.disabled=false;}}
 function showFinishBtn(kind){document.querySelectorAll(`.finish-btn[data-finish="${kind}"]`).forEach(b=>b.classList.remove('hidden'));}
 function hideFinishBtn(kind){document.querySelectorAll(`.finish-btn[data-finish="${kind}"]`).forEach(b=>b.classList.add('hidden'));}
-function switchToScreen(screenId){hideAllScreens();hideAllModals();hideAllFinishBtns();clearInterval(sayiTimerInterval);clearInterval(timerInterval);clearInterval(computerSolutionAnimationInterval);document.getElementById(screenId).classList.remove('hidden');if(screenId==='scoreboard-screen')switchScoreTab(currentScoreTab||'wordle');}
+function switchToScreen(screenId){hideAllScreens();hideAllModals();hideAllFinishBtns();clearInterval(sayiTimerInterval);clearInterval(timerInterval);clearInterval(computerSolutionAnimationInterval);document.getElementById(screenId).classList.remove('hidden');const _menuScreens=['wordle-welcome-screen','bkbi-menu-screen','kelime-welcome-screen','sayi-welcome-screen','wordle-difficulty-screen','wordle-adv-select-screen','wordle-mp-select-screen','wordle-adv-map-screen','vocab-screen','scoreboard-screen'];const _ft=document.getElementById('global-footer');if(_ft)_ft.classList.toggle('hidden',!_menuScreens.includes(screenId));if(screenId==='scoreboard-screen')switchScoreTab(currentScoreTab||'wordle');}
 
 const RULES_LINES=['📖 KELİME: Her tur 3 Sesli, 4 Sessiz ve 1 Joker harf düşer. Harfleri kullanarak en uzun kelimeleri yaz. Harf başına 1 puan!','🔢 İŞLEM: 6 sayı verilir, hedefe en yakın sonucu dört işlemle bul! Tam isabet 10 puan, fark kadar puan düşer.','🎲 KARMA: Kelime + İşlem turları art arda oynanır. Her ikisinde de skorun toplanır!','🔤 WORDLE: 5 harfli gizli kelimeyi tahmin et! 🟩 Yeşil = doğru yerde, 🟨 Sarı = var ama yanlış yerde, ⬜ Gri = yok. 5 tahmin hakkın var.','🔤 WORDLE İPUCU: Bir harf kelimede 2+ kez geçiyorsa üst simge ile gösterilir (ör. İ²). Yeşil harfler sonraki satıra taşınır.','🤝 ÇOKOYUNCULU: Arkadaşlarınla aynı anda yarış! Wordle\'de 1. bulan 30, 2. bulan 20, 3. bulan 10 puan alır. Beraberlikte hızlı çözen önde!'];
 let rulesPanelOpen=false,rulesAnimationStarted=false;
@@ -722,7 +730,7 @@ let _wordleRevealCallback=null;
 function wordleRevealContinue(){const ov=document.querySelector('.wd-reveal-popup');if(ov)ov.remove();if(_wordleRevealCallback){const cb=_wordleRevealCallback;_wordleRevealCallback=null;cb();}}
 function showWordleFailPopup(word){const ov=document.createElement('div');ov.className='fixed inset-0 bg-black/55 flex items-center justify-center z-50 p-4';ov.style.backdropFilter='blur(6px)';ov.style.webkitBackdropFilter='blur(6px)';ov.onclick=(e)=>{if(e.target===ov)ov.remove();};ov.innerHTML=`<div class="bg-white rounded-3xl shadow-2xl max-w-xs w-[85%] p-6 text-center" style="border:3px solid #f59e0b"><div class="text-3xl mb-2">😔</div><p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Bulamadın</p><p class="font-black text-xl text-summer-coral tracking-widest mb-1">${word}</p><p class="text-[11px] text-gray-400 mb-3">Diğerleri bekleniyor...</p><p id="wd-fail-meaning" class="text-[11px] text-gray-500 leading-relaxed mb-3 hidden"></p><button id="wd-fail-mean-btn" onclick="loadWordleFailMeaning('${word}')" class="text-[11px] text-sky-500 hover:text-sky-700 underline font-semibold mb-2">📖 Anlamı göster</button><br><button onclick="this.closest('.fixed').remove()" class="mt-1 px-6 py-2 bg-gray-100 text-gray-600 text-sm font-bold rounded-xl hover:bg-gray-200 transition-all">Tamam</button></div>`;document.body.appendChild(ov);}
 async function loadWordleFailMeaning(word){const btn=document.getElementById('wd-fail-mean-btn');const el=document.getElementById('wd-fail-meaning');if(!el)return;if(btn){btn.textContent='Yükleniyor...';btn.disabled=true;}try{const meaning=await fetchWordMeaning(word);el.textContent=meaning||'Anlam bulunamadı.';}catch(e){el.textContent='Anlam bulunamadı.';}el.classList.remove('hidden');if(btn)btn.style.display='none';}
-function showWordleRevealPopup(word,solved,pts,onClose,hidePts){_wordleRevealCallback=onClose;const ov=document.createElement('div');ov.className='wd-reveal-popup';const icon=solved?'🎉':'😔';const sub=hidePts?(solved?'Doğru! 🎉':'Süre doldu'):(solved?`Doğru! +${pts} puan`:'Süre doldu');ov.innerHTML=`<div class="wd-reveal-card"><div class="text-4xl mb-2">${icon}</div><p class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">${sub}</p><p class="wd-reveal-word">${word}</p><p class="wd-reveal-meaning" id="wd-reveal-meaning">...</p><button onclick="wordleRevealContinue()" class="mt-5 px-8 py-3 bg-gradient-to-r from-sky-400 to-sky-600 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all">Devam →</button></div>`;document.body.appendChild(ov);const isRare=!(turkishWordSetCore&&turkishWordSetCore.has(word));if(isRare){fetchWordMeaning(word).then(m=>{const el=document.getElementById('wd-reveal-meaning');if(el)el.textContent=m||'';});}else{const el=document.getElementById('wd-reveal-meaning');if(el)el.textContent='';}}
+function showWordleRevealPopup(word,solved,pts,onClose,hidePts){_wordleRevealCallback=onClose;const ov=document.createElement('div');ov.className='wd-reveal-popup';const icon=solved?'🎉':'😔';const sub=hidePts?(solved?'Doğru!':'Süre doldu'):(solved?`Doğru! +${pts} puan`:'Süre doldu');ov.innerHTML=`<div class="wd-reveal-card"><div class="text-4xl mb-2">${icon}</div><p class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">${sub}</p><p class="wd-reveal-word">${word}</p><p class="wd-reveal-meaning" id="wd-reveal-meaning">...</p><button onclick="wordleRevealContinue()" class="mt-5 px-8 py-3 bg-gradient-to-r from-sky-400 to-sky-600 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all">Devam →</button></div>`;document.body.appendChild(ov);const isRare=!(turkishWordSetCore&&turkishWordSetCore.has(word));if(isRare){fetchWordMeaning(word).then(m=>{const el=document.getElementById('wd-reveal-meaning');if(el)el.textContent=m||'';});}else{const el=document.getElementById('wd-reveal-meaning');if(el)el.textContent='';}}
 function soloWordleFinish(){clearInterval(soloWordleTimerInterval);game.wordle.isPlaying=false;if(game.wordle.advMode){openAdvMap(game.wordle.advCat);}else if(game.wordle.dailyMode){switchToScreen('wordle-welcome-screen');}else{endSoloWordle();}}
 let soloWordleTimerInterval=null;
 function startSoloWordleTimer(){clearInterval(soloWordleTimerInterval);soloWordleTimerInterval=setInterval(()=>{const g=game.wordle;if(!g.soloMode||!g.isPlaying){clearInterval(soloWordleTimerInterval);return;}const el=Date.now()-g.soloRoundStart;const rem=Math.max(0,Math.ceil((WORDLE_ROUND_MS-el)/1000));document.getElementById('wd-time-left').textContent=`${Math.floor(rem/60)}:${String(rem%60).padStart(2,'0')}`;if(rem<=0){clearInterval(soloWordleTimerInterval);g.isPlaying=false;endSoloWordleRound();}},250);}
