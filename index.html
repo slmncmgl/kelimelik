@@ -96,7 +96,7 @@
     
 </div>
 
-<div id="global-footer" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 hidden">
+<div id="global-footer" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 hidden">
     <div class="flex justify-center items-center gap-5 mb-1 bg-white/70 backdrop-blur-md rounded-2xl px-5 py-2 shadow-lg">
         <button onclick="toggleRulesPanel()" id="btn-rules-toggle" title="Nasıl Oynanır" class="flex items-center justify-center group">
             <span class="w-11 h-11 flex items-center justify-center group-hover:scale-110 transition-all"><img src="assets/ui/guidebook.png" alt="Nasıl Oynanır" class="w-full h-full object-contain"/></span>
@@ -528,7 +528,7 @@ function adventureRetryLevel(){openAdventureLevelIntro(game.adventure.level.id);
 
 const ALL_MODALS=['sayi-round-over-modal','karma-round-over-modal','round-over-modal','wordle-round-over-modal','joker-modal','mp-countdown-overlay','rename-modal','sayi-joker-modal'];
 
-function hideAllScreens(){ALL_SCREENS.forEach(id=>document.getElementById(id).classList.add('hidden'));}
+function hideAllScreens(){ALL_SCREENS.forEach(id=>document.getElementById(id).classList.add('hidden'));const _ft=document.getElementById('global-footer');if(_ft)_ft.classList.add('hidden');}
 function hideAllModals(){ALL_MODALS.forEach(id=>document.getElementById(id).classList.add('hidden'));}
 function hideAllFinishBtns(){document.querySelectorAll('.finish-btn').forEach(b=>b.classList.add('hidden'));}
 function setBtnLoading(btn,on){if(!btn)return;if(on){btn.dataset.orig=btn.innerHTML;btn.innerHTML='<span class="btn-spinner"></span>';btn.disabled=true;}else{if(btn.dataset.orig)btn.innerHTML=btn.dataset.orig;btn.disabled=false;}}
