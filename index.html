@@ -96,7 +96,7 @@
     
 </div>
 
-<div id="global-footer" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 hidden">
+<div id="global-footer" class="fixed left-1/2 -translate-x-1/2 z-40 hidden">
     <div class="flex justify-center items-center gap-5 mb-1 bg-white/70 backdrop-blur-md rounded-2xl px-5 py-2 shadow-lg">
         <button onclick="toggleRulesPanel()" id="btn-rules-toggle" title="Nasıl Oynanır" class="flex items-center justify-center group">
             <span class="w-11 h-11 flex items-center justify-center group-hover:scale-110 transition-all"><img src="assets/ui/guidebook.png" alt="Nasıl Oynanır" class="w-full h-full object-contain"/></span>
@@ -396,7 +396,7 @@ async function loadDict(){try{const r=await fetch('assets/kelimeler.txt');const 
 loadDict().then(()=>{try{buildWordlePools();}catch(e){}});
 setTimeout(()=>{try{vocabLoad();}catch(e){}},1500);
 setTimeout(()=>{try{prefetchScoreboard();}catch(e){}},800);
-setTimeout(()=>{const _ft=document.getElementById('global-footer');const _ws=document.getElementById('wordle-welcome-screen');if(_ft&&_ws&&!_ws.classList.contains('hidden'))_ft.classList.remove('hidden');},100);
+setTimeout(()=>{const _ft=document.getElementById('global-footer');const _ws=document.getElementById('wordle-welcome-screen');if(_ft&&_ws&&!_ws.classList.contains('hidden')){_ft.classList.remove('hidden');try{positionFooter();}catch(e){}}},100);
 setTimeout(()=>{try{showModeSwitchHintOnce();}catch(e){}},1500);
 
 let game={isPlaying:false,score:0,currentRound:1,maxRounds:10,playerName:'',hasCustomName:false,previousLetters:null,selectedRoundCount:null,selectedDurationMinutes:null,karma:{active:false,currentRound:1,maxRounds:3,score:0},roundLetters:[],activeWord:[],foundWords:[],timeRemaining:180,pendingJokerTile:null,adventure:{active:false,level:null,jokerUsed:false},wordle:{secret:'',guesses:[],current:[],cursor:0,_animRow:-1,solved:false,score:0,timeRemaining:120,isPlaying:false,_lastScoredRound:null,_reported:false},sayi:{numbers:[],target:0,currentRound:1,maxRounds:3,score:0,bestResultThisRound:null,selectedTileId:null,selectedOperator:null,timeRemaining:90,isPlaying:false,history:[]},mp:{gameId:null,isHost:false,gameType:'kelime',selectedRoundCount:null,selectedDurationMinutes:null,previousLetters:null,lastSyncedRound:null,lastBonusAppliedRound:null,currentPlayerCount:1}};
@@ -529,12 +529,14 @@ function adventureRetryLevel(){openAdventureLevelIntro(game.adventure.level.id);
 const ALL_MODALS=['sayi-round-over-modal','karma-round-over-modal','round-over-modal','wordle-round-over-modal','joker-modal','mp-countdown-overlay','rename-modal','sayi-joker-modal'];
 
 function hideAllScreens(){ALL_SCREENS.forEach(id=>document.getElementById(id).classList.add('hidden'));const _ft=document.getElementById('global-footer');if(_ft)_ft.classList.add('hidden');}
+function positionFooter(){const ft=document.getElementById('global-footer');if(!ft||ft.classList.contains('hidden'))return;const vis=ALL_SCREENS.map(id=>document.getElementById(id)).find(el=>el&&!el.classList.contains('hidden'));if(!vis)return;const r=vis.getBoundingClientRect();const ftH=ft.offsetHeight||56;let top=r.bottom-ftH/2;const maxTop=window.innerHeight-ftH-4;if(top>maxTop)top=maxTop;ft.style.top=top+'px';ft.style.bottom='auto';}
+window.addEventListener('resize',()=>{try{positionFooter();}catch(e){}});
 function hideAllModals(){ALL_MODALS.forEach(id=>document.getElementById(id).classList.add('hidden'));}
 function hideAllFinishBtns(){document.querySelectorAll('.finish-btn').forEach(b=>b.classList.add('hidden'));}
 function setBtnLoading(btn,on){if(!btn)return;if(on){btn.dataset.orig=btn.innerHTML;btn.innerHTML='<span class="btn-spinner"></span>';btn.disabled=true;}else{if(btn.dataset.orig)btn.innerHTML=btn.dataset.orig;btn.disabled=false;}}
 function showFinishBtn(kind){document.querySelectorAll(`.finish-btn[data-finish="${kind}"]`).forEach(b=>b.classList.remove('hidden'));}
 function hideFinishBtn(kind){document.querySelectorAll(`.finish-btn[data-finish="${kind}"]`).forEach(b=>b.classList.add('hidden'));}
-function switchToScreen(screenId){hideAllScreens();hideAllModals();hideAllFinishBtns();clearInterval(sayiTimerInterval);clearInterval(timerInterval);clearInterval(computerSolutionAnimationInterval);document.getElementById(screenId).classList.remove('hidden');const _menuScreens=['wordle-welcome-screen','bkbi-menu-screen','kelime-welcome-screen','sayi-welcome-screen','wordle-difficulty-screen','wordle-adv-select-screen','wordle-mp-select-screen','wordle-adv-map-screen','vocab-screen','scoreboard-screen'];const _ft=document.getElementById('global-footer');if(_ft)_ft.classList.toggle('hidden',!_menuScreens.includes(screenId));if(screenId==='scoreboard-screen')switchScoreTab(currentScoreTab||'wordle');}
+function switchToScreen(screenId){hideAllScreens();hideAllModals();hideAllFinishBtns();clearInterval(sayiTimerInterval);clearInterval(timerInterval);clearInterval(computerSolutionAnimationInterval);document.getElementById(screenId).classList.remove('hidden');const _menuScreens=['wordle-welcome-screen','bkbi-menu-screen','kelime-welcome-screen','sayi-welcome-screen','wordle-difficulty-screen','wordle-adv-select-screen','wordle-mp-select-screen','wordle-adv-map-screen','vocab-screen','scoreboard-screen'];const _ft=document.getElementById('global-footer');if(_ft){const _isMenu=_menuScreens.includes(screenId);_ft.classList.toggle('hidden',!_isMenu);if(_isMenu)requestAnimationFrame(()=>{try{positionFooter();}catch(e){}});}if(screenId==='scoreboard-screen')switchScoreTab(currentScoreTab||'wordle');}
 
 const RULES_LINES=['📖 KELİME: Her tur 3 Sesli, 4 Sessiz ve 1 Joker harf düşer. Harfleri kullanarak en uzun kelimeleri yaz. Harf başına 1 puan!','🔢 İŞLEM: 6 sayı verilir, hedefe en yakın sonucu dört işlemle bul! Tam isabet 10 puan, fark kadar puan düşer.','🎲 KARMA: Kelime + İşlem turları art arda oynanır. Her ikisinde de skorun toplanır!','🔤 WORDLE: 5 harfli gizli kelimeyi tahmin et! 🟩 Yeşil = doğru yerde, 🟨 Sarı = var ama yanlış yerde, ⬜ Gri = yok. 5 tahmin hakkın var.','🔤 WORDLE İPUCU: Bir harf kelimede 2+ kez geçiyorsa üst simge ile gösterilir (ör. İ²). Yeşil harfler sonraki satıra taşınır.','🤝 ÇOKOYUNCULU: Arkadaşlarınla aynı anda yarış! Wordle\'de 1. bulan 30, 2. bulan 20, 3. bulan 10 puan alır. Beraberlikte hızlı çözen önde!'];
 let rulesPanelOpen=false,rulesAnimationStarted=false;
