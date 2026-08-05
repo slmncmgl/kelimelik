@@ -115,8 +115,8 @@
     <div class="absolute top-4 left-4 text-xs text-gray-400 font-semibold z-10"><span class="menu-name-display"></span> <button onclick="openRenameModal()" title="Adı değiştir" class="hover:text-gray-600">✏️</button></div>
     <button onclick="showModeSwitchPopup()" title="Oyun Modu" class="absolute top-4 right-4 w-11 h-11 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full text-xl transition-all hover:rotate-45 duration-300 z-10">⚙️</button>
     <img src="assets/bkbi.png" alt="Bir Kelime Bir İşlem" class="w-auto max-h-[294px] mx-auto mb-6 object-contain" />
-    <button onclick="switchToScreen('kelime-welcome-screen')" class="w-[90%] mx-auto block py-3 menu-btn-anim bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Kelime</button>
-    <button onclick="switchToScreen('sayi-welcome-screen')" class="w-[90%] mx-auto block py-3 menu-btn-anim bg-gradient-to-r from-summer-sea to-summer-ocean text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">İşlem</button>
+    <button onclick="switchToScreen('kelime-welcome-screen')" class="w-[90%] mx-auto block py-3 menu-btn-anim bg-gradient-to-r from-indigo-400 to-indigo-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Kelime</button>
+    <button onclick="switchToScreen('sayi-welcome-screen')" class="w-[90%] mx-auto block py-3 menu-btn-anim bg-gradient-to-r from-cyan-400 to-teal-500 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">İşlem</button>
     <!-- KARMA MODU GİZLENDİ (geri açmak için bu yorumu kaldır)
     <button onclick="startSoloKarma(this)" class="w-[90%] mx-auto block py-3 menu-btn-anim bg-gradient-to-r from-summer-ocean to-summer-blue text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Karma</button>
     -->
@@ -170,6 +170,7 @@
 </div>
 
 <div id="wordle-adv-select-screen" class="hidden relative max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white" style="min-height:600px">
+    <img src="assets/wordle.png" alt="Wordle" class="w-auto max-h-24 mx-auto mb-3 object-contain" />
     <h2 class="text-2xl font-black text-gray-800 mb-1">🗺️ Macera</h2>
     <p class="text-sm text-gray-500 mb-5">Bir dünya seç, 16 bölümü çöz!</p>
     <div id="adv-cat-list" class="space-y-3"></div>
@@ -177,6 +178,7 @@
 </div>
 
 <div id="wordle-adv-map-screen" class="hidden relative max-w-md w-full bg-white/90 backdrop-blur-sm p-6 rounded-3xl shadow-2xl text-center border-4 border-white" style="min-height:600px">
+    <img src="assets/wordle.png" alt="Wordle" class="w-auto max-h-20 mx-auto mb-2 object-contain" />
     <h2 id="adv-map-title" class="text-2xl font-black text-gray-800 mb-1">🐾 Hayvanlar</h2>
     <p id="adv-map-sub" class="text-sm text-gray-500 mb-4"></p>
     <div id="adv-map-nodes" class="grid grid-cols-4 gap-3 justify-items-center"></div>
@@ -233,7 +235,6 @@
 <div id="adventure-map-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-6 rounded-3xl shadow-2xl text-center border-4 border-white max-h-[90vh] overflow-y-auto">
     <h1 class="text-3xl font-extrabold text-summer-sea mb-1">Macera</h1>
     <p class="text-gray-500 mb-3 text-sm">Bölümleri sırayla geç, yıldızları topla!</p>
-    <div class="bg-blue-50 rounded-xl p-3 mb-4 text-left text-xs text-gray-600 leading-relaxed"><span class="font-bold text-summer-sea">Nasıl puan alınır?</span> Her harf 1 puan (5 harfli kelime = 5 puan). Uzun kelimeler daha çok puan! Her bölümün bir hedefi var — hedefi geçince ⭐, fazlasıyla aşınca ⭐⭐ veya ⭐⭐⭐ kazanırsın.</div>
     <div id="adventure-level-grid" class="grid grid-cols-4 gap-3 mb-4"></div>
     <button onclick="switchToScreen('kelime-welcome-screen')" class="w-[90%] mx-auto block py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
 </div>
@@ -532,7 +533,7 @@ function adventureRetryLevel(){openAdventureLevelIntro(game.adventure.level.id);
 const ALL_MODALS=['sayi-round-over-modal','karma-round-over-modal','round-over-modal','wordle-round-over-modal','joker-modal','mp-countdown-overlay','rename-modal','sayi-joker-modal'];
 
 function hideAllScreens(){ALL_SCREENS.forEach(id=>document.getElementById(id).classList.add('hidden'));const _ft=document.getElementById('global-footer');if(_ft)_ft.classList.add('hidden');}
-function positionFooter(){const ft=document.getElementById('global-footer');if(!ft||ft.classList.contains('hidden'))return;const vis=ALL_SCREENS.map(id=>document.getElementById(id)).find(el=>el&&!el.classList.contains('hidden'));if(!vis)return;const r=vis.getBoundingClientRect();const ftH=ft.offsetHeight||56;let top=r.bottom-ftH/2-r.height*0.15;const maxTop=window.innerHeight-ftH-4;if(top>maxTop)top=maxTop;ft.style.top=top+'px';ft.style.bottom='auto';}
+function positionFooter(){const ft=document.getElementById('global-footer');if(!ft||ft.classList.contains('hidden'))return;const vis=ALL_SCREENS.map(id=>document.getElementById(id)).find(el=>el&&!el.classList.contains('hidden'));if(!vis)return;const r=vis.getBoundingClientRect();const ftH=ft.offsetHeight||56;let top=r.bottom-ftH/2;const maxTop=window.innerHeight-ftH-4;if(top>maxTop)top=maxTop;ft.style.top=top+'px';ft.style.bottom='auto';}
 window.addEventListener('resize',()=>{try{positionFooter();}catch(e){}});
 function hideAllModals(){ALL_MODALS.forEach(id=>document.getElementById(id).classList.add('hidden'));}
 function hideAllFinishBtns(){document.querySelectorAll('.finish-btn').forEach(b=>b.classList.add('hidden'));}
@@ -541,7 +542,7 @@ function showFinishBtn(kind){document.querySelectorAll(`.finish-btn[data-finish=
 function hideFinishBtn(kind){document.querySelectorAll(`.finish-btn[data-finish="${kind}"]`).forEach(b=>b.classList.add('hidden'));}
 function switchToScreen(screenId){hideAllScreens();hideAllModals();hideAllFinishBtns();clearInterval(sayiTimerInterval);clearInterval(timerInterval);clearInterval(computerSolutionAnimationInterval);document.getElementById(screenId).classList.remove('hidden');const _menuScreens=['wordle-welcome-screen','bkbi-menu-screen','kelime-welcome-screen','sayi-welcome-screen','wordle-difficulty-screen','wordle-adv-select-screen','wordle-mp-select-screen','wordle-adv-map-screen','vocab-screen','scoreboard-screen'];const _ft=document.getElementById('global-footer');if(_ft){const _isMenu=_menuScreens.includes(screenId);_ft.classList.toggle('hidden',!_isMenu);if(_isMenu)requestAnimationFrame(()=>{try{positionFooter();}catch(e){}});}if(screenId==='scoreboard-screen')switchScoreTab(currentScoreTab||'wordle');}
 
-const RULES_LINES=['📖 KELİME: Her tur 3 Sesli, 4 Sessiz ve 1 Joker harf düşer. Harfleri kullanarak en uzun kelimeleri yaz. Harf başına 1 puan!','🔢 İŞLEM: 6 sayı verilir, hedefe en yakın sonucu dört işlemle bul! Tam isabet 10 puan, fark kadar puan düşer.','🎲 KARMA: Kelime + İşlem turları art arda oynanır. Her ikisinde de skorun toplanır!','🔤 WORDLE: 5 harfli gizli kelimeyi tahmin et! 🟩 Yeşil = doğru yerde, 🟨 Sarı = var ama yanlış yerde, ⬜ Gri = yok. 5 tahmin hakkın var.','🔤 WORDLE İPUCU: Bir harf kelimede 2+ kez geçiyorsa üst simge ile gösterilir (ör. İ²). Yeşil harfler sonraki satıra taşınır.','🤝 ÇOKOYUNCULU: Arkadaşlarınla aynı anda yarış! Wordle\'de 1. bulan 30, 2. bulan 20, 3. bulan 10 puan alır. Beraberlikte hızlı çözen önde!'];
+const RULES_LINES=['📖 KELİME: Her tur 3 Sesli, 4 Sessiz ve 1 Joker harf düşer. Harfleri kullanarak en uzun kelimeleri yaz. Harf başına 1 puan!','🔢 İŞLEM: 6 sayı verilir, hedefe en yakın sonucu dört işlemle bul! Tam isabet 10 puan, fark kadar puan düşer.','🎲 KARMA: Kelime + İşlem turları art arda oynanır. Her ikisinde de skorun toplanır!','🔤 WORDLE: 5 harfli gizli kelimeyi tahmin et! 🟩 Yeşil = doğru yerde, 🟨 Sarı = var ama yanlış yerde, ⬜ Gri = yok. 5 tahmin hakkın var.','🔤 WORDLE İPUCU: Bir harf kelimede 2+ kez geçiyorsa üst simge ile gösterilir (ör. İ²). Yeşil harfler sonraki satıra taşınır.','🤝 ÇOKOYUNCULU: Arkadaşlarınla aynı anda yarış! Wordle\'de 1. bulan 30, 2. bulan 20, 3. bulan 10 puan alır. Beraberlikte hızlı çözen önde!','🗺️ MACERA: Bölümleri sırayla geç, yıldız topla! Her harf 1 puan (5 harfli kelime = 5 puan), uzun kelimeler daha çok puan. Her bölümün bir hedefi var — hedefi geçince ⭐, fazlasıyla aşınca ⭐⭐ veya ⭐⭐⭐ kazanırsın.'];
 let rulesPanelOpen=false,rulesAnimationStarted=false;
 function showModeSwitchHintOnce(){try{if(localStorage.getItem('bkbi_modehint_v1'))return;}catch(e){return;}const ov=document.createElement('div');ov.className='fixed inset-0 bg-black/55 flex items-center justify-center z-50 p-4';ov.style.backdropFilter='blur(6px)';ov.style.webkitBackdropFilter='blur(6px)';const close=()=>{try{localStorage.setItem('bkbi_modehint_v1','1');}catch(e){}ov.remove();};ov.onclick=(e)=>{if(e.target===ov)close();};ov.innerHTML=`<div class="bg-white rounded-3xl shadow-2xl max-w-sm w-[90%] p-7 text-center" style="border:3px solid #0ea5e9"><div class="text-5xl mb-3">⚙️</div><h3 class="text-xl font-black mb-3" style="color:#0ea5e9">Oyun Modu Değişti!</h3><p class="text-sm text-gray-600 leading-relaxed mb-5">Artık sağ üstteki <span class="inline-flex items-center justify-center w-7 h-7 bg-gray-100 rounded-full">⚙️</span> butonundan <b>Wordle</b> ve <b>Bir Kelime Bir İşlem</b> modları arasında geçiş yapabilirsin.</p><button id="modehint-ok" class="w-full py-3 bg-gradient-to-r from-summer-sea to-summer-ocean text-white font-bold rounded-2xl shadow hover:shadow-lg transition-all">Anladım!</button></div>`;document.body.appendChild(ov);ov.querySelector('#modehint-ok').onclick=close;}
 // ==== BİREBİR KAPIŞMA DAVET FONKSİYONLARI ====
