@@ -109,7 +109,7 @@
             <span class="text-xs font-bold text-gray-400"><span class="presence-count">0</span></span>
         </button>
     </div>
-    <div class="flex items-center justify-center mt-1"><p class="text-xs text-gray-300">v16.6</p></div>
+    <div class="flex items-center justify-center mt-1"><p class="text-xs text-gray-300">v16.7</p></div>
 </div>
 
 <div id="bkbi-menu-screen" class="hidden relative max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white" style="min-height:600px">
@@ -848,7 +848,7 @@ onDisconnect(myInviteRef).remove();
 onValue(myInviteRef,(snap)=>{const inv=snap.val();if(!inv||!inv.from)return;if(inv.status==='pending'){window.__handleIncomingInvite&&window.__handleIncomingInvite(inv);}else if(inv.status==='accepted'){window.__handleInviteAccepted&&window.__handleInviteAccepted(inv);}else if(inv.status==='rejected'){window.__handleInviteRejected&&window.__handleInviteRejected(inv);}});
 window.__mySessionId=presenceSessionId;
 window.__presenceNames=[];
-onValue(ref(db,'presence'),(snap)=>{const v=snap.val()||{};const now=(typeof serverNow==='function')?serverNow():Date.now();const STALE=90000;const entries=Object.entries(v).filter(([sid,e])=>{if(!e)return false;if(sid===presenceSessionId)return true;if(typeof e.t!=='number')return true;const fresh=(now-e.t)<STALE;if(!fresh){try{remove(ref(db,'presence/'+sid));}catch(er){}}return fresh;});window.__presenceNames=entries.map(([sid,e])=>(e&&e.n)?e.n:'Oyuncu');window.__presenceList=entries.map(([sid,e])=>({sid,name:(e&&e.n)?e.n:'Oyuncu'})).filter(p=>{if(p.sid===presenceSessionId)return false;const myName=(game&&game.playerName)?game.playerName:null;if(myName&&p.name===myName)return false;return true;});const count=entries.length;document.querySelectorAll('.presence-count').forEach(el=>{el.textContent=count;});});
+onValue(ref(db,'presence'),(snap)=>{const v=snap.val()||{};const now=(typeof serverNow==='function')?serverNow():Date.now();const STALE=90000;const entries=Object.entries(v).filter(([sid,e])=>{if(!e)return false;if(sid===presenceSessionId)return true;if(typeof e.t!=='number')return true;const fresh=(now-e.t)<STALE;if(!fresh){try{remove(ref(db,'presence/'+sid));}catch(er){}}return fresh;});window.__presenceNames=entries.map(([sid,e])=>(e&&e.n)?e.n:'Oyuncu');window.__presenceList=entries.map(([sid,e])=>({sid,name:(e&&e.n)?e.n:'Oyuncu'})).filter(p=>{if(p.sid===presenceSessionId)return false;const myName=(game&&game.playerName)?game.playerName:null;if(myName&&p.name===myName)return false;return true;});const count=(window.__presenceList||[]).length;document.querySelectorAll('.presence-count').forEach(el=>{el.textContent=count;});});
 </script>
 <div id="rules-panel" class="hidden fixed inset-0 bg-black/55 flex items-center justify-center z-50 p-4" style="backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)" onclick="if(event.target===this)toggleRulesPanel()"><div class="bg-white rounded-3xl shadow-2xl max-w-sm w-[90%] max-h-[80vh] overflow-y-auto p-7" style="border:3px solid #0ea5e9">
         <button onclick="toggleRulesPanel()" class="float-right w-9 h-9 flex items-center justify-center bg-gray-100 rounded-full text-gray-400 hover:bg-gray-200 hover:text-gray-600 text-lg font-bold -mt-2 -mr-2">✕</button>
