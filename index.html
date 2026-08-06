@@ -98,6 +98,12 @@
 
 <div id="global-footer" class="fixed left-1/2 -translate-x-1/2 z-40 hidden">
     <div class="flex justify-center items-center gap-5 mb-1 bg-white/70 backdrop-blur-md rounded-2xl px-5 py-2 shadow-lg">
+        <button onclick="goBackScreen()" id="footer-back-btn" title="Geri" class="flex items-center justify-center group">
+            <span class="w-11 h-11 flex items-center justify-center rounded-full bg-summer-sea/10 group-hover:bg-summer-sea/20 group-hover:-translate-x-0.5 transition-all">
+                <svg viewBox="0 0 24 24" fill="none" class="w-6 h-6" stroke="currentColor" style="color:#2b8a9e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </span>
+        </button>
+        <span class="w-px h-7 bg-gray-200"></span>
         <button onclick="toggleRulesPanel()" id="btn-rules-toggle" title="Nasıl Oynanır" class="flex items-center justify-center group">
             <span class="w-11 h-11 flex items-center justify-center group-hover:scale-110 transition-all"><img src="assets/ui/guidebook.png" alt="Nasıl Oynanır" class="w-full h-full object-contain"/></span>
         </button>
@@ -109,7 +115,7 @@
             <span class="text-xs font-bold text-gray-400"><span class="presence-count">0</span></span>
         </button>
     </div>
-    <div class="flex items-center justify-center mt-1"><p class="text-xs text-gray-300">v16.7</p></div>
+    <div class="flex items-center justify-center mt-1"><p class="text-xs text-gray-300">v16.8</p></div>
 </div>
 
 <div id="bkbi-menu-screen" class="hidden relative max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white" style="min-height:600px">
@@ -142,7 +148,7 @@
     <button onclick="startSoloWordle(this,5)" class="w-full py-3 bg-gradient-to-r from-green-400 to-emerald-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-2">Normal (5 Harf)</button>
     <button onclick="startSoloWordle(this,6)" class="w-full py-3 bg-gradient-to-r from-amber-400 to-orange-500 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-2">Zor (6 Harf)</button>
     <button onclick="startSoloWordle(this,7)" class="w-full py-3 bg-gradient-to-r from-red-400 to-red-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-4">İmkansız (7 Harf)</button>
-    <button onclick="switchToScreen('wordle-welcome-screen')" class="w-full py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
+    
 </div>
 
 <div id="kelime-welcome-screen" class="hidden relative max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white" style="min-height:600px">
@@ -150,7 +156,7 @@
     <button onclick="startSoloKelime(this)" class="w-full py-3 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Tek Kişilik Oyun</button>
     <button onclick="showMpLobbyScreen('kelime')" class="w-full py-3 bg-gradient-to-r from-cyan-400 to-teal-500 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Arkadaşlarınla Oyna</button>
     <button onclick="openAdventureMap()" class="w-full py-3 bg-gradient-to-r from-purple-400 to-purple-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">Macera</button>
-    <button onclick="switchToScreen('bkbi-menu-screen')" class="w-full mt-4 py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
+    
 
 </div>
 
@@ -158,7 +164,7 @@
     <img src="assets/bkbi.png" alt="Bir Kelime Bir İşlem" class="w-auto max-h-[294px] mx-auto mb-6 object-contain" />
     <button onclick="startSoloSayi(this)" class="w-full py-3 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-3">Tek Kişilik Oyun</button>
     <button onclick="showMpLobbyScreen('sayi')" class="w-full py-3 bg-gradient-to-r from-cyan-400 to-teal-500 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">Arkadaşlarınla Oyna</button>
-    <button onclick="switchToScreen('bkbi-menu-screen')" class="w-full mt-4 py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
+    
 
 </div>
 
@@ -167,7 +173,7 @@
     <p class="text-sm text-gray-500 mb-6">Nasıl oynamak istersin?</p>
     <button onclick="openWordleLobby()" class="w-[90%] mx-auto block py-4 mb-4 bg-gradient-to-r from-cyan-400 to-teal-500 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">🤝 Arkadaşlarınla Oyna<span class="block text-xs font-normal opacity-90 mt-1">Lobi kur, herkes aynı kelimeyi çözsün</span></button>
     <button onclick="openWordleVsLobby()" class="w-[90%] mx-auto block py-4 bg-gradient-to-r from-rose-400 to-red-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">⚔️ Birebir Kapışma<span class="block text-xs font-normal opacity-90 mt-1">İlk bulan kazanır, 1v1 düello</span></button>
-    <button onclick="switchToScreen('wordle-welcome-screen')" class="w-full mt-6 py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
+    
 </div>
 
 <div id="wordle-adv-select-screen" class="hidden relative max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white" style="min-height:600px">
@@ -175,7 +181,7 @@
     <h2 class="text-2xl font-black text-gray-800 mb-1">🗺️ Macera</h2>
     <p class="text-sm text-gray-500 mb-5">Bir dünya seç, 16 bölümü çöz!</p>
     <div id="adv-cat-list" class="space-y-3"></div>
-    <button onclick="switchToScreen('wordle-welcome-screen')" class="w-full mt-6 py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
+    
 </div>
 
 <div id="wordle-adv-map-screen" class="hidden relative max-w-md w-full bg-white/90 backdrop-blur-sm p-6 rounded-3xl shadow-2xl text-center border-4 border-white" style="min-height:600px">
@@ -183,7 +189,7 @@
     <h2 id="adv-map-title" class="text-2xl font-black text-gray-800 mb-1">🐾 Hayvanlar</h2>
     <p id="adv-map-sub" class="text-sm text-gray-500 mb-4"></p>
     <div id="adv-map-nodes" class="grid grid-cols-4 gap-3 justify-items-center"></div>
-    <div class="flex gap-2 mt-6"><button onclick="switchToScreen('wordle-adv-select-screen')" class="flex-1 py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Dünyalar</button><button onclick="switchToScreen('wordle-welcome-screen')" class="flex-1 py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">🏠 Ana Menü</button></div>
+    
 </div>
 
 <div id="vocab-screen" class="hidden relative max-w-md w-full bg-white/90 backdrop-blur-sm p-6 rounded-3xl shadow-2xl border-4 border-white" style="min-height:600px">
@@ -196,7 +202,7 @@
       <button id="vocab-tab-kelimeAvi" onclick="switchVocabTab('kelimeAvi')" class="flex-1 py-2 rounded-xl font-bold text-sm transition-all bg-blue-50 text-summer-sea">📖 Kelime Avı</button>
     </div>
     <div id="vocab-list" class="space-y-1 overflow-y-auto pr-1" style="max-height:150px"></div>
-    <button onclick="switchToScreen('wordle-welcome-screen')" class="w-full mt-4 py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
+    
 </div>
 
 <div id="wordle-game-screen" class="hidden max-w-md w-full overflow-x-hidden bg-white/90 backdrop-blur-sm p-3 rounded-3xl shadow-2xl border-4 border-white">
@@ -239,7 +245,7 @@
     <h1 class="text-3xl font-extrabold text-summer-sea mb-1">Macera</h1>
     <p class="text-gray-500 mb-3 text-sm">Bölümleri sırayla geç, yıldızları topla!</p>
     <div id="adventure-level-grid" class="grid grid-cols-4 gap-3 mb-4"></div>
-    <button onclick="switchToScreen('kelime-welcome-screen')" class="w-[90%] mx-auto block py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
+    
 </div>
 
 <div id="adventure-level-intro-screen" class="hidden max-w-md w-full bg-white/95 backdrop-blur-md p-8 rounded-3xl shadow-2xl text-center border-4 border-summer-ocean relative overflow-hidden">
@@ -248,7 +254,7 @@
     <div class="bg-blue-50 rounded-2xl p-5 my-5"><p class="text-xs font-bold text-summer-sea uppercase tracking-widest mb-2">🎯 Hedef</p><p id="adv-intro-goal" class="text-xl font-bold text-gray-700">-</p></div>
     <div class="flex items-center justify-center gap-4 text-sm text-gray-500 mb-6"><span>⏱️ <span id="adv-intro-time">120</span> sn</span><span id="adv-intro-nojoker" class="hidden">🚫 Joker yok</span></div>
     <button onclick="startAdventureLevel()" class="w-full py-3 bg-gradient-to-r from-summer-ocean to-summer-blue text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-2">Başla 🚀</button>
-    <button onclick="switchToScreen('adventure-map-screen')" class="w-[90%] mx-auto block py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Haritaya Dön</button>
+    
 </div>
 
 <div id="adventure-level-complete-screen" class="hidden max-w-md w-full bg-white/95 backdrop-blur-md p-8 rounded-3xl shadow-2xl text-center border-4 border-summer-sun relative overflow-hidden">
@@ -270,7 +276,7 @@
         <button onclick="switchScoreTab('wordle')" id="score-tab-wordle" class="score-tab-btn flex-1 py-2 rounded-lg font-bold text-sm transition-all text-gray-500">🔤 Wordle</button>
     </div>
     <div class="retro-highscore-box"><div class="grid grid-cols-12 font-retro text-xs text-slate-400 tracking-wider mb-3 px-2"><span class="col-span-2 text-left">POS</span><span class="col-span-5 text-left">NAME</span><span class="col-span-5 text-left">SCORE</span></div><div id="retro-top10-list" class="flex flex-col gap-1"><p class="text-slate-500 text-sm">Yükleniyor...</p></div></div>
-    <button onclick="switchToScreen('wordle-welcome-screen')" class="w-full mt-4 py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
+    
 </div>
 
 <div id="round-select-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
@@ -279,21 +285,21 @@
     <p class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Tur Süresi (dk)</p>
     <div class="grid grid-cols-3 gap-2 mb-6"><button onclick="selectSoloDuration(1)" data-solo-duration="1" class="solo-duration-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">1</button><button onclick="selectSoloDuration(2)" data-solo-duration="2" class="solo-duration-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">2</button><button onclick="selectSoloDuration(3)" data-solo-duration="3" class="solo-duration-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">3</button></div>
     <button onclick="startGame()" id="btn-solo-start" disabled class="wbtn t-orange mb-3"><span>OYUNU BAŞLAT</span></button>
-    <button onclick="switchToScreen('kelime-welcome-screen')" class="w-[90%] mx-auto block py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
+    
 </div>
 
 <div id="sayi-round-select-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
     <h2 class="text-3xl font-extrabold text-summer-sea mb-2">İşlem</h2><p class="text-gray-500 mb-6">Kaç tur oynayalım?</p>
     <div class="grid grid-cols-3 gap-2 mb-6"><button onclick="selectSayiRoundCount(3)" data-sayi-round="3" class="sayi-round-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">3</button><button onclick="selectSayiRoundCount(5)" data-sayi-round="5" class="sayi-round-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">5</button><button onclick="selectSayiRoundCount(7)" data-sayi-round="7" class="sayi-round-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">7</button></div>
     <button onclick="startSayiGame()" id="btn-sayi-start" disabled class="w-full py-3 bg-gray-300 text-white font-bold text-lg rounded-2xl shadow-lg transition-all mb-3 cursor-not-allowed">Oyunu Başlat 🚀</button>
-    <button onclick="switchToScreen('sayi-welcome-screen')" class="w-[90%] mx-auto block py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
+    
 </div>
 
 <div id="karma-round-select-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
     <h2 class="text-3xl font-extrabold text-summer-sea mb-2">🎲 Bir Kelime Bir İşlem</h2><p class="text-gray-500 mb-6">Toplam kaç tur?</p>
     <div class="grid grid-cols-3 gap-2 mb-6"><button onclick="selectKarmaRoundCount(3)" data-karma-round="3" class="karma-round-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">3</button><button onclick="selectKarmaRoundCount(5)" data-karma-round="5" class="karma-round-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">5</button><button onclick="selectKarmaRoundCount(7)" data-karma-round="7" class="karma-round-btn py-3 bg-blue-50 text-summer-sea font-black text-lg rounded-2xl border-2 border-blue-200 transition-colors">7</button></div>
     <button onclick="startKarmaGame()" id="btn-karma-start" disabled class="w-full py-3 bg-gray-300 text-white font-bold text-lg rounded-2xl shadow-lg transition-all mb-3 cursor-not-allowed">Oyunu Başlat 🚀</button>
-    <button onclick="switchToScreen('wordle-welcome-screen')" class="w-full py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
+    
 </div>
 
 <div id="sayi-game-screen" class="hidden w-full max-w-2xl flex flex-col h-full max-h-[90vh]">
@@ -330,7 +336,7 @@
     <button onclick="openMpHost(this)" class="w-full py-3 bg-gradient-to-r from-summer-sun to-summer-coral text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all mb-6">➕ Oyun Kur</button>
     <p class="text-left text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Aktif Oyunlar</p>
     <div id="mp-active-list" class="flex flex-col gap-2 mb-6 max-h-60 overflow-y-auto"><p class="text-gray-400 text-sm">Yükleniyor...</p></div>
-    <button onclick="leaveMpLobbyScreen()" class="w-full py-3 bg-gray-100 text-gray-500 font-bold rounded-xl hover:bg-gray-200 transition-colors">← Geri</button>
+    
 </div>
 
 <div id="mp-waiting-screen" class="hidden max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white">
@@ -562,7 +568,11 @@ function hideAllFinishBtns(){document.querySelectorAll('.finish-btn').forEach(b=
 function setBtnLoading(btn,on){if(!btn)return;if(on){btn.dataset.orig=btn.innerHTML;btn.innerHTML='<span class="btn-spinner"></span>';btn.disabled=true;}else{if(btn.dataset.orig)btn.innerHTML=btn.dataset.orig;btn.disabled=false;}}
 function showFinishBtn(kind){document.querySelectorAll(`.finish-btn[data-finish="${kind}"]`).forEach(b=>b.classList.remove('hidden'));}
 function hideFinishBtn(kind){document.querySelectorAll(`.finish-btn[data-finish="${kind}"]`).forEach(b=>b.classList.add('hidden'));}
-function switchToScreen(screenId){hideAllScreens();hideAllModals();hideAllFinishBtns();clearInterval(sayiTimerInterval);clearInterval(timerInterval);clearInterval(computerSolutionAnimationInterval);document.getElementById(screenId).classList.remove('hidden');const _menuScreens=['wordle-welcome-screen','bkbi-menu-screen','kelime-welcome-screen','sayi-welcome-screen','wordle-difficulty-screen','wordle-adv-select-screen','wordle-mp-select-screen','wordle-adv-map-screen','vocab-screen','scoreboard-screen'];const _ft=document.getElementById('global-footer');if(_ft){const _isMenu=_menuScreens.includes(screenId);_ft.classList.toggle('hidden',!_isMenu);if(_isMenu)requestAnimationFrame(()=>{try{positionFooter();}catch(e){}});}if(screenId==='scoreboard-screen')switchScoreTab(currentScoreTab||'wordle');}
+let _screenHistory=[];let _navBack=false;
+function currentVisibleScreen(){return ALL_SCREENS.map(id=>document.getElementById(id)).find(el=>el&&!el.classList.contains('hidden'));}
+function switchToScreen(screenId){const _prevEl=currentVisibleScreen();const _prevId=_prevEl?_prevEl.id:null;if(!_navBack&&_prevId&&_prevId!==screenId){_screenHistory.push(_prevId);if(_screenHistory.length>40)_screenHistory.shift();}_navBack=false;hideAllScreens();hideAllModals();hideAllFinishBtns();clearInterval(sayiTimerInterval);clearInterval(timerInterval);clearInterval(computerSolutionAnimationInterval);document.getElementById(screenId).classList.remove('hidden');const _menuScreens=['wordle-welcome-screen','bkbi-menu-screen','kelime-welcome-screen','sayi-welcome-screen','wordle-difficulty-screen','wordle-adv-select-screen','wordle-mp-select-screen','wordle-adv-map-screen','vocab-screen','scoreboard-screen','mp-lobby-screen','mp-waiting-screen'];const _ft=document.getElementById('global-footer');if(_ft){const _isMenu=_menuScreens.includes(screenId);_ft.classList.toggle('hidden',!_isMenu);if(_isMenu)requestAnimationFrame(()=>{try{positionFooter();updateBackButton();}catch(e){}});}if(screenId==='scoreboard-screen')switchScoreTab(currentScoreTab||'wordle');}
+function goBackScreen(){const _cur=currentVisibleScreen();const _curId=_cur?_cur.id:null;if(_curId==='mp-lobby-screen'||_curId==='mp-waiting-screen'){try{if(typeof leaveMpLobbyScreen==='function'){_screenHistory=[];leaveMpLobbyScreen();return;}}catch(e){}}if(_screenHistory.length===0){switchToScreen('wordle-welcome-screen');return;}const target=_screenHistory.pop();_navBack=true;switchToScreen(target);}
+function updateBackButton(){const btn=document.getElementById('footer-back-btn');if(!btn)return;const canBack=_screenHistory.length>0;btn.style.opacity=canBack?'1':'0.3';btn.style.pointerEvents=canBack?'auto':'none';}
 
 const RULES_LINES=['📖 KELİME: Her tur 3 Sesli, 4 Sessiz ve 1 Joker harf düşer. Harfleri kullanarak en uzun kelimeleri yaz. Harf başına 1 puan!','🔢 İŞLEM: 6 sayı verilir, hedefe en yakın sonucu dört işlemle bul! Tam isabet 10 puan, fark kadar puan düşer.','🎲 KARMA: Kelime + İşlem turları art arda oynanır. Her ikisinde de skorun toplanır!','🔤 WORDLE: 5 harfli gizli kelimeyi tahmin et! 🟩 Yeşil = doğru yerde, 🟨 Sarı = var ama yanlış yerde, ⬜ Gri = yok. 5 tahmin hakkın var.','🔤 WORDLE İPUCU: Bir harf kelimede 2+ kez geçiyorsa üst simge ile gösterilir (ör. İ²). Yeşil harfler sonraki satıra taşınır.','🤝 ÇOKOYUNCULU: Arkadaşlarınla aynı anda yarış! Wordle\'de 1. bulan 30, 2. bulan 20, 3. bulan 10 puan alır. Beraberlikte hızlı çözen önde!','🗺️ MACERA: Bölümleri sırayla geç, yıldız topla! Her harf 1 puan (5 harfli kelime = 5 puan), uzun kelimeler daha çok puan. Her bölümün bir hedefi var — hedefi geçince ⭐, fazlasıyla aşınca ⭐⭐ veya ⭐⭐⭐ kazanırsın.'];
 let rulesPanelOpen=false,rulesAnimationStarted=false;
