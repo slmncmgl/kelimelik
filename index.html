@@ -98,12 +98,6 @@
 
 <div id="global-footer" class="fixed left-1/2 -translate-x-1/2 z-40 hidden">
     <div class="flex justify-center items-center gap-5 mb-1 bg-white/70 backdrop-blur-md rounded-2xl px-5 py-2 shadow-lg">
-        <button onclick="goBackScreen()" id="footer-back-btn" title="Geri" class="flex items-center justify-center group">
-            <span class="w-11 h-11 flex items-center justify-center rounded-full bg-summer-sea/10 group-hover:bg-summer-sea/20 group-hover:-translate-x-0.5 transition-all">
-                <svg viewBox="0 0 24 24" fill="none" class="w-6 h-6" stroke="currentColor" style="color:#2b8a9e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-            </span>
-        </button>
-        <span class="w-px h-7 bg-gray-200"></span>
         <button onclick="toggleRulesPanel()" id="btn-rules-toggle" title="Nasıl Oynanır" class="flex items-center justify-center group">
             <span class="w-11 h-11 flex items-center justify-center group-hover:scale-110 transition-all"><img src="assets/ui/guidebook.png" alt="Nasıl Oynanır" class="w-full h-full object-contain"/></span>
         </button>
@@ -114,8 +108,14 @@
             <span class="w-11 h-11 flex items-center justify-center group-hover:scale-110 transition-all relative"><img src="assets/ui/online.png" alt="Çevrimiçi" class="w-full h-full object-contain"/></span>
             <span class="text-xs font-bold text-gray-400"><span class="presence-count">0</span></span>
         </button>
+        <span class="w-px h-7 bg-gray-200"></span>
+        <button onclick="goBackScreen()" id="footer-back-btn" title="Geri" class="flex items-center justify-center group">
+            <span class="w-11 h-11 flex items-center justify-center rounded-full bg-summer-sea/10 group-hover:bg-summer-sea/20 group-hover:-translate-x-0.5 transition-all">
+                <svg viewBox="0 0 24 24" fill="none" class="w-6 h-6" stroke="currentColor" style="color:#2b8a9e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </span>
+        </button>
     </div>
-    <div class="flex items-center justify-center mt-1"><p class="text-xs text-gray-300">v16.8</p></div>
+    <div class="flex items-center justify-center mt-1"><p class="text-xs text-gray-300">v16.9</p></div>
 </div>
 
 <div id="bkbi-menu-screen" class="hidden relative max-w-md w-full bg-white/90 backdrop-blur-sm p-8 rounded-3xl shadow-2xl text-center border-4 border-white" style="min-height:600px">
